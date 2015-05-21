@@ -11,7 +11,7 @@ if (isset($_GET['getdata'])) {
 			if ($product) {
 				$data[] = array(
 					'email' => $affiliate->getEmail(),
-					'product' => ($product->isDeleted() ? '' : ('<a target=\'_blank\' href=\'' . $product->getLink() . '\'>' . $product->getTitle() . '</a>')),
+					'product' => ($product->isDeleted() ? '' : ('<a target=\'_blank\' href=\'' . $product->getUrl() . '\'>' . $product->getTitle() . '</a>')),
 					'orders' => $affiliate->getOrders(),
 					'unpaidOrders' => $affiliate->getUnpaidOrders(),
 					'unpaidAmount' => '$' . $affiliate->getUnpaidFiat(),
