@@ -53,6 +53,7 @@ $products->addPage(			new Page(						array(	array('seller', 'products', 'create'
                                                                     array('seller', 'products', 'create', 'upload'),
 																	array('seller', 'products', 'edit', '*'),
                                                                     array('seller', 'products', 'edit', '*', 'upload')),        	'views/seller/products-create-edit.php', 		'Create'		    ));
+$products->addPage(		    new Page(						array(	array('seller', 'products', 'orders')), 						'views/seller/orders.php', 				    	'Orders'            ));
 $spbox->addPage(		    new Page(						array(	array('seller', 'proxy')), 										'views/seller/proxy.php', 						'Proxy/VPN Detector'));
 $spbox->addPage(		    new Page(						array(	array('seller', 'tracking')), 									'views/seller/tracking.php', 					'Sales & Tracking'  ));
 

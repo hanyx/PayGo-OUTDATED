@@ -126,6 +126,23 @@ class Order {
 		return $orders;
 	}
 
+    public static function getOrdersByUser($uid) {
+        $orders = array();
+
+        $q = DB::getInstance()->prepare('SELECT o.id FROM orders AS `o` JOIN products AS `p` ON (p.id = o.product_id) WHERE p.seller_id = ? AND o.completed = 0');
+        $q->execute(array($uid));
+        $q = $q->fetchAll();
+
+        foreach ($q as $p) {
+            $order = new Order();
+            if ($order->read($p['id'])) {
+                $orders[] = $order;
+            }
+        }
+
+        return $orders;
+    }
+
     public function getFiat() {
         return $this->fiat;
     }

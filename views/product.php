@@ -43,15 +43,15 @@ if (count($url) == 3 && $url[2] == 'buy') {
 
                     $questions = array();
 
-                    $qs = count($product->getQuestions());
+                    $qs = $product->getQuestions();
 
-                    for ($x = 1; $x <= $qs; $x++) {
+                    for ($x = 1; $x <= count($qs); $x++) {
                         if (isset($_POST['q-' . $x])) {
-                            $questions[] = htmlspecialchars($_POST['q-' . $x], ENT_QUOTES);
+                            $questions[] = array($qs[$x - 1], htmlspecialchars($_POST['q-' . $x], ENT_QUOTES));
                         }
                     }
 
-                    if (count($questions) != $qs) {
+                    if (count($questions) != count($qs)) {
                         $errorMessage = 'RELOAD';
                         break;
                     }
@@ -71,6 +71,9 @@ if (count($url) == 3 && $url[2] == 'buy') {
                     if ($order->getCurrency() == ProductCurrency::PAYPAL || $order->getCurrency() == ProductCurrency::PAYPALSUB) {
                         $response['action'] = 'pp-checkout';
                         $response['data'] = array('sub' => $order->getCurrency() == ProductCurrency::PAYPALSUB, 'business' => $seller->getPaypal(), 'itemname' => $product->getTitle(), 'itemnumber' => $product->getId(), 'amount' => $order->getFiat(), 'custom' => $order->getTxid(), 'shipping' => $product->getRequireShipping(), 'quantity' => $order->getQuantity(), 'sub-length' => $product->getPaypalSubLength(), 'sub-unit' => $product->getPaypalSubUnit());
+
+                        $order->setNative($order->getFiat());
+                        $order->update();
                     } else if ($order->getCurrency() == ProductCurrency::BITCOIN || $order->getCurrency() == ProductCurrency::LITECOIN|| $order->getCurrency() == ProductCurrency::OMNICOIN) {
                         $cp = new CoinPaymentsAPI();
                         $cp->Setup($config['coinpayments']['private'], $config['coinpayments']['public']);
