@@ -176,6 +176,16 @@ foreach ($product->getCurrency() as $currency) {
     }
 }
 
+$view = new View();
+
+$view->setProductId($product->getId());
+$view->setIp(getRealIp());
+if (isset($_SERVER['HTTP_REFERER'])) {
+    $view->setReferrer(htmlspecialchars($_SERVER['HTTP_REFERER']));
+}
+
+$view->create();
+
 include_once('seller/header.php');
 ?>
 <style>
