@@ -66,7 +66,7 @@ class Product {
             }
         }
 		
-		$q = DB::getInstance()->prepare('INSERT into products (url, seller_id, title, description, price, type, currency, visible, custom_delivery, pp_sub_length, pp_sub_unit, require_shipping, affiliate_enabled, affiliate_percent, affiliate_secondary_link, affiliate_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+		$q = DB::getInstance()->prepare('INSERT into products (url, seller_id, title, description, price, type, currency, visible, custom_delivery, pp_sub_length, pp_sub_unit, require_shipping, affiliate_enabled, affiliate_percent, affiliate_secondary_link, affiliate_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 		
 		$q->execute(array($this->url, $this->sellerId, $this->title, $this->description, $this->price, $this->type, implode(',', $this->currency), $this->visible, $this->customDelivery, $this->paypalSubLength, $this->paypalSubUnit, $this->requireShipping, $this->affiliateEnabled, $this->affiliatePercent, $this->affiliateSecondaryLink, $this->affiliateId));
 
@@ -247,10 +247,6 @@ class Product {
 		$q = DB::getInstance()->prepare('SELECT id, type FROM products WHERE seller_id = ? AND (deleted = ? OR deleted = ?)');
 		$q->execute(array($uid, $showDeleted, false));
 		$q = $q->fetchAll();
-		
-		if (count($q) == 0) {
-			return false;
-		}
 		
 		foreach ($q as $p) {
 			$product = Product::getProduct($p['id'], $showDeleted);
