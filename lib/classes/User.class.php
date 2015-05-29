@@ -17,6 +17,7 @@ class User {
 	private $bitcoin;
 	private $litecoin;
 	private $omnicoin;
+    private $payza;
 	
 	public function __construct() {
         $this->id = 0;
@@ -34,6 +35,7 @@ class User {
         $this->bitcoin = '';
         $this->litecoin = '';
         $this->omnicoin = '';
+        $this->payza = '';
 	}
 	
 	public function create() {
@@ -45,7 +47,7 @@ class User {
 	}
 	
 	public function read($id) {
-		$q = DB::getInstance()->prepare('SELECT id, session, username, password, email, active, account_type, last_login_timestamp, last_login_ip, paypal, bitcoin, litecoin, omnicoin FROM users WHERE id = ?');
+		$q = DB::getInstance()->prepare('SELECT id, session, username, password, email, active, account_type, last_login_timestamp, last_login_ip, paypal, bitcoin, litecoin, omnicoin, payza FROM users WHERE id = ?');
 		$q->execute(array($id));
 		$q = $q->fetchAll();
 		
@@ -70,6 +72,7 @@ class User {
 		$this->bitcoin = $q[0]['bitcoin'];
 		$this->litecoin = $q[0]['litecoin'];
 		$this->omnicoin = $q[0]['omnicoin'];
+        $this->payza = $q[0]['payza'];
 		
 		return true;
 	}
@@ -99,8 +102,8 @@ class User {
     }
 	
 	public function update() {
-		$q = DB::getInstance()->prepare('UPDATE users SET session = ?, username = ?, password = ?, email = ?, active = ?, account_type = ?, last_login_timestamp = ?, last_login_ip = ?, paypal = ?, bitcoin = ?, litecoin = ?, omnicoin = ? WHERE id = ?');
-		$q->execute(array($this->session, $this->username, $this->password, $this->email, $this->active, $this->accountType,$this->lastLoginTimestamp, $this->lastLoginIp, $this->paypal, $this->bitcoin, $this->litecoin, $this->omnicoin, $this->id));
+		$q = DB::getInstance()->prepare('UPDATE users SET session = ?, username = ?, password = ?, email = ?, active = ?, account_type = ?, last_login_timestamp = ?, last_login_ip = ?, paypal = ?, bitcoin = ?, litecoin = ?, omnicoin = ?, payza = ? WHERE id = ?');
+		$q->execute(array($this->session, $this->username, $this->password, $this->email, $this->active, $this->accountType,$this->lastLoginTimestamp, $this->lastLoginIp, $this->paypal, $this->bitcoin, $this->litecoin, $this->omnicoin, $this->payza, $this->id));
 	}
 		
 	public function checkPassword($password) {
@@ -162,6 +165,10 @@ class User {
         $this->omnicoin = $omnicoin;
     }
 
+    public function setPayza($payza) {
+        $this->payza = $payza;
+    }
+
     public function getActive() {
         return $this->active;
     }
@@ -204,6 +211,10 @@ class User {
 
     public function getOmnicoin() {
         return $this->omnicoin;
+    }
+
+    public function getPayza() {
+        return $this->payza;
     }
 
 }

@@ -39,6 +39,7 @@ abstract class ProductCurrency {
 	const BITCOIN = 2;
 	const LITECOIN = 3;
 	const OMNICOIN = 4;
+    const PAYZA = 5;
 }
 
 abstract class MessageFolder {

@@ -75,6 +75,10 @@ if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['descriptio
         $currencies[] = ProductCurrency::OMNICOIN;
     }
 
+    if (isset($_POST['payza']) && $_POST['payza'] == '1') {
+        $currencies[] = ProductCurrency::PAYZA;
+    }
+
     $product->setSellerId($uas->getUser()->getId());
     $product->setTitle(htmlspecialchars($_POST['title'], ENT_QUOTES));
     $product->setPrice((double)$_POST['price']);
@@ -91,6 +95,7 @@ if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['descriptio
     $product->setCustomDelivery(htmlspecialchars($_POST['custom-delivery'], ENT_QUOTES));
     $product->setRequireShipping(isset($_POST['require-shipping']) && $_POST['require-shipping'] == '1');
     $product->setVisible(isset($_POST['display']) && $_POST['display'] == '1');
+    $product->setSuccessUrl($_POST["success-url"]);
 
     $questions = array();
 
@@ -101,6 +106,21 @@ if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['descriptio
     }
 
     $product->setQuestions($questions);
+
+    $coupons = array();
+
+    for ($x = 0; $x < 10; $x++) {
+        if (isset($_POST['coupon-q-' . $x]) && isset($_POST['coupon-reduction-q-' . $x]) && isset($_POST['coupon-amount-q-' . $x])) {
+            $coupon = new ProductCoupon();
+            $coupon->setName(htmlspecialchars($_POST['coupon-q-' . $x], ENT_QUOTES));
+            $coupon->setReduction(htmlspecialchars($_POST['coupon-reduction-q-' . $x], ENT_QUOTES));
+            $coupon->setMaxUsedAmount(htmlspecialchars($_POST['coupon-amount-q-' . $x], ENT_QUOTES));
+
+            $coupons[] = $coupon;
+        }
+    }
+
+    $product->setCoupons($coupons);
 
     if ($_POST['title'] == '') {
         $uas->addMessage(new ErrorSuccessMessage('Product title cannot be empty'));
@@ -184,12 +204,12 @@ if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['descriptio
 
 include_once('header.php');
 ?>
-	<section id='content'>
-		<section class='main padder'>
-			<div class='clearfix'>
-				<h4><i class='fa fa-plus'></i> Create Product</h4>
-				<?php $uas->printMessages(); ?>
-			</div>
+    <section id='content'>
+        <section class='main padder'>
+            <div class='clearfix'>
+                <h4><i class='fa fa-plus'></i> Create Product</h4>
+                <?php $uas->printMessages(); ?>
+            </div>
             <?php if ($displayForm) { ?>
                 <div class='row'>
                     <div class='col-sm-12'>
@@ -249,6 +269,13 @@ include_once('header.php');
                                                 <input type='checkbox' name='omnicoin' value='1' <?php echo $product->acceptsCurrency(ProductCurrency::OMNICOIN) ? 'checked=\'1\'' : ''; ?>>
                                                 <i class='fa fa-check-square-o'></i>
                                                 OmniCoin
+                                            </label>
+                                        </div>
+                                        <div class='checkbox'>
+                                            <label class='checkbox-custom'>
+                                                <input type='checkbox' name='payza' value='1' <?php echo $product->acceptsCurrency(ProductCurrency::PAYZA) ? 'checked=\'1\'' : ''; ?>>
+                                                <i class='fa fa-check-square-o'></i>
+                                                Payza
                                             </label>
                                         </div>
                                         <div class='pp-sub-options <?php echo $product->acceptsCurrency(ProductCurrency::PAYPALSUB) ? '' : 'hide'; ?>'>
@@ -365,6 +392,27 @@ include_once('header.php');
                                             <span class='fa fa-minus'></span>
                                         </button>
                                         <div class='line line-dashed m-t-large'></div>
+                                        <p>Coupons:</p>
+                                        <div class='coupon-entries'>
+                                            <?php
+                                            $x = 0;
+                                            foreach ($product->getCoupons() as $coupon) {
+                                                $cp = new ProductCoupon();
+                                                $cp->read($coupon->getId());
+                                                $x++;
+                                                echo '<div class="coupon-1"><p>Coupon 1:</p>
+<div class="row"> <div class="col-md-2"><input name="coupon-q-' . $x . '" required="true" type="text" placeholder="Name" value="' . $cp->getName() . '" class="input-sm form-control"></div><div class="col-md-2"><input name="coupon-reduction-q-' . $cp->getReduction() . '" value="' . $x . '" required="true" type="number" min="1" max="99" placeholder="Reduction %" class="input-sm form-control"></div><div class="col-md-2"><input name="coupon-amount-q-' . $x . '" required="true" type="number" min="0" value="' . $cp->getMaxUsedAmount() . '" placeholder="Maximum amount of times to use" class="input-sm form-control"></div></div></div>';
+                                            }
+                                            ?>
+                                        </div>
+                                        <br>
+                                        <button type='button' class='btn btn-success' id='coupon-add'>
+                                            <span class='fa fa-plus'></span>
+                                        </button>
+                                        <button type='button' class='btn btn-success' id='coupon-remove'>
+                                            <span class='fa fa-minus'></span>
+                                        </button>
+                                        <div class='line line-dashed m-t-large'></div>
                                         <p>Affiliates:</p>
                                         <div class='checkbox'>
                                             <label class='checkbox-custom'>
@@ -383,6 +431,10 @@ include_once('header.php');
                                         <p>Custom Delivery:</p>
                                         <div class='form-group' id='product-title'>
                                             <input name='custom-delivery' placeholder='Optional' type='text' class='input-sm form-control' value='<?php echo $product->getCustomDelivery(); ?>'>
+                                        </div>
+                                        <p>Success URL:</p>
+                                        <div class='form-group' id='product-title'>
+                                            <input name='success-url' placeholder='Optional' type='url' class='input-sm form-control' value='<?php echo $product->getSuccessUrl(); ?>'>
                                         </div>
                                         <div class='line line-dashed m-t-large'></div>
                                         <div class='checkbox'>
@@ -403,8 +455,8 @@ include_once('header.php');
                     </div>
                 </div>
             <?php } ?>
-		</section>
-	</section>
+        </section>
+    </section>
     <script>
         $(function() {
             if ($('.netseal-entries').children().length == 0) {
@@ -467,6 +519,10 @@ include_once('header.php');
                 addQuestion($('.question-entries').children().length + 1);
             });
 
+            $('#coupon-add').click(function() {
+                addCoupon($('.coupon-entries').children().length + 1);
+            });
+
             $('#question-remove').click(function() {
                 var x = $('.question-entries').children().length;
 
@@ -474,8 +530,16 @@ include_once('header.php');
                     $('.question-' + x).remove();
                 }
             });
+
+            $('#coupon-remove').click(function() {
+                var x = $('.coupon-entries').children().length;
+
+                if (x > 0) {
+                    $('.coupon-' + x).remove();
+                }
+            });
         });
-        
+
         function addNetseal(offset) {
             $('.netseal-entries').append('<div class=\'netseal-' + offset + '\'>\
                 ' + (offset != 1 ? '<div class=\'line line-dashed m-t-large\'></div>' : '') + '\
@@ -507,6 +571,14 @@ include_once('header.php');
                 ' + (offset != 1 ? '<div class=\'line line-dashed m-t-large\'></div>' : '') + '\
                 <p>Question ' + offset + ':</p>\
                 <input name=\'question-q-' + offset + '\' type=\'text\' class=\'input-sm form-control\'>\
+            </div>');
+        }
+
+        function addCoupon(offset) {
+            $('.coupon-entries').append('<div class=\'coupon-' + offset + '\'>\
+                ' + (offset != 1 ? '<div class=\'line line-dashed m-t-large\'></div>' : '') + '\
+                <p>Coupon ' + offset + ':</p>\
+                <div class=\'row\'> <div class=\'col-md-2\'><input name=\'coupon-q-' + offset + '\' required="true" type=\'text\' placeholder=\'Name\' class=\'input-sm form-control\'/></div><div class=\'col-md-2\'><input name=\'coupon-reduction-q-' + offset + '\' required="true" type=\'number\' min=1 max=99 placeholder=\'Reduction %\' class=\'input-sm form-control\'/></div><div class=\'col-md-2\'><input name=\'coupon-amount-q-' + offset + '\' required="true" type=\'number\' min=0 placeholder=\'Maximum amount of times to use\' class=\'input-sm form-control\'/></div></div>\
             </div>');
         }
     </script>

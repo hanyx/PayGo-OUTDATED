@@ -16,6 +16,8 @@ class Order {
 	private $email;
 	private $ip;
 	private $questions;
+    private $coupon;
+    private $successUrl;
 	
 	public function __construct() {
         $this->id = 0;
@@ -31,6 +33,8 @@ class Order {
         $this->email = '';
         $this->ip = '';
         $this->questions = array();
+        $this->coupon = "0";
+        $this->successUrl = '';
 	}
 	
 	public function create() {
@@ -46,9 +50,9 @@ class Order {
 		
 		$this->date = date('Y-m-d H:i:s');
 		
-		$q = DB::getInstance()->prepare('INSERT into orders (txid, date, product_id, quantity, currency, fiat, email, ip) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+		$q = DB::getInstance()->prepare('INSERT into orders (txid, date, product_id, quantity, currency, fiat, email, ip, coupon_id, after_success_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 		
-		$q->execute(array($this->txid, $this->date, $this->productId, $this->quantity, $this->currency, $this->fiat, $this->email, $this->ip));
+		$q->execute(array($this->txid, $this->date, $this->productId, $this->quantity, $this->currency, $this->fiat, $this->email, $this->ip, $this->coupon, $this->successUrl));
 
         $this->readByTxid($this->txid);
 
@@ -60,7 +64,7 @@ class Order {
 	}
 	
 	public function read($id) {
-		$q = DB::getInstance()->prepare('SELECT id, completed, txid, processor_txid, date, product_id, quantity, currency, fiat, native, email, ip FROM orders WHERE id = ?');
+		$q = DB::getInstance()->prepare('SELECT id, completed, txid, processor_txid, date, product_id, quantity, currency, fiat, native, email, ip, coupon_id, after_success_url FROM orders WHERE id = ?');
 		$q->execute(array($id));
 		$q = $q->fetchAll();
 		
@@ -80,6 +84,8 @@ class Order {
 		$this->native = $q[0]['native'];
 		$this->email = $q[0]['email'];
 		$this->ip = $q[0]['ip'];
+        $this->coupon = $q[0]['coupon_id'];
+        $this->successUrl = $q[0]['after_success_url'];
 
         $q = DB::getInstance()->prepare('SELECT question, response FROM order_questions WHERE order_id = ?');
         $q->execute(array($id));
@@ -195,6 +201,14 @@ class Order {
         $this->email = $email;
     }
 
+    public function getCoupon(){
+        return $this->coupon;
+    }
+
+    public function setCoupon($cid) {
+        $this->coupon = $cid;
+    }
+
     public function getIp() {
         return $this->ip;
     }
@@ -223,4 +237,13 @@ class Order {
         $this->processorTxid = $processorTxid;
     }
 
+    public function setSuccessUrl($successUrl){
+        if(filter_var($successUrl, FILTER_VALIDATE_URL) || $successUrl == ''){
+            $this->successUrl = $successUrl;
+        }
+    }
+
+    public function getSuccessUrl() {
+        return $this->successUrl;
+    }
 }

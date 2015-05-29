@@ -65,12 +65,14 @@ if (count($url) == 3 && $url[2] == 'buy') {
                     $order->setEmail($_POST['email']);
                     $order->setIp(getRealIp());
                     $order->setQuestions($questions);
+                    $order->setCoupon($_POST['couponCode']);
+                    $order->setSuccessUrl($product->getSuccessUrl());
 
                     $order->create();
 
                     if ($order->getCurrency() == ProductCurrency::PAYPAL || $order->getCurrency() == ProductCurrency::PAYPALSUB) {
                         $response['action'] = 'pp-checkout';
-                        $response['data'] = array('sub' => $order->getCurrency() == ProductCurrency::PAYPALSUB, 'business' => $seller->getPaypal(), 'itemname' => $product->getTitle(), 'itemnumber' => $product->getId(), 'amount' => $order->getFiat(), 'custom' => $order->getTxid(), 'shipping' => $product->getRequireShipping(), 'quantity' => $order->getQuantity(), 'sub-length' => $product->getPaypalSubLength(), 'sub-unit' => $product->getPaypalSubUnit());
+                        $response['data'] = array('sub' => $order->getCurrency() == ProductCurrency::PAYPALSUB, 'business' => $seller->getPaypal(), 'itemname' => $product->getTitle(), 'itemnumber' => $product->getId(), 'amount' => $order->getFiat(), 'custom' => $order->getTxid(), 'shipping' => $product->getRequireShipping(), 'quantity' => $order->getQuantity(), 'sub-length' => $product->getPaypalSubLength(), 'sub-unit' => $product->getPaypalSubUnit(), 'success_url' => $product->getSuccessUrl());
 
                         $order->setNative($order->getFiat());
                         $order->update();
@@ -96,7 +98,7 @@ if (count($url) == 3 && $url[2] == 'buy') {
                                 break;
                         }
 
-                        $tx = $cp->CreateTransaction(array('buyer_name' => '', 'buyer_email' => $_POST['email'], 'amount' => $order->getFiat(), 'currency1' => 'USD', 'currency2' => $currency, 'address' => $address, 'item_name' => $product->getTitle(), 'item_number' => $product->getId(), 'custom' => $order->getTxid(), 'ipn_url' => '', 'quantity' => $order->getQuantity()));
+                        $tx = $cp->CreateTransaction(array('buyer_name' => '', 'buyer_email' => $_POST['email'], 'amount' => $order->getFiat(), 'currency1' => 'USD', 'currency2' => $currency, 'address' => $address, 'item_name' => $product->getTitle(), 'item_number' => $product->getId(), 'custom' => $order->getTxid(), 'ipn_url' => '', 'quantity' => $order->getQuantity(), 'success_url' => $product->getSuccessUrl()));
 
                         if ($tx['error'] != 'ok') {
                             $errorMessage = 'RELOAD';
@@ -109,6 +111,12 @@ if (count($url) == 3 && $url[2] == 'buy') {
 
                         $response['action'] = 'display-crypto';
                         $response['data'] = array('txid' => $order->getTxid());
+                    } else if($order->getCurrency() == ProductCurrency::PAYZA) {
+                        $response['action'] = 'payza-checkout';
+                        $response['data'] = array('merchant' => $seller->getPayza(), 'itemname' => $product->getTitle(), 'itemcode' => $product->getId(), 'amount' => $order->getFiat(), 'apc_1' => $order->getTxid(), 'quantity' => $order->getQuantity(), 'success_url' => $product->getSuccessUrl());
+
+                        $order->setNative($order->getFiat());
+                        $order->update();
                     }
 
                 } else {
@@ -129,7 +137,7 @@ if (count($url) == 3 && $url[2] == 'buy') {
                             $tx = $cp->GetTransactionInfo($order->getProcessorTxid());
 
                             if ($tx['error'] == 'ok') {
-                                $response = array('title' => $product->getTitle(), 'totalPrice' => $order->getQuantity() * $order->getFiat(), 'txid' => $order->getTxid(), 'quantity' => $order->getQuantity(), 'price' => $order->getFiat(), 'created' => $tx['result']['time_created'], 'expires' => $tx['result']['time_expires'], 'status' => $tx['result']['status'], 'coin' => $tx['result']['coin'], 'amount' => $tx['result']['amountf'], 'received' => $tx['result']['receivedf'], 'confirms' => $tx['result']['recv_confirms'], 'address' => $tx['result']['payment_address']);
+                                $response = array('title' => $product->getTitle(), 'totalPrice' => $order->getQuantity() * $order->getFiat(), 'txid' => $order->getTxid(), 'quantity' => $order->getQuantity(), 'price' => $order->getFiat(), 'created' => $tx['result']['time_created'], 'expires' => $tx['result']['time_expires'], 'status' => $tx['result']['status'], 'coin' => $tx['result']['coin'], 'amount' => $tx['result']['amountf'], 'received' => $tx['result']['receivedf'], 'confirms' => $tx['result']['recv_confirms'], 'address' => $tx['result']['payment_address'], 'success_url' => $product->getSuccessUrl());
                             }
                         } else {
                             $errorMessage = 'RELOAD';
@@ -154,26 +162,59 @@ if (count($url) == 3 && $url[2] == 'buy') {
     }
 }
 
+if(isset($_GET['redeemcoupon']) && $_GET['redeemcoupon'] == "true" && isset($_GET['couponcode']) && ctype_alnum($_GET['couponcode']))
+{
+    $coupons = $product->getCoupons();
+
+    $result = "false";
+
+    foreach($coupons as $coupon){
+        $cp = new ProductCoupon();
+        $cp->read($coupon->getId());
+
+        if($cp->getName() == $_GET['couponcode']){
+            if($cp->getMaxUsedAmount() == $cp->getUsedAmount()){
+                $result = "used";
+            } else {
+                $result = $cp->getId();
+            }
+        }
+        break;
+    }
+
+    die($result);
+}
+
 foreach ($product->getCurrency() as $currency) {
     switch ($currency) {
-        case 0:
+        case ProductCurrency::PAYPAL:
             if ($seller->getPaypal() == '') {
                 die('invalid payment setup 0');
             }
             break;
-        case 1:
-            if ($seller->getBitcoin() == '') {
+        case ProductCurrency::PAYPALSUB:
+            if ($seller->getPaypal() == '') {
                 die('invalid payment setup 1');
             }
             break;
-        case 2:
-            if ($seller->getLitecoin() == '') {
+        case ProductCurrency::BITCOIN:
+            if ($seller->getBitcoin() == '') {
                 die('invalid payment setup 2');
             }
             break;
-        case 3:
-            if ($seller->getOmnicoin() == '') {
+        case ProductCurrency::LITECOIN:
+            if ($seller->getLitecoin() == '') {
                 die('invalid payment setup 3');
+            }
+            break;
+        case ProductCurrency::OMNICOIN:
+            if ($seller->getOmnicoin() == '') {
+                die('invalid payment setup 4');
+            }
+            break;
+        case ProductCurrency::PAYZA:
+            if ($seller->getPayza() == '') {
+                die('invalid payment setup 5');
             }
             break;
     }
@@ -259,7 +300,7 @@ include_once('seller/header.php');
                         <tbody>
                         <tr>
                             <td>
-                                <h5 class='semibold mt0 mb5'>abe</h5>
+                                <h5 class='semibold mt0 mb5'><?php echo $product->getDescription(); ?></h5>
                             </td>
                             <td class='valign-top text-center'><input min='1' max='<?php echo $product->getType() == ProductType::SERIAL ? count($product->getSerials()) : '100'; ?>' style='width: 60px;' value='1' id='quantity' type='number'></td>
                             <td class='valign-top text-center'><span class='bold'>$<?php echo $product->getPrice(); ?></span></td>
@@ -286,25 +327,29 @@ include_once('seller/header.php');
                         <div class='col-lg-9'>
                             <?php
                             if ($product->acceptsCurrency(ProductCurrency::PAYPAL)) {
-                                echo '<button onclick=\'pay(0);\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'>PayPal</button>';
+                                echo '<button onclick=\'pay(' . ProductCurrency::PAYPAL . ');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'>PayPal</button>';
                             }
                             if ($product->acceptsCurrency(ProductCurrency::PAYPALSUB)) {
-                                echo '<button onclick=\'pay(1);\' class=\'btn btn-success\' style=\'width: 205px; font-size: 18px; margin: 0 5px 5px 0;\'>PayPal Subscription</button>';
+                                echo '<button onclick=\'pay(' . ProductCurrency::PAYPALSUB . ');\' class=\'btn btn-success\' style=\'width: 205px; font-size: 18px; margin: 0 5px 5px 0;\'>PayPal Subscription</button>';
                             }
                             if ($product->acceptsCurrency(ProductCurrency::BITCOIN)) {
-                                echo '<button onclick=\'pay(2);\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 20px; height: 18px; background-image: url("/images/crypto-icons.png"); background-position: -3px -20px; vertical-align: -2px;\'></span>Bitcoin</button>';
+                                echo '<button onclick=\'pay(' .ProductCurrency::BITCOIN . ');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 20px; height: 18px; background-image: url("/images/crypto-icons.png"); background-position: -3px -20px; vertical-align: -2px;\'></span>Bitcoin</button>';
                             }
                             if ($product->acceptsCurrency(ProductCurrency::LITECOIN)) {
-                                echo '<button onclick=\'pay(4);\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 20px; height: 19px; background-image: url("/images/crypto-icons.png"); background-position: -3px -78px; vertical-align: -2px;\'></span>Litecoin</button>';
+                                echo '<button onclick=\'pay(' . ProductCurrency::LITECOIN . ');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 20px; height: 19px; background-image: url("/images/crypto-icons.png"); background-position: -3px -78px; vertical-align: -2px;\'></span>Litecoin</button>';
                             }
                             if ($product->acceptsCurrency(ProductCurrency::OMNICOIN)) {
-                                echo '<button onclick=\'pay(5);\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 23px; height: 22px; background-image: url("/images/crypto-icons.png"); background-position: -3px -137px; vertical-align: -4px;\'></span>Omnicoin</button>';
+                                echo '<button onclick=\'pay(' .ProductCurrency::OMNICOIN . ');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 23px; height: 22px; background-image: url("/images/crypto-icons.png"); background-position: -3px -137px; vertical-align: -4px;\'></span>Omnicoin</button>';
+                            }
+                            if ($product->acceptsCurrency(ProductCurrency::PAYZA)) {
+                                echo '<button onclick=\'pay(' . ProductCurrency::PAYZA .');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'>Payza</button>';
                             }
                             ?>
                         </div>
                     </div>
                 </section>
-            </div>
+
+        </div>
             <div class='step-2' style='display:none;'>
                 <div class='panel panel-default'>
                     <div class='panel-heading' style='background-color: #91a7c0;'>
@@ -322,13 +367,33 @@ include_once('seller/header.php');
                         $x = 0;
                         foreach ($product->getQuestions() as $question) {
                             $x++;
-                        ?>
+                            ?>
                             <p><?php echo $question; ?>:</p>
                             <input type='text' id='custom-question-<?php echo $x; ?>' class='form-control' required>
                             <br>
                         <?php
                         }
                         ?>
+
+                        <?php
+                        if(count($product->getCoupons()) > 0){
+                            ?>
+                            <p>Coupon:</p>
+                            <div class="input-group">
+                            <input type="text" id="couponCode" class="form-control"/>
+                                <span class="input-group-btn">
+        <button class="btn btn-default" onclick="redeemCoupon();" type="button">Apply</button>
+      </span>
+                            </div>
+                            <div class="form-goup">
+                                <label>Applied coupon: </label><span id="coupon"> None</span>
+                            </div>
+                            <input type="hidden" value="-1" id="couponCodeResult" name="couponCode"/>
+                            <br>
+                        <?php
+                        }
+                        ?>
+
                         <input type='button' onClick='checkout()' class='btn btn-success' value='Continue to Payment'>
                     </div>
                 </div>
@@ -345,7 +410,6 @@ include_once('seller/header.php');
                     <div class='panel-body'></div>
                 </div>
             </div>
-        </div>
     </div>
 </div>
 <script>
@@ -360,6 +424,24 @@ include_once('seller/header.php');
         $('.total').html('$' + ((($(this).val() * <?php echo $product->getPrice(); ?>) * 100) / 100).toFixed(2));
     });
 
+    function redeemCoupon()
+    {
+        $.get( "?redeemcoupon=true&couponcode=" + $('#couponCode').val(), function( data ) {
+            switch (data){
+                case "false":
+                        alert('The coupon you entered is not valid.');
+                    break;
+                case "used":
+                        alert('The maximum usage limit of this coupon has been reached.');
+                    break;
+                default:
+                    $('#coupon').text(" "+$('#couponCode').val());
+                    $('#couponCodeResult').val(data)
+                    break;
+            }
+        });
+    }
+
     function pay(type) {
         currency = type;
         $('.step-1').slideUp(1000, function() {
@@ -368,7 +450,7 @@ include_once('seller/header.php');
     }
 
     function checkout() {
-        var data = {'action': 'purchase', 'price': <?php echo $product->getPrice(); ?>, 'currency': currency, 'email': $('#email').val(), 'quantity': $('#quantity').val()};
+        var data = {'action': 'purchase', 'price': <?php echo $product->getPrice(); ?>, 'currency': currency, 'email': $('#email').val(), 'quantity': $('#quantity').val(), 'couponCode': $('#couponCodeResult').val(), 'success_url': '<?php echo $product->getSuccessUrl(); ?>'};
 
         for (var x = 1; x <= <?php echo count($product->getQuestions()); ?>; x++) {
             data['q-' + x] = $('#custom-question-' + x).val();
@@ -391,7 +473,7 @@ include_once('seller/header.php');
                             <input type=\'hidden\' name=\'amount\' value=\'' + data.response.data.amount + '\'>\
                             <input type=\'hidden\' name=\'custom\' value=\'' + data.response.data.custom + '\'>\
                             <input type=\'hidden\' name=\'notify_url\' value=\'\'>\
-                            <input type=\'hidden\' name=\'return\' value=\'\'>\
+                            <input type=\'hidden\' name=\'return\' value=\'' + data.response.data.success_url +'\'>\
                             <input type=\'hidden\' name=\'cancel_return\' value=\'\'>\
                             <input type=\'hidden\' name=\'invoice\' value=\'\'>\
                             <input type=\'hidden\' name=\'allow_amount\' value=\'0\'>\
@@ -428,6 +510,21 @@ include_once('seller/header.php');
 
                         update();
 
+                        break;
+                    case 'payza-checkout':
+                        $('body').append('<form method="post" action="https://secure.payza.com/checkout" id="payza-form" >\
+                        <input type="hidden" name="ap_merchant" value="' + data.response.data.merchant + '"/>\
+                    <input type="hidden" name="ap_purchasetype" value="item-goods"/>\
+                    <input type="hidden" name="ap_itemname" value="' + data.response.data.itemname + '"/>\
+                    <input type="hidden" name="ap_amount" value="' + data.response.data.amount + '"/>\
+                    <input type="hidden" name="ap_currency" value="USD"/>\
+                    <input type="hidden" name="ap_quantity" value="' + data.response.data.quantity + '"/>\
+                    <input type="hidden" name="ap_itemcode" value="' + data.response.data.itemcode + '"/>\
+                    <input type="hidden" name="ap_returnurl" value="' + data.response.data.success_url + '"/>\
+                    <input type="hidden" name="apc_1" value="' + data.response.data.apc_1 + '"/>\
+                    </form>');
+
+                        $('#payza-form').submit();
                         break;
                 }
             }

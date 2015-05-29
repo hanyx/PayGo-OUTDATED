@@ -21,6 +21,9 @@ class Product {
 	private $affiliatePercent;
 	private $affiliateSecondaryLink;
 	private $affiliateId;
+
+    private $coupons;
+    private $successUrl;
 	
 	public function __construct() {
         $this->id = 0;
@@ -38,11 +41,13 @@ class Product {
         $this->paypalSubUnit = -1;
         $this->requireShipping = 0;
         $this->questions = array();
+        $this->coupons = array();
 
         $this->affiliateEnabled = false;
         $this->affiliatePercent = 0;
         $this->affiliateSecondaryLink = '';
         $this->affiliateId = '';
+        $this->successUrl = '';
 	}
 	
 	public function create() {
@@ -66,9 +71,9 @@ class Product {
             }
         }
 		
-		$q = DB::getInstance()->prepare('INSERT into products (url, seller_id, title, description, price, type, currency, visible, custom_delivery, pp_sub_length, pp_sub_unit, require_shipping, affiliate_enabled, affiliate_percent, affiliate_secondary_link, affiliate_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+		$q = DB::getInstance()->prepare('INSERT into products (url, seller_id, title, description, price, type, currency, visible, custom_delivery, pp_sub_length, pp_sub_unit, require_shipping, affiliate_enabled, affiliate_percent, affiliate_secondary_link, affiliate_id, after_success_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 		
-		$q->execute(array($this->url, $this->sellerId, $this->title, $this->description, $this->price, $this->type, implode(',', $this->currency), $this->visible, $this->customDelivery, $this->paypalSubLength, $this->paypalSubUnit, $this->requireShipping, $this->affiliateEnabled, $this->affiliatePercent, $this->affiliateSecondaryLink, $this->affiliateId));
+		$q->execute(array($this->url, $this->sellerId, $this->title, $this->description, $this->price, $this->type, implode(',', $this->currency), $this->visible, $this->customDelivery, $this->paypalSubLength, $this->paypalSubUnit, $this->requireShipping, $this->affiliateEnabled, $this->affiliatePercent, $this->affiliateSecondaryLink, $this->affiliateId, $this->successUrl));
 
         $this->readByUrl($this->url);
 
@@ -77,10 +82,15 @@ class Product {
 
             $q->execute(array($this->id, array_search($question, $this->questions), $question));
         }
+
+        foreach ($this->coupons as $coupon){
+            $q = DB::getInstance()->prepare('INSERT INTO products_coupons(name, reduction, max_used_amount, product_id) VALUES (?,?,?,?)');
+            $q->execute(array($coupon->getName(), $coupon->getReduction(), $coupon->getMaxUsedAmount(),  $this->id));
+        }
     }
 	
 	public function read($id, $showDeleted = false) {
-		$q = DB::getInstance()->prepare('SELECT id, url, deleted, seller_id, title, description, price, type, currency, visible, custom_delivery, pp_sub_length, pp_sub_unit, require_shipping, affiliate_enabled, affiliate_percent, affiliate_secondary_link, affiliate_id FROM products WHERE id = ? AND (deleted = ? OR deleted = ?)');
+		$q = DB::getInstance()->prepare('SELECT id, url, deleted, seller_id, title, description, price, type, currency, visible, custom_delivery, pp_sub_length, pp_sub_unit, require_shipping, affiliate_enabled, affiliate_percent, affiliate_secondary_link, affiliate_id, after_success_url FROM products WHERE id = ? AND (deleted = ? OR deleted = ?)');
 		$q->execute(array($id, $showDeleted, false));
 		$q = $q->fetchAll();
 		
@@ -107,6 +117,7 @@ class Product {
 		$this->affiliatePercent = $q[0]['affiliate_percent'];
 		$this->affiliateSecondaryLink = $q[0]['affiliate_secondary_link'];
 		$this->affiliateId = $q[0]['affiliate_id'];
+        $this->successUrl = $q[0]['after_success_url'];
 
         $q = DB::getInstance()->prepare('SELECT question FROM products_questions WHERE product_id = ?');
         $q->execute(array($this->id));
@@ -115,6 +126,8 @@ class Product {
         foreach ($q as $question) {
             $this->questions[] = $question['question'];
         }
+
+        //$q = DB::getInstance()->prepare('SELECT ')
 		
 		return true;
 	}
@@ -156,8 +169,8 @@ class Product {
     }
 	
 	public function update() {
-		$q = DB::getInstance()->prepare('UPDATE products SET deleted = ?, title = ?, description = ?, price = ?, currency = ?, visible = ?, custom_delivery = ?, pp_sub_length = ?, pp_sub_unit = ?, require_shipping = ?, affiliate_enabled = ?, affiliate_percent = ?, affiliate_secondary_link = ? WHERE id = ?');
-        $q->execute(array($this->deleted, $this->title, $this->description, $this->price, implode(',', $this->currency), $this->visible, $this->customDelivery, $this->paypalSubLength, $this->paypalSubUnit, $this->requireShipping, $this->affiliateEnabled, $this->affiliatePercent, $this->affiliateSecondaryLink, $this->id));
+		$q = DB::getInstance()->prepare('UPDATE products SET deleted = ?, title = ?, description = ?, price = ?, currency = ?, visible = ?, custom_delivery = ?, pp_sub_length = ?, pp_sub_unit = ?, require_shipping = ?, affiliate_enabled = ?, affiliate_percent = ?, affiliate_secondary_link = ?, after_success_url = ? WHERE id = ?');
+        $q->execute(array($this->deleted, $this->title, $this->description, $this->price, implode(',', $this->currency), $this->visible, $this->customDelivery, $this->paypalSubLength, $this->paypalSubUnit, $this->requireShipping, $this->affiliateEnabled, $this->affiliatePercent, $this->affiliateSecondaryLink, $this->successUrl, $this->id));
 
         $q = DB::getInstance()->prepare('SELECT count(id) as `num` FROM products_questions WHERE product_id = ?');
         $q->execute(array($this->id));
@@ -183,6 +196,11 @@ class Product {
                 $q->execute(array($index, $this->id, $question));
             }
         }
+    }
+
+    public function setCoupons($coupons)
+    {
+        $this->coupons = $coupons;
     }
 	
 	public function getOrders() {
@@ -258,6 +276,13 @@ class Product {
 		
 		return $products;
 	}
+
+    public function getCoupons()
+    {
+        if($this->id === 0)
+            return array();
+        return ProductCoupon::getCouponsByProduct($this->id);
+    }
 	
 	public function getNotes() {
 		return '';
@@ -383,8 +408,22 @@ class Product {
         return $this->requireShipping;
     }
 
-    public function setRequireShipping($requireShipping) {
+    public function setRequireShipping($requireShipping)
+    {
         $this->requireShipping = $requireShipping;
+    }
+
+    public function getSuccessUrl(){
+        return $this->successUrl;
+    }
+
+    public function setSuccessUrl($successUrl){
+        $successUrl = strip_tags($successUrl);
+        $successUrl = str_replace("'", "", $successUrl);
+        $successUrl = str_replace('"', '', $successUrl);
+        if(filter_var($successUrl, FILTER_VALIDATE_URL) || $successUrl == ''){
+            $this->successUrl = $successUrl;
+        }
     }
 
 }

@@ -3,6 +3,7 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 	
 	private $authenticated;
 	private $user;
+    private $requireCaptcha;
 	
 	public function __construct() {
 		parent::__construct();
@@ -10,6 +11,7 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 		session_start();
 
 		$this->authenticated = false;
+        $this->requireCaptcha = false;
 		
 		if (isset($_SESSION['user_id']) && isset($_SESSION['session'])) {
 			$user = new User();
@@ -30,7 +32,7 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 			return false;
 		}
 		
-		if (!validateReCaptcha($captcha)) {
+		if ($this->requireCaptcha && !validateReCaptcha($captcha)) {
 			$this->addMessage(new ErrorSuccessMessage('Invalid Captcha'));
 			return false;
 		}
@@ -39,11 +41,13 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 
 		if (!$user->readByUsername($username) && !$user->readByEmail($username)) {
 			$this->addMessage(new ErrorSuccessMessage('Invalid Username or Email'));
+            $this->requireCaptcha = true;
 			return false;
 		}
 		
 		if (!$user->checkPassword($password)) {
 			$this->addMessage(new ErrorSuccessMessage('Invalid Password'));
+            $this->requireCaptcha = true;
 			return false;
 		}
 		
@@ -51,7 +55,8 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 			$this->addMessage(new ErrorSuccessMessage('Account not activated. Please check your email to activate your account'));
 			return false;
 		}
-		
+
+        $this->requireCaptcha = false;
 		$this->user = $user;
 		$this->user->setLastLogin(getRealIp());
 		$this->user->update();
@@ -243,7 +248,7 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 		return true;
 	}
 	
-	public function processUpdatePaymentDetails($paypal, $bitcoin, $litecoin, $omnicoin) {
+	public function processUpdatePaymentDetails($paypal, $bitcoin, $litecoin, $omnicoin, $payza) {
 		if (!$this->authenticated) {
 			return false;
 		}
@@ -252,6 +257,11 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 			$this->addMessage(new ErrorSuccessMessage('PayPal email is invalid'));
 			return false;
 		}
+
+        if($payza != '' && ! filter_var($payza, FILTER_VALIDATE_EMAIL)) {
+            $this->addMessage(new ErrorSuccessMessage('Payza email is invalid'));
+            return false;
+        }
 		
 		if ($bitcoin != '' && !ctype_alnum($bitcoin)) {
 			$this->addMessage(new ErrorSuccessMessage('Bitcoin address is invalid'));
@@ -272,7 +282,7 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 
         $tfr->setUserId($this->user->getId());
         $tfr->setAction(TwoFactorRequestAction::UPDATEPAYMENTDETAILS);
-        $tfr->setData(implode(',', array($paypal, $bitcoin, $litecoin, $omnicoin)));
+        $tfr->setData(implode(',', array($paypal, $bitcoin, $litecoin, $omnicoin, $payza)));
 
 		$tfr->create();
 		
@@ -293,4 +303,7 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 		return $this->user;
 	}
 
+    public function getRequireCaptcha(){
+        return $this->requireCaptcha;
+    }
 }

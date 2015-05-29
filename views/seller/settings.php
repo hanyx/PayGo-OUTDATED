@@ -5,8 +5,8 @@ if (isset($_POST['update-password']) && isset($_POST['password-old']) && isset($
 	$uas->processUpdatePassword($_POST['password-old'], $_POST['password'], $_POST['password-confirm']);
 }
 
-if (isset($_POST['update-payment-details']) && isset($_POST['paypal']) && isset($_POST['bitcoin']) && isset($_POST['litecoin']) && isset($_POST['omnicoin'])) {
-	$uas->processUpdatePaymentDetails($_POST['paypal'], $_POST['bitcoin'], $_POST['litecoin'], $_POST['omnicoin']);
+if (isset($_POST['update-payment-details']) && isset($_POST['paypal']) && isset($_POST['bitcoin']) && isset($_POST['litecoin']) && isset($_POST['omnicoin']) && isset($_POST['payza'])) {
+	$uas->processUpdatePaymentDetails($_POST['paypal'], $_POST['bitcoin'], $_POST['litecoin'], $_POST['omnicoin'], $_POST['payza']);
 }
 
 if (count($url) == 4 && ($url[2] == 'update')) {
@@ -131,7 +131,13 @@ if (count($url) == 4 && ($url[2] == 'update')) {
 										<div class='line line-dashed m-t-large'></div>
 									</div>
 								</div>
-
+                                <div class='form-group'>
+                                    <label class='col-lg-3 control-label'>Payza Email</label>
+                                    <div class='col-lg-8'>
+                                        <input type='email' name='payza' class='form-control' placeholder='(e.g. john.doe@gmail.com)' value='<?php echo $uas->getUser()->getPayza(); ?>'>
+                                        <div class='line line-dashed m-t-large'></div>
+                                    </div>
+                                </div>
 								<div class='form-group'>
 									<div class='col-lg-9 col-lg-offset-3'>
 										<button type='submit' name='update-payment-details' class='btn btn-primary'>Update Payment Settings</button>

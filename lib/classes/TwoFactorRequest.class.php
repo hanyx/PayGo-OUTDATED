@@ -108,6 +108,7 @@ class TwoFactorRequest extends ErrorSuccessMessages {
 				$user->setBitcoin($details[1]);
 				$user->setLitecoin($details[2]);
 				$user->setOmnicoin($details[3]);
+                $user->setPayza($details[4]);
 				
 				$user->update();
 				

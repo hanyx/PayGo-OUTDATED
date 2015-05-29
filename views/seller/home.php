@@ -133,6 +133,7 @@ foreach ($productDelivery as $message) {
 						</header>
 						<ul class="list-group">
 							<?php
+                            if(is_array($products))
 							foreach ($products as $product) {
 								$orders = $product->getOrders();
 								

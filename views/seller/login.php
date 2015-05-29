@@ -8,11 +8,11 @@ if ($url[1] == 'logout') {
 	}
 }
 
-if (isset($_POST['login']) && isset($_POST['username']) && isset($_POST['password']) && isset($_POST['g-recaptcha-response'])) {
-	if ($uas->login($_POST['username'], $_POST['password'], $_POST['g-recaptcha-response'])) {
+if (isset($_POST['login']) && isset($_POST['username']) && isset($_POST['password'])) {
+	if ($uas->login($_POST['username'], $_POST['password'], isset($_POST['g-recaptcha-response']) ? $_POST['g-recaptcha-response'] : '')) {
 		header('Location: /seller/');
 		die();
-	}
+    }
 }
 
 if (count($url) == 4 && ($url[2] == 'activate' || $url[2] == 'update')) {
@@ -62,9 +62,11 @@ include_once('header.php');
 								<label class='control-label'>Password</label>
 								<input type='password' class='form-control' name='password'>
 							</div>
+                            <?php if($uas->getRequireCaptcha()) {?>
 							<div class='block'>
 								<div class='g-recaptcha' data-sitekey='<?php echo $config['recaptcha']['site']; ?>'></div>
 							</div>
+    <?php } ?>
 							<a href='/seller/reset' class='pull-right m-t-mini'><small>Forgot password?</small></a>
 							<button type='submit' class='btn btn-info' name='login'>Sign in</button>
 							<div class='line line-dashed'></div>
