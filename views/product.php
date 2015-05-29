@@ -480,7 +480,7 @@ include_once('seller/header.php');
                             <input type=\'hidden\' name=\'want_shipping\' value=\'' + data.response.data.shipping + '\'>\
                             <input type=\'hidden\' name=\'quantity\' value=\'' + data.response.data.quantity + '\'>\
                             <input type=\'hidden\' name=\'no_shipping\' value=\'' + (data.response.data.shipping ? '0' : '1') + '\'>\
-                            ' + (data.response.data.sub ? '<input name=\'a3\' type=\'hidden\' value=\'' + data.response.data.amount + '\'><input name=\'t3\' type=\'hidden\' value=\'' + data.response.data.sublength + '\'><input name=\'p3\' type=\'hidden\' value=\'' + data.response.data.subunit + '\'><input name=\'src\' type=\hidden\' value=\'1\'>' : '') + '\
+                            ' + (data.response.data.sub ? '<input name=\'a3\' type=\'hidden\' value=\'' + data.response.data.amount + '\'><input name=\'t3\' type=\'hidden\' value=\'' + data.response.data.sublength + '\'><input name=\'p3\' type=\'hidden\' value=\'' + data.response.data.subunit + '\'><input name=\'src\' type=\'hidden\' value=\'1\'>' : '') + '\
                         </form>');
 
                         document.getElementById('ppform').submit();

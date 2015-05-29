@@ -24,6 +24,7 @@ $uncategorized->addPage(	new Page(						array(	array('v', '*'),
     																array('v', '*', 'a', '*'),
     														        array('v', '*', 'buy')), 							        	'views/product.php', 							'', true			));
 
+$uncategorized->addPage(new Page(array(array('gateway')), 'views/gateway.php'));
 
 
 $authPages->addPage(		new Page(						array(	array('seller', 'login'),
