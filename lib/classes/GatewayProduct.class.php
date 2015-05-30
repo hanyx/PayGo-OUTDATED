@@ -54,7 +54,7 @@ class GatewayProduct {
 
     public function readByTxid($txid){
         $q = DB::getInstance()->prepare("SELECT id, ipn_url, address_to, currency, fiat, after_success_url, status, `date`, processor_txid, txid, custom FROM gateway_products WHERE txid = ?");
-        $q->execute(array(txid));
+        $q->execute(array($txid));
         $q = $q->fetchAll();
 
         if(count($q) != 1) {
@@ -94,6 +94,11 @@ class GatewayProduct {
         $q->execute(array($this->ipn_url, $this->address_to, $this->currency, $this->fiat, $this->after_success_url, $this->status, $this->date, $this->processor_txid, $this->txid, $this->custom));
 
         $this->readByTxid($this->txid);
+    }
+
+    public function update(){
+        $q = DB::getInstance()->prepare('UPDATE gateway_products SET ipn_url = ?, address_to = ?, currency = ?, fiat = ?, after_success_url = ?, status = ?, processor_txid = ?, custom = ? WHERE txid = ?');
+        $q->execute(array($this->ipn_url, $this->address_to, $this->currency, $this->fiat, $this->after_success_url, $this->status, $this->processor_txid, $this->custom, $this->txid));
     }
 
     public function getId() {
