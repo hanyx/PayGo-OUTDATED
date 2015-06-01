@@ -15,12 +15,13 @@ class LicensingProduct {
     private $loginForm;
     private $isJunked;
     private $logo;
+    private $userId;
 
     public function __construct() {
         $this->id = 0;
         $this->title = '';
         $this->description = '';
-        $this->maxIpAddresses= 0;
+        $this->maxIpAddresses= 3;
         $this->isReady = false;
         $this->md5 = '';
         $this->status = 0;
@@ -29,6 +30,7 @@ class LicensingProduct {
         $this->coreProgram = array();
         $this->loginForm = array();
         $this->logo = array();
+        $this->userId = 0;
     }
 
     public function create(){
@@ -45,8 +47,8 @@ class LicensingProduct {
             }
         }
 
-        $p = DB::getInstance()->prepare("INSERT INTO `licensing_products`(`Title`, `Description`, `MaxIpAddresses`, `IsReady`, `CreatedOn`, `Md5`, `CoreProgram`, `LastUpdated`, `Status`, `PreloaderKey`, `LoginForm`, `IsJunked`, `Logo`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
-        $p->execute(array($this->title, $this->description,$this->maxIpAddresses,$this->isReady,$this->createdOn,$this->md5,$this->coreProgram,$this->lastUpdated,$this->status,$this->preloaderKey,$this->loginForm,$this->isJunked,$this->logo));
+        $p = DB::getInstance()->prepare("INSERT INTO `licensing_products`(`Title`, `Description`, `MaxIpAddresses`, `IsReady`, `CreatedOn`, `Md5`, `LastUpdated`, `Status`, `PreloaderKey`, `IsJunked`, UserId) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+        $p->execute(array($this->title, $this->description,$this->maxIpAddresses,$this->isReady,$this->createdOn,$this->md5,$this->lastUpdated,$this->status,$this->preloaderKey,$this->isJunked, $this->userId));
     }
 
     public function update(){
@@ -79,6 +81,7 @@ class LicensingProduct {
         $this->loginForm = $product['LoginForm'];
         $this->isJunked = $product['IsJunked'];
         $this->logo = $product['Logo'];
+        $this->userId = $product['UserId'];
 
         return true;
     }
@@ -93,6 +96,22 @@ class LicensingProduct {
         }
 
         return $this->read($q[0]['id']);
+    }
+
+    public static function getLicensingProductsByUser($uid){
+        $products = array();
+        $p = DB::getInstance()-> prepare("SELECT id FROM licensing_products WHERE UserId = ?");
+        $p->execute(array($uid));
+        $q = $p->fetchAll();
+
+        foreach($q as $l) {
+            $product = new LicensingProduct();
+            if($product->read($l['id'])){
+                $products[] = $product;
+            }
+        }
+
+        return $products;
     }
 
     public function getId(){
