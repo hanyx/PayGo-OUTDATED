@@ -31,7 +31,7 @@ class Download {
     }
 
     public function read($id) {
-        $q = DB::getInstance()->prepare('SELECT id, link, file_id, ip');
+        $q = DB::getInstance()->prepare('SELECT id, link, file_id, ip FROM downloads WHERE id = ?');
         $q->execute(array($id));
         $q = $q->fetchAll();
 
@@ -47,8 +47,13 @@ class Download {
         return true;
     }
 
+    public function update() {
+        $q = DB::getInstance()->prepare('UPDATE downloads SET ip = ? WHERE id = ?');
+        $q->execute(array($this->ip, $this->id));
+    }
+
     public function readByLink($link) {
-        $q = DB::getInstance()->prepare('SELECT id FROM downloads WHERE link');
+        $q = DB::getInstance()->prepare('SELECT id FROM downloads WHERE link = ?');
         $q->execute(array($link));
         $q = $q->fetchAll();
 
