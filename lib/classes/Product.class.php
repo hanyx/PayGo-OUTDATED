@@ -265,7 +265,7 @@ class Product {
 		$q = DB::getInstance()->prepare('SELECT id, type FROM products WHERE seller_id = ? AND (deleted = ? OR deleted = ?)');
 		$q->execute(array($uid, $showDeleted, false));
 		$q = $q->fetchAll();
-		
+
 		foreach ($q as $p) {
 			$product = Product::getProduct($p['id'], $showDeleted);
 			
@@ -424,6 +424,10 @@ class Product {
         if(filter_var($successUrl, FILTER_VALIDATE_URL) || $successUrl == ''){
             $this->successUrl = $successUrl;
         }
+    }
+
+    public function getViews() {
+        return View::getViewsByProduct($this->id);
     }
 
 }

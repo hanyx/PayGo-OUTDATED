@@ -11,33 +11,6 @@ if (count($url) == 4 && $url[2] == 'edit') {
     }
 }
 
-if (count($url) == 4 && $url[3] == 'upload') {
-    if (!empty($_FILES)) {
-        $finfo = new finfo(FILEINFO_MIME_TYPE);
-        if (preg_grep('/' . pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION) . '/i' , $config['upload']['allowedFiles'])) {
-            if ($_FILES['file']['size'] < 50000000) {
-                $fileHandler = new FileHandler();
-
-                $fileHandler->setOwner($uas->getUser()->getId());
-                $fileHandler->setExtension(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
-
-                $fileHandler->create();
-
-                move_uploaded_file($_FILES['file']['tmp_name'], $config['upload']['directory'] . $fileHandler->getFile());
-
-                $_SESSION['file_id'] = $fileHandler->getFileId();
-
-                die();
-            } else {
-                die($_SESSION['file_error'] = 'FILE_OVERSIZE');
-            }
-        } else {
-            die($_SESSION['file_error'] = 'BAD_FILETYPE');
-        }
-    }
-    die($_SESSION['file_error'] = 'UPLOAD_ERROR');
-}
-
 if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['description']) && isset($_POST['type']) && isset($_POST['details']) && isset($_POST['aff_percent']) && isset($_POST['secondary-aff-link'])) {
     if (!(count($url) == 4 && $url[2] == 'edit')) {
         switch ($_POST['type']) {
@@ -141,25 +114,12 @@ if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['descriptio
     } else {
         switch ($_POST['type']) {
             case 0:
-                if (isset($_SESSION['file_error']) && $_SESSION['file_error'] != '') {
-                    switch ($_SESSION['file_error']) {
-                        case 'UPLOAD_ERROR':
-                            $uas->addMessage(new ErrorSuccessMessage('An error occurred while uploading your file'));
-                            break;
-                        case 'BAD_FILETYPE':
-                            $uas->addMessage(new ErrorSuccessMessage('Uploaded file must be one of the following types: ' . implode(', ', $config['upload']['allowedFiles'])));
-                            break;
-                        case 'FILE_OVERSIZE':
-                            $uas->addMessage(new ErrorSuccessMessage('Uploaded file must be under 50 MB'));
-                            break;
-                    }
-                } else if (!isset($_SESSION['file_id']) || $_SESSION['file_id'] == '') {
-                    $uas->addMessage(new ErrorSuccessMessage('No file uploaded'));
+                $file = new File();
+
+                if (!$file->read($_POST['file'])) {
+                    $uas->addMessage(new ErrorSuccessMessage('Invalid file'));
+                    break;
                 } else {
-                    $fileHandler = new FileHandler();
-
-                    $fileHandler->readByFileId($_SESSION['file_id']);
-
                     $product->setFileId($fileHandler->getId());
                 }
 
@@ -196,94 +156,90 @@ if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['descriptio
                 $uas->addMessage(new ErrorSuccessMessage('Product successfully created', false));
             }
         }
-    }
-
-    $_SESSION['file_id'] = '';
-    $_SESSION['file_error'] = '';
+    };
 }
 
 include_once('header.php');
 ?>
-    <section id='content'>
-        <section class='main padder'>
-            <div class='clearfix'>
-                <h4><i class='fa fa-plus'></i> Create Product</h4>
-                <?php $uas->printMessages(); ?>
-            </div>
-            <?php if ($displayForm) { ?>
-                <div class='row'>
-                    <div class='col-sm-12'>
-                        <section class='panel' data-initialize='wizard' id='form-wizard'>
-                            <div class='wizard clearfix'>
-                                <ul class='steps'>
-                                    <li data-step='1' class='active'><span class='badge badge-info'>1</span></li>
-                                    <li data-step='2'><span class='badge'>2</span></li>
-                                    <li data-step='3'><span class='badge'>3</span></li>
-                                </ul>
-                            </div>
-                            <div class='step-content'>
-                                <form action='' method='post' id='form'>
-                                    <div class='step-pane active' data-step='1'>
-                                        <p>Title:</p>
-                                        <div class='form-group' id='product-title'>
-                                            <input name='title' type='text' class='input-sm form-control' value='<?php echo $product->getTitle(); ?>'>
-                                        </div>
-                                        <div class='line line-dashed m-t-large'></div>
-                                        <p>Price:</p>
+    <section class='wrapper'>
+        <div class='clearfix'>
+            <?php $uas->printMessages(); ?>
+        </div>
+        <?php if ($displayForm) { ?>
+            <div class='row'>
+                <div class="col-sm-12">
+                    <section class="panel">
+                        <div class="panel-body">
+                            <form class="bs-example form-horizontal" method="post">
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">Title</label>
+                                    <div class="col-lg-10">
+                                        <input name='title' type='text' class='form-control' value='<?php echo $product->getTitle(); ?>'>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">Price</label>
+                                    <div class="col-lg-10">
                                         <div class='input-group'>
                                             <span class='input-group-addon'>$</span>
-                                            <input name='price' type='number' class='input-sm form-control' value='<?php echo $product->getPrice(); ?>'>
+                                            <input name='price' type='number' class='form-control' value='<?php echo $product->getPrice(); ?>'>
                                         </div>
-                                        <div class='line line-dashed m-t-large'></div>
-                                        <p>Currencies:</p>
-                                        <div class='checkbox'>
-                                            <label class='checkbox-custom'>
-                                                <input type='checkbox' id='paypal-option' name='paypal' value='1' <?php echo $product->acceptsCurrency(ProductCurrency::PAYPAL) ? 'checked=\'1\'' : ''; ?>>
-                                                <i class='fa fa-check-square-o'></i>
-                                                PayPal
-                                            </label>
+                                    </div>
+                                </div>
+                                <div class="line line-dashed m-t-large"></div>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">Currencies</label>
+                                    <div class="col-lg-10">
+                                        <label class="switch">
+                                            <input type='checkbox' id='paypal-option' name='paypal' value='1' <?php echo $product->acceptsCurrency(ProductCurrency::PAYPAL) ? 'checked=\'1\'' : ''; ?>>
+                                            <span></span>
+                                            PayPal
+                                        </label>
+                                        <br>
+                                        <label class="switch">
+                                            <input type='checkbox' id='paypal-sub-option' name='paypal-sub' value='1' <?php echo $product->acceptsCurrency(ProductCurrency::PAYPALSUB) ? 'checked=\'1\'' : ''; ?>>
+                                            <span></span>
+                                            PayPal Subscription
+                                        </label>
+                                        <br>
+                                        <label class="switch">
+                                            <input type='checkbox' name='bitcoin' value='1' <?php echo $product->acceptsCurrency(ProductCurrency::BITCOIN) ? 'checked=\'1\'' : ''; ?>>
+                                            <span></span>
+                                            Bitcoin
+                                        </label>
+                                        <br>
+                                        <label class="switch">
+                                            <input type='checkbox' name='litecoin' value='1' <?php echo $product->acceptsCurrency(ProductCurrency::LITECOIN) ? 'checked=\'1\'' : ''; ?>>
+                                            <span></span>
+                                            Litecoin
+                                        </label>
+                                        <br>
+                                        <label class="switch">
+                                            <input type='checkbox' name='omnicoin' value='1' <?php echo $product->acceptsCurrency(ProductCurrency::OMNICOIN) ? 'checked=\'1\'' : ''; ?>>
+                                            <span></span>
+                                            Omnicoin
+
+                                        </label>
+                                        <br>
+                                        <label class="switch">
+                                            <input type='checkbox' name='payza' value='1' <?php echo $product->acceptsCurrency(ProductCurrency::PAYZA) ? 'checked=\'1\'' : ''; ?>>
+                                            <span></span>
+                                            Payza
+                                        </label>
+                                        <br>
+                                    </div>
+                                </div>
+                                <div class="line line-dashed m-t-large"></div>
+                                <div class='pp-sub-options <?php echo $product->acceptsCurrency(ProductCurrency::PAYPALSUB) ? '' : 'hide'; ?>'>
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label">PayPal Subscription Length</label>
+                                        <div class="col-lg-10">
+                                            <input name='pp-sub-length' type='number' class='form-control' value='<?php echo $product->getPaypalSubLength(); ?>'>
                                         </div>
-                                        <div class='checkbox'>
-                                            <label class='checkbox-custom'>
-                                                <input type='checkbox' id='paypal-sub-option' name='paypal-sub' value='1' <?php echo $product->acceptsCurrency(ProductCurrency::PAYPALSUB) ? 'checked=\'1\'' : ''; ?>>
-                                                <i class='fa fa-check-square-o'></i>
-                                                PayPal Subscription
-                                            </label>
-                                        </div>
-                                        <div class='checkbox'>
-                                            <label class='checkbox-custom'>
-                                                <input type='checkbox' name='bitcoin' value='1' <?php echo $product->acceptsCurrency(ProductCurrency::BITCOIN) ? 'checked=\'1\'' : ''; ?>>
-                                                <i class='fa fa-check-square-o'></i>
-                                                BitCoin
-                                            </label>
-                                        </div>
-                                        <div class='checkbox'>
-                                            <label class='checkbox-custom'>
-                                                <input type='checkbox' name='litecoin' value='1' <?php echo $product->acceptsCurrency(ProductCurrency::LITECOIN) ? 'checked=\'1\'' : ''; ?>>
-                                                <i class='fa fa-check-square-o'></i>
-                                                LiteCoin
-                                            </label>
-                                        </div>
-                                        <div class='checkbox'>
-                                            <label class='checkbox-custom'>
-                                                <input type='checkbox' name='omnicoin' value='1' <?php echo $product->acceptsCurrency(ProductCurrency::OMNICOIN) ? 'checked=\'1\'' : ''; ?>>
-                                                <i class='fa fa-check-square-o'></i>
-                                                OmniCoin
-                                            </label>
-                                        </div>
-                                        <div class='checkbox'>
-                                            <label class='checkbox-custom'>
-                                                <input type='checkbox' name='payza' value='1' <?php echo $product->acceptsCurrency(ProductCurrency::PAYZA) ? 'checked=\'1\'' : ''; ?>>
-                                                <i class='fa fa-check-square-o'></i>
-                                                Payza
-                                            </label>
-                                        </div>
-                                        <div class='pp-sub-options <?php echo $product->acceptsCurrency(ProductCurrency::PAYPALSUB) ? '' : 'hide'; ?>'>
-                                            <div class='line line-dashed m-t-large'></div>
-                                            <p>Paypal Subscription Length:</p>
-                                            <input name='pp-sub-length' type='number' class='input-sm form-control' value='<?php echo $product->getPaypalSubLength(); ?>'>
-                                            <br>
-                                            <p>Paypal Subscription Unit:</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label">PayPal Subscription Unit</label>
+                                        <div class="col-lg-10">
                                             <select name='pp-sub-unit' class='select2' data-placeholder='Choose a Type' style='width:260px;'>
                                                 <option></option>
                                                 <option value='0' <?php echo $product->getPaypalSubUnit() == 0 ? 'selected=\'1\'' : ''?>>Days</option>
@@ -291,108 +247,136 @@ include_once('header.php');
                                                 <option value='2' <?php echo $product->getPaypalSubUnit() == 2 ? 'selected=\'1\'' : ''?>>Years</option>
                                             </select>
                                         </div>
-                                        <div class='pp-options <?php echo ($product->acceptsCurrency(ProductCurrency::PAYPAL) || $product->acceptsCurrency(ProductCurrency::PAYPALSUB)) ? '' : 'hide'; ?>'>
-                                            <div class='line line-dashed m-t-large'></div>
-                                            <div class='checkbox'>
-                                                <label class='checkbox-custom'>
-                                                    <input type='checkbox' name='require-shipping' value='1' <?php echo $product->getRequireShipping() ? 'checked=\'1\'' : ''; ?>>
-                                                    <i class='fa fa-check-square-o'></i>
-                                                    Require shipping address (Paypal Only)
-                                                </label>
-                                            </div>
+                                    </div>
+                                    <div class="line line-dashed m-t-large"></div>
+                                </div>
+                                <div class='pp-options <?php echo ($product->acceptsCurrency(ProductCurrency::PAYPAL) || $product->acceptsCurrency(ProductCurrency::PAYPALSUB)) ? '' : 'hide'; ?>'>
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label">Require Shipping (PayPal Only)</label>
+                                        <div class="col-lg-10">
+                                            <label class="switch">
+                                                <input type='checkbox' name='require-shipping' value='1' <?php echo $product->getRequireShipping() ? 'checked=\'1\'' : ''; ?>>
+                                                <span></span>
+                                            </label>
                                         </div>
                                     </div>
-                                    <div class='step-pane' data-step='2'>
-                                        <p>Description:</p>
-                                        <textarea name='description' type='text' class='input-sm form-control' id='description' style='height: 160px;' ><?php echo $product->getDescription(); ?></textarea>
-                                        <div class='line line-dashed m-t-large'></div>
-                                        <p>Product Type:</p>
+                                    <div class="line line-dashed m-t-large"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">Description</label>
+                                    <div class="col-lg-10">
+                                        <textarea name='description' type='text' class='form-control wysi' id='description' style='height: 160px;' ><?php echo $product->getDescription(); ?></textarea>
+                                    </div>
+                                </div>
+                                <div class="line line-dashed m-t-large"></div>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">Product Type</label>
+                                    <div class="col-lg-10">
                                         <?php echo (count($url) == 4 && $url[2] == 'edit') ? '<input type=\'hidden\' name=\'type\' value=\'' . $product->getType() . '\'>' : ''; ?>
                                         <select class='select2' id='type' data-placeholder='Choose a Type' style='width:260px' <?php echo (count($url) == 4 && $url[2] == 'edit') ? 'disabled=\'1\'' : 'name=\'type\'' ?>>
                                             <option></option>
                                             <option value='0' <?php echo $product->getType() == 0 ? 'selected=\'1\'' : ''; ?>>Download</option>
-                                            <option value='1' <?php echo $product->getType() == 1 ? 'selected=\'1\'' : ''; ?>>Codes/Serials/Etc.</option>
+                                            <option value='1' <?php echo $product->getType() == 1 ? 'selected=\'1\'' : ''; ?>>Codes / Serials</option>
                                             <option value='2' <?php echo $product->getType() == 2 ? 'selected=\'1\'' : ''; ?>>Netseal</option>
                                         </select>
-                                        <br>
                                     </div>
-                                    <div class='step-pane' data-step='3'>
-                                        <div class='product-type product-type-0 <?php echo $product->getType() == 0 ? '' : 'hide'; ?>'>
-                                            <div class='form-group text-center'>
-                                                <div class='fileupload dropzone'></div>
-                                                <i>Only the last file uploaded will be used. Other files will be discarded</i>
-                                            </div>
+                                </div>
+                                <div class='product-type product-type-0 <?php echo $product->getType() == 0 ? '' : 'hide'; ?>'>
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label">File</label>
+                                        <div class="col-lg-10">
+                                            <select style='width:260px' name='file'>
+                                                <option></option>
+                                                <?php
+                                                $files = $uas->getUser()->getFiles();
+
+                                                foreach ($files as $file) {
+                                                    echo '<option value=\'' . $file->getId() . '\'>' . $file->getName() . '</option>';
+                                                }
+                                                ?>
+                                            </select>
                                         </div>
-                                        <div class='product-type product-type-1 <?php echo $product->getType() == 1 ? '' : 'hide'; ?>'>
-                                            <p>Codes/Serials/Etc:</p>
-                                            <textarea name='details' type='text' class='input-sm form-control' id='description' style='height: 160px;' placeholder='Codes/Serials/Etc. separated by commas'><?php echo ($product->getType() == ProductType::SERIAL) ? implode(',', $product->getSerials()) : '' ?></textarea>
-                                        </div>
-                                        <div class='product-type product-type-2 <?php echo $product->getType() == 2 ? '' : 'hide'; ?>'>
+                                    </div>
+                                </div>
+                                <div class='product-type product-type-1 <?php echo $product->getType() == 1 ? '' : 'hide'; ?>'>
+                                    <label class="col-lg-2 control-label">Serials / Codes</label>
+                                    <div class="col-lg-10">
+                                        <textarea name='details' type='text' class='form-control' id='description' style='height: 160px;' placeholder='Codes / Serials separated by commas'><?php echo ($product->getType() == ProductType::SERIAL) ? implode(',', $product->getSerials()) : '' ?></textarea>
+                                    </div>
+                                </div>
+                                <div class='product-type product-type-2 <?php echo $product->getType() == 2 ? '' : 'hide'; ?>'>
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label">Netseal Codes</label>
+                                        <div class="col-lg-10">
                                             <div class='netseal-entries'>
                                                 <?php
                                                 if ($product->getType() == ProductType::NETSEAL) {
                                                     $x = 0;
                                                     foreach ($product->getSerials() as $serial) {
                                                         $x++;
-                                                        echo '<div class=\'netseal-' . $x . '\'>
-                                                            ' . ($x != 1 ? '<div class=\'line line-dashed m-t-large\'></div>' : '') . '
-                                                            <p>License ' . $x . ':</p>
-                                                            <input name=\'netseal-link-' . $x . '\' type=\'text\' class=\'input-sm form-control\' placeholder=\'Download Link\' value=\'' . $serial[0] . '\'>
-                                                            <br>
-                                                            <input name=\'netseal-time-' . $x . '\' type=\'number\' class=\'input-sm form-control\' placeholder=\'Time\' value=\'' . $serial[1] . '\'>
-                                                            <br>
-                                                            <input name=\'netseal-points-' . $x . '\' type=\'number\' class=\'input-sm form-control\' placeholder=\'Points\' value=\'' . $serial[2] . '\'>
-                                                            <br>
-                                                            <select name=\'netseal-type-' . $x . '\' class=\'select2\' data-placeholder=\'Choose a Type\' style=\'width:260px;\'>
-                                                                <option></option>
-                                                                <option value=\'0\' ' . ($serial[3] == '0' ? 'selected=\'1\'' : '') . '>Free</option>
-                                                                <option value=\'1\' ' . ($serial[3] == '1' ? 'selected=\'1\'' : '') . '>Bronze</option>
-                                                                <option value=\'2\' ' . ($serial[3] == '2' ? 'selected=\'1\'' : '') . '>Silver</option>
-                                                                <option value=\'3\' ' . ($serial[3] == '3' ? 'selected=\'1\'' : '') . '>Gold</option>
-                                                                <option value=\'4\' ' . ($serial[3] == '4' ? 'selected=\'1\'' : '') . '>Platinum</option>
-                                                                <option value=\'5\' ' . ($serial[3] == '5' ? 'selected=\'1\'' : '') . '>Diamond</option>
-                                                            </select>
-                                                            <br><br>
-                                                            <input name=\'netseal-track-' . $x . '\' type=\'text\' class=\'input-sm form-control\' placeholder=\'Track (optional)\' value=\'' . $serial[4] . '\'>
-                                                            <br>
-                                                            <input name=\'netseal-nkey-' . $x . '\' type=\'text\' class=\'input-sm form-control\' placeholder=\'Netseal Remote API\' value=\'' . $serial[5] . '\'>
-                                                        </div>';
+                                                        echo '<div class="panel netseal-' . $x . '"><header class="panel-heading font-bold">License ' . $x . '</header><div class="panel-body">
+                                                    ' . ($x != 1 ? '<div class=\'line line-dashed m-t-large\'></div>' : '') . '
+                                                    <p>License ' . $x . ':</p>
+                                                    <input name=\'netseal-link-' . $x . '\' type=\'text\' class=\'form-control\' placeholder=\'Download Link\' value=\'' . $serial[0] . '\'>
+                                                    <br>
+                                                    <input name=\'netseal-time-' . $x . '\' type=\'number\' class=\'form-control\' placeholder=\'Time\' value=\'' . $serial[1] . '\'>
+                                                    <br>
+                                                    <input name=\'netseal-points-' . $x . '\' type=\'number\' class=\'form-control\' placeholder=\'Points\' value=\'' . $serial[2] . '\'>
+                                                    <br>
+                                                    <select name=\'netseal-type-' . $x . '\' class=\'select2\' data-placeholder=\'Choose a Type\' style=\'width:260px;\'>
+                                                        <option></option>
+                                                        <option value=\'0\' ' . ($serial[3] == '0' ? 'selected=\'1\'' : '') . '>Free</option>
+                                                        <option value=\'1\' ' . ($serial[3] == '1' ? 'selected=\'1\'' : '') . '>Bronze</option>
+                                                        <option value=\'2\' ' . ($serial[3] == '2' ? 'selected=\'1\'' : '') . '>Silver</option>
+                                                        <option value=\'3\' ' . ($serial[3] == '3' ? 'selected=\'1\'' : '') . '>Gold</option>
+                                                        <option value=\'4\' ' . ($serial[3] == '4' ? 'selected=\'1\'' : '') . '>Platinum</option>
+                                                        <option value=\'5\' ' . ($serial[3] == '5' ? 'selected=\'1\'' : '') . '>Diamond</option>
+                                                    </select>
+                                                    <br><br>
+                                                    <input name=\'netseal-track-' . $x . '\' type=\'text\' class=\'form-control\' placeholder=\'Track (optional)\' value=\'' . $serial[4] . '\'>
+                                                    <br>
+                                                    <input name=\'netseal-nkey-' . $x . '\' type=\'text\' class=\'form-control\' placeholder=\'Netseal Remote API\' value=\'' . $serial[5] . '\'>
+                                                </div></div>';
                                                     }
                                                 }
                                                 ?>
                                             </div>
                                             <br>
-                                            <button type='button' class='btn btn-success' id='netseal-add'>
+                                            <button type='button' class='btn btn-primary' id='netseal-add'>
                                                 <span class='fa fa-plus'></span>
                                             </button>
-                                            <button type='button' class='btn btn-success' id='netseal-remove'>
+                                            <button type='button' class='btn btn-primary' id='netseal-remove'>
                                                 <span class='fa fa-minus'></span>
                                             </button>
                                         </div>
-                                        <div class='line line-dashed m-t-large'></div>
-                                        <p>Custom Questions:</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">Custom Questions</label>
+                                    <div class="col-lg-10">
                                         <div class='question-entries'>
                                             <?php
                                             $x = 0;
                                             foreach ($product->getQuestions() as $question) {
                                                 $x++;
-                                                echo '<div class=\'question-' . $x . '\'>
-                                                        ' . ($x != 1 ? '<div class=\'line line-dashed m-t-large\'></div>' : '') . '
-                                                        <p>Question ' . $x . ':</p>
-                                                        <input name=\'question-q-' . $x . '\' type=\'text\' class=\'input-sm form-control\' value=\'' . $question . '\'>
-                                                    </div>';
+                                                echo '<div class="panel question-' . $x . '"><header class="panel-heading font-bold">Question ' . $x . '</header><div class="panel-body">
+                                                    <input name=\'question-q-' . $x . '\' type=\'text\' class=\'form-control\' value=\'' . $question . '\'>
+                                                </div></div>';
                                             }
                                             ?>
                                         </div>
                                         <br>
-                                        <button type='button' class='btn btn-success' id='question-add'>
+                                        <button type='button' class='btn btn-primary' id='question-add'>
                                             <span class='fa fa-plus'></span>
                                         </button>
-                                        <button type='button' class='btn btn-success' id='question-remove'>
+                                        <button type='button' class='btn btn-primary' id='question-remove'>
                                             <span class='fa fa-minus'></span>
                                         </button>
-                                        <div class='line line-dashed m-t-large'></div>
-                                        <p>Coupons:</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">Coupons</label>
+                                    <div class="col-lg-10">
                                         <div class='coupon-entries'>
                                             <?php
                                             $x = 0;
@@ -400,62 +384,90 @@ include_once('header.php');
                                                 $cp = new ProductCoupon();
                                                 $cp->read($coupon->getId());
                                                 $x++;
-                                                echo '<div class="coupon-1"><p>Coupon 1:</p>
-<div class="row"> <div class="col-md-2"><input name="coupon-q-' . $x . '" required="true" type="text" placeholder="Name" value="' . $cp->getName() . '" class="input-sm form-control"></div><div class="col-md-2"><input name="coupon-reduction-q-' . $cp->getReduction() . '" value="' . $x . '" required="true" type="number" min="1" max="99" placeholder="Reduction %" class="input-sm form-control"></div><div class="col-md-2"><input name="coupon-amount-q-' . $x . '" required="true" type="number" min="0" value="' . $cp->getMaxUsedAmount() . '" placeholder="Maximum amount of times to use" class="input-sm form-control"></div></div></div>';
+                                                echo '<div class="panel coupon-' . $x . '"><header class="panel-heading font-bold">Question ' . $x . '</header><div class="panel-body">
+                                                        <div class="row">
+                                                            <div class="col-md-2">
+                                                                <input name="coupon-q-' . $x . '" required="true" type="text" placeholder="Name" value="' . $cp->getName() . '" class="form-control">
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <input name="coupon-reduction-q-' . $cp->getReduction() . '" value="' . $x . '" required="true" type="number" min="1" max="99" placeholder="Reduction %" class="form-control">
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                 <input name="coupon-amount-q-' . $x . '" required="true" type="number" min="0" value="' . $cp->getMaxUsedAmount() . '" placeholder="Maximum amount of times to use" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                    </div>';
                                             }
                                             ?>
                                         </div>
                                         <br>
-                                        <button type='button' class='btn btn-success' id='coupon-add'>
+                                        <button type='button' class='btn btn-primary' id='coupon-add'>
                                             <span class='fa fa-plus'></span>
                                         </button>
-                                        <button type='button' class='btn btn-success' id='coupon-remove'>
+                                        <button type='button' class='btn btn-primary' id='coupon-remove'>
                                             <span class='fa fa-minus'></span>
                                         </button>
-                                        <div class='line line-dashed m-t-large'></div>
-                                        <p>Affiliates:</p>
-                                        <div class='checkbox'>
-                                            <label class='checkbox-custom'>
-                                                <input type='checkbox' name='affiliate-enabled' value='1' <?php echo $product->getAffiliateEnabled() ? 'checked=\'1\'' : ''; ?>>
-                                                <i class='fa fa-check-square-o'></i>
-                                                Allow users to create affiliate links for this product.
-                                            </label>
-                                        </div>
-                                        <div class='input-group'>
-                                            <input name='aff_percent' type='number' class='input-sm form-control' placeholder='Affiliate Percent' value='<?php echo $product->getAffiliatePercent(); ?>'>
-                                            <span class='input-group-addon'>%</span>
-                                        </div>
-                                        <br>
-                                        <input name='secondary-aff-link' type='text' class='input-sm form-control' placeholder='Secondary Affiliate Link' value='<?php echo $product->getAffiliateSecondaryLink(); ?>'>
-                                        <div class='line line-dashed m-t-large'></div>
-                                        <p>Custom Delivery:</p>
-                                        <div class='form-group' id='product-title'>
-                                            <input name='custom-delivery' placeholder='Optional' type='text' class='input-sm form-control' value='<?php echo $product->getCustomDelivery(); ?>'>
-                                        </div>
-                                        <p>Success URL:</p>
-                                        <div class='form-group' id='product-title'>
-                                            <input name='success-url' placeholder='Optional' type='url' class='input-sm form-control' value='<?php echo $product->getSuccessUrl(); ?>'>
-                                        </div>
-                                        <div class='line line-dashed m-t-large'></div>
-                                        <div class='checkbox'>
-                                            <label class='checkbox-custom'>
-                                                <input type='checkbox' name='display' value='1' <?php echo $product->getVisible() ? 'checked=\'1\'' : ''; ?>>
-                                                <i class='fa fa-check-square-o'></i>
-                                                Show on User Page
-                                            </label>
+                                    </div>
+                                </div>
+                                <div class="line line-dashed m-t-large"></div>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">Affiliates</label>
+                                    <div class="col-lg-10">
+                                        <label class="switch">
+                                            <input type='checkbox' id="affiliate-enabled" name='affiliate-enabled' value='1' <?php echo $product->getAffiliateEnabled() ? 'checked=\'1\'' : ''; ?>>
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div id="affiliates-container" class="hide">
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label">Affiliate Percent</label>
+                                        <div class="col-lg-10">
+                                            <input name='aff_percent' type='number' class='form-control' placeholder='Affiliate Percent' value='<?php echo $product->getAffiliatePercent(); ?>'>
                                         </div>
                                     </div>
-                                    <div class='actions m-t'>
-                                        <button type='button' class='btn btn-white btn-sm btn-prev' disabled='disabled'>Prev</button>
-                                        <button type='button' class='btn btn-white btn-sm btn-next' data-last='Submit'>Next</button>
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label">Affiliate Secondary Link</label>
+                                        <div class="col-lg-10">
+                                            <input name='secondary-aff-link' type='text' class='form-control' placeholder='Secondary Affiliate Link' value='<?php echo $product->getAffiliateSecondaryLink(); ?>'>
+                                        </div>
                                     </div>
-                                </form>
-                            </div>
-                        </section>
-                    </div>
+                                </div>
+                                <div class="line line-dashed m-t-large"></div>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">Custom Delivery Message</label>
+                                    <div class="col-lg-10">
+                                        <input name='custom-delivery' placeholder='Optional' type='text' class='form-control' value='<?php echo $product->getCustomDelivery(); ?>'>
+                                    </div>
+                                </div>
+                                <div class="line line-dashed m-t-large"></div>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">Custom Success Url</label>
+                                    <div class="col-lg-10">
+                                        <input name='success-url' placeholder='Optional' type='url' class='form-control' value='<?php echo $product->getSuccessUrl(); ?>'>
+                                    </div>
+                                </div>
+                                <div class="line line-dashed m-t-large"></div>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">Show on User Page</label>
+                                    <div class="col-lg-10">
+                                        <label class="switch">
+                                            <input type='checkbox' name='display' value='1' <?php echo $product->getVisible() ? 'checked=\'1\'' : ''; ?>>
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-lg-offset-2 col-lg-10">
+                                        <button class="btn btn-sm btn-primary" type="submit"><?php echo (count($url) == 4 && $url['3'] == 'edit') ? 'Edit' : 'Create'; ?></button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
                 </div>
-            <?php } ?>
-        </section>
+            </div>
+        <?php } ?>
     </section>
     <script>
         $(function() {
@@ -494,15 +506,6 @@ include_once('header.php');
                 $('.product-type-' + $(this).val()).removeClass('hide');
             });
 
-            $('.fileupload').dropzone({
-                url: '/seller/products/create/upload',
-                maxFilesize: 50,
-                uploadMultiple: false,
-                maxFiles: 10000
-            });
-
-            $('#description').wysihtml5();
-
             $('#netseal-add').click(function() {
                 addNetseal($('.netseal-entries').children().length + 1);
             });
@@ -538,17 +541,24 @@ include_once('header.php');
                     $('.coupon-' + x).remove();
                 }
             });
+
+            $('#affiliate-enabled').change(function() {
+                if ($(this).is(':checked')) {
+                    $('#affiliates-container').removeClass('hide');
+                } else {
+                    $('#affiliates-container').addClass('hide');
+                }
+            });
         });
 
         function addNetseal(offset) {
-            $('.netseal-entries').append('<div class=\'netseal-' + offset + '\'>\
+            $('.netseal-entries').append('<div class="panel netseal-' + offset + '"> <header class="panel-heading font-bold">License ' + offset + '</header><div class="panel-body">\
                 ' + (offset != 1 ? '<div class=\'line line-dashed m-t-large\'></div>' : '') + '\
-                <p>License ' + offset + ':</p>\
-                <input name=\'netseal-link-' + offset + '\' type=\'text\' class=\'input-sm form-control\' placeholder=\'Download Link\'>\
+                <input name=\'netseal-link-' + offset + '\' type=\'text\' class=\'form-control\' placeholder=\'Download Link\'>\
                 <br>\
-                <input name=\'netseal-time-' + offset + '\' type=\'number\' class=\'input-sm form-control\' placeholder=\'Time\'>\
+                <input name=\'netseal-time-' + offset + '\' type=\'number\' class=\'form-control\' placeholder=\'Time\'>\
                 <br>\
-                <input name=\'netseal-points-' + offset + '\' type=\'number\' class=\'input-sm form-control\' placeholder=\'Points\'>\
+                <input name=\'netseal-points-' + offset + '\' type=\'number\' class=\'form-control\' placeholder=\'Points\'>\
                 <br>\
                 <select name=\'netseal-type-' + offset + '\' class=\'select2\' data-placeholder=\'Choose a Type\' style=\'width:260px;\'>\
                     <option></option>\
@@ -560,26 +570,24 @@ include_once('header.php');
                     <option value=\'5\'>Diamond</option>\
                 </select>\
                 <br><br>\
-                <input name=\'netseal-track-' + offset + '\' type=\'text\' class=\'input-sm form-control\' placeholder=\'Track (optional)\'>\
+                <input name=\'netseal-track-' + offset + '\' type=\'text\' class=\'form-control\' placeholder=\'Track (optional)\'>\
                 <br>\
-                <input name=\'netseal-nkey-' + offset + '\' type=\'text\' class=\'input-sm form-control\' placeholder=\'Netseal Remote API\'>\
-            </div>');
+                <input name=\'netseal-nkey-' + offset + '\' type=\'text\' class=\'form-control\' placeholder=\'Netseal Remote API\'>\
+            </div></div>');
         }
 
         function addQuestion(offset) {
-            $('.question-entries').append('<div class=\'question-' + offset + '\'>\
-                ' + (offset != 1 ? '<div class=\'line line-dashed m-t-large\'></div>' : '') + '\
-                <p>Question ' + offset + ':</p>\
-                <input name=\'question-q-' + offset + '\' type=\'text\' class=\'input-sm form-control\'>\
-            </div>');
+            $('.question-entries').append('<div class="panel question-' + offset + '"> <header class="panel-heading font-bold">Question ' + offset + '</header><div class="panel-body">\
+                <input name=\'question-q-' + offset + '\' type=\'text\' class=\'form-control\'>\
+            </div></div>');
         }
 
         function addCoupon(offset) {
-            $('.coupon-entries').append('<div class=\'coupon-' + offset + '\'>\
+            $('.coupon-entries').append('<div class="panel coupon-' + offset + '"> <header class="panel-heading font-bold">Coupon ' + offset + '</header><div class="panel-body">\
                 ' + (offset != 1 ? '<div class=\'line line-dashed m-t-large\'></div>' : '') + '\
                 <p>Coupon ' + offset + ':</p>\
-                <div class=\'row\'> <div class=\'col-md-2\'><input name=\'coupon-q-' + offset + '\' required="true" type=\'text\' placeholder=\'Name\' class=\'input-sm form-control\'/></div><div class=\'col-md-2\'><input name=\'coupon-reduction-q-' + offset + '\' required="true" type=\'number\' min=1 max=99 placeholder=\'Reduction %\' class=\'input-sm form-control\'/></div><div class=\'col-md-2\'><input name=\'coupon-amount-q-' + offset + '\' required="true" type=\'number\' min=0 placeholder=\'Maximum amount of times to use\' class=\'input-sm form-control\'/></div></div>\
-            </div>');
+                <div class=\'row\'> <div class=\'col-md-2\'><input name=\'coupon-q-' + offset + '\' required="true" type=\'text\' placeholder=\'Name\' class=\'form-control\'/></div><div class=\'col-md-2\'><input name=\'coupon-reduction-q-' + offset + '\' required="true" type=\'number\' min=1 max=99 placeholder=\'Reduction %\' class=\'form-control\'/></div><div class=\'col-md-2\'><input name=\'coupon-amount-q-' + offset + '\' required="true" type=\'number\' min=0 placeholder=\'Maximum amount of times to use\' class=\'form-control\'/></div></div>\
+            </div></div>');
         }
     </script>
 <?php

@@ -88,22 +88,16 @@ class Mailer {
 				if ($arg1 == null || $arg2 == null) {
 					return false;
 				}
-				
+
 				$subject = 'Payment detail change for your account on PayIvy';
-				
-				$message = 
+
+				$message =
 				'Hey there ' . $username . ',
-				
-				We\'ve received a request to change the payment details on your account on PayIvy
-				
-				To continue the update, simply click the link below:
-				
-				<a href=\'' . $config['url']['protocol'] . $config['url']['domain'] . '/seller/settings/update/' . $arg1 . '\'>' . $config['url']['protocol'] . $config['url']['domain'] . '/seller/settings/update' . $arg1 . '</a>
-				
-				If you did not initate this change, your account has most likely been compromised by an unauthorized party. We recommend that you immediately change your password.
-				
-				If the URL above doesn\'t work, copy and paste it into your browser.
-				
+
+				Your payment details on PayIvy been changed
+
+				If you did not initate this change, your account has most likely been compromised by an unauthorized party. We recommend that you immediately change your password and update your payment details.
+
 				This request was initiated by a user with the IP: ' . $arg2 . '
 				';
 				break;

@@ -98,22 +98,6 @@ class TwoFactorRequest extends ErrorSuccessMessages {
 				
 				$this->addMessage(new ErrorSuccessMessage('Password Updated', false));
 				break;
-			case TwoFactorRequestAction::UPDATEPAYMENTDETAILS:
-				$user = new User();
-                $user->read($this->userId);
-				
-				$details = explode(',', $this->data);
-				
-				$user->setPaypal($details[0]);
-				$user->setBitcoin($details[1]);
-				$user->setLitecoin($details[2]);
-				$user->setOmnicoin($details[3]);
-                $user->setPayza($details[4]);
-				
-				$user->update();
-				
-				$this->addMessage(new ErrorSuccessMessage('Payment Details Updated', false));
-				break;
 		}
 		
 		$this->used = true;

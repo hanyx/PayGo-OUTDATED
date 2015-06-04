@@ -26,38 +26,29 @@ if (isset($_GET['getdata'])) {
 
 include_once('header.php');
 ?>
-    <section id='content'>
-        <section class='main padder'>
-            <div class='clearfix'>
-                <h4><i class='fa fa-eye'></i> orders</h4>
-                <?php $uas->printMessages(); ?>
-            </div>
-            <div class='row'>
-                <div class='col-lg-12'>
-                    <section class='panel'>
-                        <div class='table-responsive' style='overflow-x: scroll;'>
-                            <table class='table table-striped m-b-none' data-ride='orders'>
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Buyer Email</th>
-                                        <th>Buyer IP</th>
-                                        <th>Transaction ID</th>
-                                        <th>Currency</th>
-                                        <th>Fiat</th>
-                                        <th>Native</th>
-                                        <th>Product</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
-                </div>
-            </div>
+    <div class="wrapper">
+        <div class='clearfix'>
+            <?php $uas->printMessages(); ?>
+        </div>
+        <section class='panel'>
+            <table class='table table-striped m-b-none' data-ride='orders'>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Buyer Email</th>
+                        <th>Buyer IP</th>
+                        <th>Transaction ID</th>
+                        <th>Currency</th>
+                        <th>Fiat</th>
+                        <th>Native</th>
+                        <th>Product</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </section>
-    </section>
+    </div>
     <script>
         $('[data-ride=\'orders\']').dataTable( {
             'bProcessing': true,

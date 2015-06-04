@@ -25,6 +25,10 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 				$this->authenticated = true;
 			}
 		}
+
+        if (isset($_SESSION['bad_login'])) {
+            $this->requireCaptcha = $_SESSION['bad_login'];
+        }
 	}
 	
 	public function login($username, $password, $captcha) {
@@ -41,13 +45,13 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 
 		if (!$user->readByUsername($username) && !$user->readByEmail($username)) {
 			$this->addMessage(new ErrorSuccessMessage('Invalid Username or Email'));
-            $this->requireCaptcha = true;
+            $this->setRequireCaptcha();
 			return false;
 		}
 		
 		if (!$user->checkPassword($password)) {
 			$this->addMessage(new ErrorSuccessMessage('Invalid Password'));
-            $this->requireCaptcha = true;
+            $this->setRequireCaptcha();
 			return false;
 		}
 		
@@ -56,7 +60,8 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 			return false;
 		}
 
-        $this->requireCaptcha = false;
+        $this->setRequireCaptcha(false);
+
 		$this->user = $user;
 		$this->user->setLastLogin(getRealIp());
 		$this->user->update();
@@ -277,20 +282,21 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 			$this->addMessage(new ErrorSuccessMessage('Omnicoin address is invalid'));
 			return false;
 		}
-		
-		$tfr = new TwoFactorRequest();
 
-        $tfr->setUserId($this->user->getId());
-        $tfr->setAction(TwoFactorRequestAction::UPDATEPAYMENTDETAILS);
-        $tfr->setData(implode(',', array($paypal, $bitcoin, $litecoin, $omnicoin, $payza)));
+        $this->user->setPaypal($paypal);
+        $this->user->setBitcoin($bitcoin);
+        $this->user->setLitecoin($litecoin);
+        $this->user->setOmnicoin($omnicoin);
+        $this->user->setPayza($payza);
 
-		$tfr->create();
-		
-		$this->addMessage(new ErrorSuccessMessage('Please check your email to update your payment details', false));
+        $this->user->update();
+
+        $this->addMessage(new ErrorSuccessMessage('Payment Details Updated', false));
+
 		
 		$mailer = new Mailer();
 		
-		$mailer->sendTemplate(EmailTemplate::UPDATEPAYMENTDETAILS, $this->user->getEmail(), $this->user->getUsername(), $tfr->getToken(), getRealIp());
+		$mailer->sendTemplate(EmailTemplate::UPDATEPAYMENTDETAILS, $this->user->getEmail(), $this->user->getUsername(), getRealIp());
 		
 		return true;
 	}
@@ -305,5 +311,10 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 
     public function getRequireCaptcha(){
         return $this->requireCaptcha;
+    }
+
+    public function setRequireCaptcha($require = true) {
+        $_SESSION['bad_login'] = $require;
+        $this->requireCaptcha = $require;
     }
 }

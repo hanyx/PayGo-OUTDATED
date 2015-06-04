@@ -18,6 +18,8 @@ class Order {
 	private $questions;
     private $coupon;
     private $successUrl;
+    private $referrer;
+    private $merchant;
 	
 	public function __construct() {
         $this->id = 0;
@@ -35,6 +37,8 @@ class Order {
         $this->questions = array();
         $this->coupon = "0";
         $this->successUrl = '';
+        $this->referrer = '';
+        $this->merchant = '';
 	}
 	
 	public function create() {
@@ -50,9 +54,9 @@ class Order {
 		
 		$this->date = date('Y-m-d H:i:s');
 		
-		$q = DB::getInstance()->prepare('INSERT into orders (txid, date, product_id, quantity, currency, fiat, email, ip, coupon_id, after_success_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+		$q = DB::getInstance()->prepare('INSERT into orders (txid, date, product_id, quantity, currency, fiat, email, ip, coupon_id, after_success_url, referrer, merchant) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 		
-		$q->execute(array($this->txid, $this->date, $this->productId, $this->quantity, $this->currency, $this->fiat, $this->email, $this->ip, $this->coupon, $this->successUrl));
+		$q->execute(array($this->txid, $this->date, $this->productId, $this->quantity, $this->currency, $this->fiat, $this->email, $this->ip, $this->coupon, $this->successUrl, $this->referrer, $this->merchant));
 
         $this->readByTxid($this->txid);
 
@@ -64,7 +68,7 @@ class Order {
 	}
 	
 	public function read($id) {
-		$q = DB::getInstance()->prepare('SELECT id, completed, txid, processor_txid, date, product_id, quantity, currency, fiat, native, email, ip, coupon_id, after_success_url FROM orders WHERE id = ?');
+		$q = DB::getInstance()->prepare('SELECT id, completed, txid, processor_txid, date, product_id, quantity, currency, fiat, native, email, ip, coupon_id, after_success_url, referrer, merchant FROM orders WHERE id = ?');
 		$q->execute(array($id));
 		$q = $q->fetchAll();
 		
@@ -86,6 +90,8 @@ class Order {
 		$this->ip = $q[0]['ip'];
         $this->coupon = $q[0]['coupon_id'];
         $this->successUrl = $q[0]['after_success_url'];
+        $this->referrer = $q[0]['referrer'];
+        $this->merchant = $q[0]['merchant'];
 
         $q = DB::getInstance()->prepare('SELECT question, response FROM order_questions WHERE order_id = ?');
         $q->execute(array($id));
@@ -128,9 +134,14 @@ class Order {
                 $orders[] = $order;
             }
         }
-		
+
 		return $orders;
 	}
+
+    public function process() {
+        //Process order, email user, etc
+
+    }
 
     public static function getOrdersByUser($uid) {
         $orders = array();
@@ -245,5 +256,25 @@ class Order {
 
     public function getSuccessUrl() {
         return $this->successUrl;
+    }
+
+    public function getReferrer() {
+        return $this->referrer;
+    }
+
+    public function setReferrer($referrer) {
+        $this->referrer = $referrer;
+    }
+
+    public function isCompleted() {
+        return $this->completed;
+    }
+
+    public function getMerchant() {
+        return $this->merchant;
+    }
+
+    public function setMerchant($merchant) {
+        $this->merchant = $merchant;
     }
 }

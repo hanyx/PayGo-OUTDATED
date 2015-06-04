@@ -79,62 +79,57 @@ $chartEnd = date("Y", strtotime(date("Y-m-d"))) . ", " . (date("m", strtotime(da
 
 include_once('header.php');
 ?>
-    <section id='content'>
-        <section class='main padder'>
-            <div class='clearfix'>
-                <h4><i class='fa fa-bar-chart-o'></i> Sales & Tracking</h4>
-                <?php $uas->printMessages(); ?>
+    <section class="wrapper">
+        <div class='clearfix'>
+            <?php $uas->printMessages(); ?>
+        </div>
+        <section class='panel'>
+            <header class='panel-heading font-bold'>Weekly Site Statistics</header>
+            <div class='panel-body'>
+                <div id='views-chart' style='height:240px'></div>
             </div>
-            <section class='panel'>
-                <header class='panel-heading font-bold'>Weekly Site Statistics</header>
-                <div class='panel-body'>
-                    <div id='views-chart' style='height:240px'></div>
-                </div>
-                <footer class='panel-footer'>
-                    <div class='row text-center'>
-                        <div class='col-xs-3 b-r'>
-                            <p class='h3 font-bold m-t'><?php echo $todayViews; ?></p>
-                            <p class='text-muted'><?php echo formatS($todayViews, 'Pageview'); ?> Today</p>
-                        </div>
-                        <div class='col-xs-3 b-r'>
-                            <p class='h3 font-bold m-t'><?php echo $todayVisitors; ?></p>
-                            <p class='text-muted'>Unique <?php echo formatS($todayVisitors, 'Visitor'); ?> Today</p>
-                        </div>
-                        <div class='col-xs-3 b-r'>
-                            <p class='h3 font-bold m-t'><?php echo $monthViews; ?></p>
-                            <p class='text-muted'><?php echo formatS($monthViews, 'Pageview'); ?> this Month</p>
-                        </div>
-                        <div class='col-xs-3'>
-                            <p class='h3 font-bold m-t'><?php echo $monthVisitors; ?></p>
-                            <p class='text-muted'>Unique <?php echo formatS($monthVisitors, 'Visitor'); ?> this Month</p>
-                        </div>
+            <footer class='panel-footer'>
+                <div class='row text-center'>
+                    <div class='col-xs-3 b-r'>
+                        <p class='h3 font-bold m-t'><?php echo $todayViews; ?></p>
+                        <p class='text-muted'><?php echo formatS($todayViews, 'Pageview'); ?> Today</p>
                     </div>
-                </footer>
-            </section>
-            <div class='row'>
-                <div class='col-lg-12'>
-                    <section class='panel'>
-                        <header class='panel-heading font-bold'>
-                            Page Views
-                        </header>
-                        <div class='table-responsive' style='overflow-x: scroll;'>
-                            <table class='table table-striped m-b-none' data-ride='views'>
-                                <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Date</th>
-                                    <th>IP</th>
-                                    <th>Referring URL</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
+                    <div class='col-xs-3 b-r'>
+                        <p class='h3 font-bold m-t'><?php echo $todayVisitors; ?></p>
+                        <p class='text-muted'>Unique <?php echo formatS($todayVisitors, 'Visitor'); ?> Today</p>
+                    </div>
+                    <div class='col-xs-3 b-r'>
+                        <p class='h3 font-bold m-t'><?php echo $monthViews; ?></p>
+                        <p class='text-muted'><?php echo formatS($monthViews, 'Pageview'); ?> this Month</p>
+                    </div>
+                    <div class='col-xs-3'>
+                        <p class='h3 font-bold m-t'><?php echo $monthVisitors; ?></p>
+                        <p class='text-muted'>Unique <?php echo formatS($monthVisitors, 'Visitor'); ?> this Month</p>
+                    </div>
                 </div>
-            </div>
+            </footer>
         </section>
+        <div class='row'>
+            <div class='col-lg-12'>
+                <section class='panel'>
+                    <header class='panel-heading font-bold'>
+                        Page Views
+                    </header>
+                    <table class='table table-striped m-b-none' data-ride='views'>
+                        <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Date</th>
+                            <th>IP</th>
+                            <th>Referring URL</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </div>
     </section>
     <script>
         $('[data-ride=\'views\']').dataTable( {

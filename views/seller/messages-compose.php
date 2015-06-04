@@ -31,47 +31,42 @@ if (isset($_POST['send']) && isset($_POST['recipient']) && isset($_POST['message
 
 include_once('header.php');
 ?>
-	<section id='content' class='content-sidebar bg-white'>
-		<section class='main'>
-			<?php
-			if ($uas->hasMessage()) {
-			?>
-				<div class='text-small padder padder-v'>
-					<?php $uas->printMessages(); ?>
-				</div>
-			<?php
-			} else {
-			?>
-				<form action='/seller/messages/compose' method='post' style='margin-bottom: 0;'>
-					<div class='modal-body'>
-						<div class='form-group'>
-							<div class='input-group'>
-								<span class='input-group-addon'>TO:</span>
-								<input name='recipient' type='email' class='form-control' placeholder='Email To' value='<?php echo ($reply) ? $message->getSender() : ''; ?>'>
-							</div>
-						</div>
-						<div class='form-group'>
-							<textarea name='message' id='message-body' class='form-control' placeholder='Message' style='height: 120px;'>
-								<?php
-									if ($reply) {
-										echo '<br><br>';
-										echo '<i>';
-										echo 'On ' . $message->getDate() . ' ' . $message->getSender() . ' wrote: <br>';
-										echo htmlspecialchars($message->getMessage());
-										echo '</i>';
-									}
-								?>
-							</textarea>
-						</div>
-					</div>
-					<div class='modal-footer clearfix'>
-						<button type='submit' name='send' class='btn btn-primary pull-left'><i class='fa fa-envelope'></i> Send Message</button>
-					</div>
-				</form>
-			<?php
-			}
-			?>
-		</section>
-	</section>
+    <div class="wrapper">
+        <?php
+        if ($uas->hasMessage()) {
+        ?>
+            <div class='text-small padder padder-v'>
+                <?php $uas->printMessages(); ?>
+            </div>
+        <?php
+        } else {
+        ?>
+            <form action='/seller/messages/compose' method='post' style='margin-bottom: 0;'>
+                <div class='form-group'>
+                    <div class='input-group'>
+                        <span class='input-group-addon'>TO:</span>
+                        <input name='recipient' type='email' class='form-control' placeholder='Email To' value='<?php echo ($reply) ? $message->getSender() : ''; ?>'>
+                    </div>
+                </div>
+                <div class='form-group'>
+                    <textarea name='message' id='message-body' class='form-control' placeholder='Message' style='height: 120px;'>
+                        <?php
+                            if ($reply) {
+                                echo '<br><br>';
+                                echo '<i>';
+                                echo 'On ' . $message->getDate() . ' ' . $message->getSender() . ' wrote: <br>';
+                                echo htmlspecialchars($message->getMessage());
+                                echo '</i>';
+                            }
+                        ?>
+                    </textarea>
+                </div>
+                <button type='submit' name='send' class='btn btn-primary pull-left'><i class='fa fa-envelope'></i> Send Message</button>
+            </form>
+        <?php
+        }
+        ?>
+    </div>
+    </div>
 <?php
 include_once('footer.php');

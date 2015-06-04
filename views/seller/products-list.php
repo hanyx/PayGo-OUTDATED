@@ -33,37 +33,28 @@ if (isset($_GET['getdata'])) {
 
 include_once('header.php');
 ?>
-	<section id='content'>
-		<section class='main padder'>
-			<div class='clearfix'>
-				<h4><i class='fa fa-eye'></i> Products</h4>
-				<?php $uas->printMessages(); ?>
-			</div>
-			<div class='row'>
-				<div class='col-lg-12'>
-					<section class='panel'>
-						<div class='table-responsive' style='overflow-x: scroll;'>
-							<table class='table table-striped m-b-none' data-ride='products'>
-								<thead>
-									<tr>
-										<th>Title</th>
-										<th>Affiliate Link</th>
-										<th>Notes</th>
-										<th>Orders</th>
-										<th>Revenue</th>
-										<th>Configure</th>
-									</tr>
-								</thead>
-								<tbody>
-								</tbody>
-							</table>
-						</div>
-					</section>
-				</div>
-			</div>
-		</section>
-	</section>
-	<script>
+    <div class="wrapper">
+        <div class='clearfix'>
+            <?php $uas->printMessages(); ?>
+        </div>
+        <section class='panel'>
+            <table class='table table-striped m-b-none' data-ride='products'>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Affiliate Link</th>
+                        <th>Notes</th>
+                        <th>Orders</th>
+                        <th>Revenue</th>
+                        <th>Configure</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </section>
+    </div>
+    <script>
 		$('[data-ride=\'products\']').dataTable( {
 			'bProcessing': true,
 			'sAjaxSource': '/seller/products/view?getdata=true',

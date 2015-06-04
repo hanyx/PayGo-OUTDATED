@@ -81,7 +81,7 @@ class User {
         $q = DB::getInstance()->prepare('SELECT id FROM users WHERE username = ?');
         $q->execute(array($username));
 		$q = $q->fetchAll();
-		
+
 		if (count($q) != 1) {
 			return false;
 		}
@@ -215,6 +215,10 @@ class User {
 
     public function getPayza() {
         return $this->payza;
+    }
+
+    public function getFiles($showDeleted = false) {
+        return File::getFilesByUser($this->id, $showDeleted);
     }
 
 }

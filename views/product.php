@@ -61,12 +61,13 @@ if (count($url) == 3 && $url[2] == 'buy') {
                     $order->setProductId($product->getId());
                     $order->setQuantity((int)$_POST['quantity']);
                     $order->setCurrency($_POST['currency']);
-                    $order->setFiat($_POST['quantity'] * $product->getPrice());
+                    $order->setFiat($product->getPrice());
                     $order->setEmail($_POST['email']);
                     $order->setIp(getRealIp());
                     $order->setQuestions($questions);
                     $order->setCoupon($_POST['couponCode']);
                     $order->setSuccessUrl($product->getSuccessUrl());
+                    $order->setReferrer(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
 
                     $order->create();
 
@@ -74,6 +75,7 @@ if (count($url) == 3 && $url[2] == 'buy') {
                         $response['action'] = 'pp-checkout';
                         $response['data'] = array('sub' => $order->getCurrency() == ProductCurrency::PAYPALSUB, 'business' => $seller->getPaypal(), 'itemname' => $product->getTitle(), 'itemnumber' => $product->getId(), 'amount' => $order->getFiat(), 'custom' => $order->getTxid(), 'shipping' => $product->getRequireShipping(), 'quantity' => $order->getQuantity(), 'sub-length' => $product->getPaypalSubLength(), 'sub-unit' => $product->getPaypalSubUnit(), 'success_url' => $product->getSuccessUrl());
 
+                        $order->setMerchant($seller->getPaypal());
                         $order->setNative($order->getFiat());
                         $order->update();
                     } else if ($order->getCurrency() == ProductCurrency::BITCOIN || $order->getCurrency() == ProductCurrency::LITECOIN|| $order->getCurrency() == ProductCurrency::OMNICOIN) {
@@ -98,7 +100,7 @@ if (count($url) == 3 && $url[2] == 'buy') {
                                 break;
                         }
 
-                        $tx = $cp->CreateTransaction(array('buyer_name' => '', 'buyer_email' => $_POST['email'], 'amount' => $order->getFiat(), 'currency1' => 'USD', 'currency2' => $currency, 'address' => $address, 'item_name' => $product->getTitle(), 'item_number' => $product->getId(), 'custom' => $order->getTxid(), 'ipn_url' => '', 'quantity' => $order->getQuantity(), 'success_url' => $product->getSuccessUrl()));
+                        $tx = $cp->CreateTransaction(array('buyer_name' => '', 'buyer_email' => $_POST['email'], 'amount' => $order->getFiat() * $order->getQuantity(), 'currency1' => 'USD', 'currency2' => $currency, 'address' => $address, 'item_name' => $product->getTitle(), 'item_number' => $product->getId(), 'custom' => $order->getTxid(), 'ipn_url' => $config['url']['protocol'] . $config['url']['domain'] . '/ipn/coinpayments/', 'quantity' => $order->getQuantity(), 'success_url' => $product->getSuccessUrl()));
 
                         if ($tx['error'] != 'ok') {
                             $errorMessage = 'RELOAD';
@@ -472,7 +474,7 @@ include_once('seller/header.php');
                             <input type=\'hidden\' name=\'item_number\' value=\'' + data.response.data.itemnumber + '\'>\
                             <input type=\'hidden\' name=\'amount\' value=\'' + data.response.data.amount + '\'>\
                             <input type=\'hidden\' name=\'custom\' value=\'' + data.response.data.custom + '\'>\
-                            <input type=\'hidden\' name=\'notify_url\' value=\'\'>\
+                            <input type=\'hidden\' name=\'notify_url\' value=\'<?php echo $config['url']['protocol'] . $config['url']['domain'] . '/ipn/paypal'; ?>\'>\
                             <input type=\'hidden\' name=\'return\' value=\'' + data.response.data.success_url +'\'>\
                             <input type=\'hidden\' name=\'cancel_return\' value=\'\'>\
                             <input type=\'hidden\' name=\'invoice\' value=\'\'>\

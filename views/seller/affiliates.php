@@ -45,36 +45,27 @@ if (count($url) == 4 && $url[2] == 'pay') {
 
 include_once('header.php');
 ?>
-	<section id='content'>
-		<section class='main padder'>
-			<div class='clearfix'>
-				<h4><i class='fa fa-user'></i> Affiliates</h4>
-				<?php $uas->printMessages(); ?>
-			</div>
-			<div class='row'>
-				<div class='col-lg-12'>
-					<section class='panel'>
-						<div class='table-responsive' style='overflow-x: scroll;'>
-							<table class='table table-striped m-b-none' data-ride='affiliates'>
-								<thead>
-									<tr>
-										<th>Email</th>
-										<th>Product</th>
-										<th>Total Orders</th>
-										<th>Unpaid Orders</th>
-										<th>Unpaid Amount</th>
-										<th>Mark as Paid</th>
-									</tr>
-								</thead>
-								<tbody>
-								</tbody>
-							</table>
-						</div>
-					</section>
-				</div>
-			</div>
-		</section>
-	</section>
+    <div class="wrapper">
+        <div class='clearfix'>
+            <?php $uas->printMessages(); ?>
+        </div>
+        <section class='panel'>
+            <table class='table table-striped m-b-none' data-ride='affiliates'>
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Product</th>
+                        <th>Total Orders</th>
+                        <th>Unpaid Orders</th>
+                        <th>Unpaid Amount</th>
+                        <th>Mark as Paid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </section>
+    </div>
 	<script>
 		$('[data-ride=\'affiliates\']').dataTable( {
 			'bProcessing': true,

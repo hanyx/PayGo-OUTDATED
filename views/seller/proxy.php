@@ -45,34 +45,31 @@ if (isset($_POST['ip'])) {
 
 include_once('header.php');
 ?>
-    <section id='content'>
-        <section class='main padder'>
-            <div class='clearfix'>
-                <h4><i class='fa fa-search'></i> Proxy/VPN Detector</h4>
-                <?php $uas->printMessages(); ?>
-            </div>
-            <div class='row'>
-                <div class='col-sm-6'>
-                    <section class='panel'>
-                        <div class='panel-body'>
-                            <form class='form-horizontal' method='post'>
-                                <div class='form-group'>
-                                    <label class='col-lg-3 control-label'>IP</label>
-                                    <div class='col-lg-8'>
-                                        <input name='ip' class='form-control' required='' type='text'>
-                                    </div>
+    <section class="wrapper">
+        <div class='clearfix'>
+            <?php $uas->printMessages(); ?>
+        </div>
+        <div class='row'>
+            <div class='col-sm-6'>
+                <section class='panel'>
+                    <div class='panel-body'>
+                        <form class='form-horizontal' method='post'>
+                            <div class='form-group'>
+                                <label class='col-lg-3 control-label'>IP</label>
+                                <div class='col-lg-8'>
+                                    <input name='ip' class='form-control' required='' type='text'>
                                 </div>
-                                <div class='form-group'>
-                                    <div class='col-lg-9 col-lg-offset-3'>
-                                        <button type='submit' class='btn btn-primary'>Lookup</button>
-                                    </div>
+                            </div>
+                            <div class='form-group'>
+                                <div class='col-lg-9 col-lg-offset-3'>
+                                    <button type='submit' class='btn btn-primary'>Lookup</button>
                                 </div>
-                            </form>
-                        </div>
-                    </section>
-                </div>
+                            </div>
+                        </form>
+                    </div>
+                </section>
             </div>
-        </section>
+        </div>
     </section>
 <?php
 include_once('footer.php');

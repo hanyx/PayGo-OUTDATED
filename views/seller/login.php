@@ -37,46 +37,44 @@ if (isset($_GET['update'])) {
 
 include_once('header.php');
 ?>
-	<section id='content'>
-		<div class='main padder'>
-			<div class='row'>
-				<div class='col-lg-4 col-lg-offset-4 m-t-large'>
-					<section class='panel'>
-						<header class='panel-heading text-center'>
-							Login
-						</header>
-						<form action='/seller/login' class='panel-body' method='post'>
-							<center>
-								<?php 
-								$uas->printMessages(); 
-								if (isset($tfr)) {
-									$tfr->printMessages();
-								}
-								?>
-							</center><br />
-							<div class='block'>
-								<label class='control-label'>Username</label>
-								<input type='text' class='form-control' name='username'>
-							</div>
-							<div class='block'>
-								<label class='control-label'>Password</label>
-								<input type='password' class='form-control' name='password'>
-							</div>
-                            <?php if($uas->getRequireCaptcha()) {?>
-							<div class='block'>
-								<div class='g-recaptcha' data-sitekey='<?php echo $config['recaptcha']['site']; ?>'></div>
-							</div>
-    <?php } ?>
-							<a href='/seller/reset' class='pull-right m-t-mini'><small>Forgot password?</small></a>
-							<button type='submit' class='btn btn-info' name='login'>Sign in</button>
-							<div class='line line-dashed'></div>
-							<p class='text-muted text-center'><small>Do not have an account?</small></p>
-							<a href='/seller/register' class='btn btn-white btn-block'>Register</a>
-						</form>
-					</section>
-				</div>
-			</div>
-		</div>
-	</section>
+    <div class="wrapper">
+        <div class='row'>
+            <div class='col-lg-4 col-lg-offset-4 m-t-large'>
+                <section class='panel'>
+                    <header class='panel-heading text-center'>
+                        Login
+                    </header>
+                    <form action='/seller/login' class='panel-body' method='post'>
+                        <center>
+                            <?php
+                            $uas->printMessages();
+                            if (isset($tfr)) {
+                                $tfr->printMessages();
+                            }
+                            ?>
+                        </center><br />
+                        <div class='block'>
+                            <label class='control-label'>Username</label>
+                            <input type='text' class='form-control' name='username'>
+                        </div>
+                        <div class='block'>
+                            <label class='control-label'>Password</label>
+                            <input type='password' class='form-control' name='password'>
+                        </div>
+                        <?php if ($uas->getRequireCaptcha()) { ?>
+                        <div class='block'>
+                            <div class='g-recaptcha' data-sitekey='<?php echo $config['recaptcha']['site']; ?>'></div>
+                        </div>
+                        <?php } ?>
+                        <a href='/seller/reset' class='pull-right m-t-mini'><small>Forgot password?</small></a>
+                        <button type='submit' class='btn btn-info' name='login'>Sign in</button>
+                        <div class='line line-dashed'></div>
+                        <p class='text-muted text-center'><small>Do not have an account?</small></p>
+                        <a href='/seller/register' class='btn btn-white btn-block'>Register</a>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </div>
 <?php
 include_once('footer.php');
