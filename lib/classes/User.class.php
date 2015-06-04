@@ -105,6 +105,10 @@ class User {
 		$q = DB::getInstance()->prepare('UPDATE users SET session = ?, username = ?, password = ?, email = ?, active = ?, account_type = ?, last_login_timestamp = ?, last_login_ip = ?, paypal = ?, bitcoin = ?, litecoin = ?, omnicoin = ?, payza = ? WHERE id = ?');
 		$q->execute(array($this->session, $this->username, $this->password, $this->email, $this->active, $this->accountType,$this->lastLoginTimestamp, $this->lastLoginIp, $this->paypal, $this->bitcoin, $this->litecoin, $this->omnicoin, $this->payza, $this->id));
 	}
+
+    public function getViews() {
+        return View::getViewsByUser($this->id);
+    }
 		
 	public function checkPassword($password) {
 		return password_verify($password, $this->password);

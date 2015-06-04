@@ -87,20 +87,16 @@ if (count($url) == 2 && $url[1] == 'chart') {
     die(json_encode($response));
 }
 
-$products = $uas->getUser()->getProducts(true);
+$views = $uas->getUser()->getViews();
 
 $referrers = array();
 
-foreach ($products as $product) {
-    $orders = $product->getOrders();
-
-    foreach ($orders as $order) {
-        if (!isset($referrers[$order->getReferrer()])) {
-            $referrers[$order->getReferrer()] = 0;
-        }
-
-        $referrers[$order->getReferrer()]++;
+foreach ($views as $view) {
+    if (!isset($referrers[$view->getReferrer()])) {
+        $referrers[$view->getReferrer()] = 0;
     }
+
+    $referrers[$view->getReferrer()]++;
 }
 
 arsort($referrers);
