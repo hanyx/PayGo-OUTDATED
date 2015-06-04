@@ -36,10 +36,11 @@ abstract class ProductType {
 abstract class ProductCurrency {
 	const PAYPAL = 0;
     const PAYPALSUB = 1;
-	const BITCOIN = 2;
-	const LITECOIN = 3;
-	const OMNICOIN = 4;
-    const PAYZA = 5;
+    const PAYZA = 2;
+
+	const BITCOIN = 50;
+	const LITECOIN = 51;
+	const OMNICOIN = 52;
 }
 
 abstract class MessageFolder {
