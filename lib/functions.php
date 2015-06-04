@@ -20,6 +20,10 @@ abstract class EmailTemplate {
 	const SELLERMESSAGE = 4;
 	const USERMESSAGE = 5;
 	const AFFILIATEPAID = 6;
+    const DOWNLOAD = 7;
+    const NETSEALS = 8;
+    const SERIALS = 9;
+    const OUTOFSTOCK = 10;
 }
 
 abstract class UserAccountType {

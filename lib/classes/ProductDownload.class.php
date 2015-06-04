@@ -46,4 +46,8 @@ class ProductDownload extends Product {
         $this->fileId = $fileId;
     }
 
+    public function getFileId() {
+        return $this->fileId;
+    }
+
 }

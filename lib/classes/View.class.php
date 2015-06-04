@@ -58,6 +58,20 @@ class View {
         return $views;
     }
 
+    public static function getViewsByProduct($id) {
+        $views = array();
+        $q = DB::getInstance()->prepare('SELECT v.id FROM views AS `v` JOIN products AS `p` ON (p.id = v.product_id) WHERE p.id = ? ORDER BY date DESC');
+        $q->execute(array($id));
+        $q = $q->fetchAll();
+        foreach ($q as $p) {
+            $view = new View();
+            if ($view->read($p['id'])) {
+                $views[] = $view;
+            }
+        }
+        return $views;
+    }
+
     public function getProductId() {
         return $this->productId;
     }

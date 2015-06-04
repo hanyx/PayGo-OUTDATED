@@ -152,6 +152,74 @@ class Mailer {
 				';
 				
 				break;
+            case EmailTemplate::DOWNLOAD:
+                if ($arg1 == null) {
+                    return false;
+                }
+
+                $subject = 'Your product download from PayIvy.com';
+
+                $message =
+                'Hey there,
+
+				Thanks for your recent purchase on PayIvy.com.
+
+				Here\'s a link to download your product: <b>' . $arg1 . '</b>
+				';
+
+                break;
+            case EmailTemplate::OUTOFSTOCK:
+                $subject = 'Your recent purchase on PayIvy';
+
+                $message =
+                'Hey there,
+
+				We received your purchase order, but the item is now out of stock. Please contact the seller of the product to receive a refund.
+				';
+
+                break;
+            case EmailTemplate::SERIALS:
+                if ($arg1 == null) {
+                    return false;
+                }
+
+                $subject = 'Your purchase on PayIvy';
+
+                $message =
+                'Hey there,
+
+				Here are the serials you purchased:
+
+				<b>' . implode('</b><br>', $arg1) . '</b>
+
+				';
+
+                break;
+            case EmailTemplate::NETSEALS:
+                if ($arg1 == null) {
+                    return false;
+                }
+
+                $subject = 'Your purchase on PayIvy';
+
+                $message =
+                'Hey there,
+
+				Here is the product you purchased:
+                ';
+
+                $x = 0;
+                foreach ($arg1 as $key) {
+                    $x++;
+                    if (count($arg1) > 1) {
+                        $message .= '<b>Product ' . $x . '</b><br><br>';
+                    }
+
+                    $message .= '<b>Download: ' . $key[0] . '</b>
+                    <b>Serial: ' . $key[1] . '</b><br><br>';
+                }
+
+                break;
 		}
 
 		$this->send($email, $message, $subject);

@@ -138,6 +138,58 @@ class Order {
     public function process() {
         //Process order, email user, etc
 
+        $product = new Product();
+
+        if ($product->read($this->productId)) {
+            $product = Product::getProduct($product->getId());
+
+            switch ($product->getType()) {
+                case ProductType::DOWNLOAD:
+                    $download = new Download();
+
+                    $download->setFileId($product->getFileId());
+
+                    $download->create();
+
+                    $mailer = new Mailer();
+
+                    $mailer->sendTemplate(EmailTemplate::DOWNLOAD, $this->email, '', $download->getLink());
+
+                    break;
+                case ProductType::NETSEAL:
+                    $netseal = new Netseal();
+
+                    $seals = array();
+
+                    foreach ($product->getSerials() as $seal) {
+                        $seals[] = array($seal[0], $netseal->createCode($seal[1], $seal[2], $seal[3], $seal[4], $seal[5]));
+                    }
+
+                    $mailer = new Mailer();
+
+                    $mailer->sendTemplate(EmailTemplate::NETSEALS, $this->email, '', $seals);
+
+                    break;
+                case ProductType::SERIAL:
+                    if (count($product->getSerials()) < $this->getQuantity()) {
+                        $mailer = new Mailer();
+
+                        $mailer->sendTemplate(EmailTemplate::OUTOFSTOCK, $this->email, '');
+                    } else {
+
+                        $keys = array_slice($product->getSerials(), 0, $this->quantity);
+
+                        $product->setSerials(array_slice($product->getSerials(), $this->quantity));
+
+                        $mailer = new Mailer();
+
+                        $mailer->sendTemplate(EmailTemplate::SERIALS, $this->email, '', $keys);
+
+                    }
+
+                    break;
+            }
+        }
     }
 
     public static function getOrdersByUser($uid) {
