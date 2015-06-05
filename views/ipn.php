@@ -81,5 +81,94 @@ if ($url['1'] == 'paypal') {
     }
 
     $order->process();
+} else if($url['1'] == 'payza'){
+    define("IPN_V2_HANDLER", "https://secure.payza.com/ipn2.ashx");
+    define("TOKEN_IDENTIFIER", "token=");
 
+    $token = urlencode($_POST['token']);
+    $token = TOKEN_IDENTIFIER.$token;
+
+    $response = '';
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, IPN_V2_HANDLER);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $token);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    if(strlen($response) > 0){
+        if(urldecode($response) == "INVALID TOKEN"){
+
+        } else {
+            $response = urldecode($response);
+
+            $aps = explode("&", $response);
+
+            $info = array();
+
+            foreach ($aps as $ap)
+            {
+                $ele = explode("=", $ap);
+                $info[$ele[0]] = $ele[1];
+            }
+
+            if($info['ap_status'] != "Success" || $info['ap_transactionstate'] != "Completed"){
+                die();
+            }
+
+            if($info['ap_purchasetype'] != 'item-goods'){
+                die();
+            }
+
+            if($info['ap_test'] != 0){
+                die();
+            }
+
+            if($info['apc_1'] == ''){
+                die();
+            }
+
+            if($info['ap_discountamount'] != '0.00'){
+                die();
+            }
+
+            if($info['ap_currency'] != 'USD'){
+                die();
+            }
+
+            $order_txn = $info['apc_1'];
+
+            $order = new Order();
+            if(!$order->readByTxid($order_txn)){
+                die();
+            }
+
+            $order->setProcessorTxid($info['ap_referencenumber']);
+
+            if($order->getMerchant() != $info['ap_merchant']){
+                die();
+            }
+
+            if($order->getQuantity() != $info['ap_quantity']){
+                die();
+            }
+
+            $coupon = new ProductCoupon();
+            $coupon->read($order->getCoupon());
+
+            $percentage = $coupon->getReduction() / 100;
+
+            if($order->getFiat() - ($order->getFiat() * $percentage) != $info['ap_amount']){
+                die();
+            }
+
+            $order->process();
+        }
+    }
 }
