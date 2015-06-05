@@ -13,6 +13,7 @@ $dashboard = 		new SellerPageCategory(		'Dashboard', 	'fa-eye',	true, 0);
 $messages = 		new PageCategory(			'Messages', 	'fa fa-envelope-o', 	true, 0);
 $affiliates = 		new PageCategory(			'Affiliates', 	'fa-user', 		true, 0);
 $products =			new PageCategory(			'Products', 	'fa-list-alt', 	true, 0);
+$coupons = new PageCategory('Coupons', 'fa-ticket', true,0);
 $spbox = 			new PageCategory(			'SPBox', 		'fa-star', 		true, 0);
 $admin = 			new PageCategory(			'Admin', 		'fa-wrench', 	true, 1);
 
@@ -60,6 +61,10 @@ $products->addPage(			new Page(						array(	array('seller', 'products', 'create'
 $products->addPage(		    new Page(						array(	array('seller', 'products', 'orders')), 						'views/seller/orders.php', 				    	'Orders'            ));
 $products->addPage(			new Page(						array(	array('seller', 'products', 'files'),
                                                                     array('seller', 'products', 'files', 'upload')),				'views/seller/files.php', 			        	'Files'	        	));
+
+$coupons->addPage(new Page(array(array('seller', 'coupons', 'view')), 'views/seller/coupons-list.php', 'View'));
+$coupons->addPage(new Page(array(array('seller', 'coupons', 'create')), 'views/seller/coupons-create-edit.php', 'Create'));
+
 $spbox->addPage(		    new Page(						array(	array('seller', 'proxy')), 										'views/seller/proxy.php', 						'Proxy/VPN Detector'));
 $spbox->addPage(		    new Page(						array(	array('seller', 'tracking')), 									'views/seller/tracking.php', 					'Sales & Tracking'  ));
 
@@ -69,6 +74,7 @@ $pageManager->addCategory($dashboard);
 $pageManager->addCategory($messages);
 $pageManager->addCategory($affiliates);
 $pageManager->addCategory($products);
+$pageManager->addCategory($coupons);
 //$pageManager->addCategory($spbox);
 $pageManager->addCategory($admin);
 

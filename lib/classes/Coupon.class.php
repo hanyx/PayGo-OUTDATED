@@ -6,7 +6,7 @@ class Coupon {
     private $reduction;
     private $used_amount;
     private $max_used_amount;
-    private $product_id;
+    private $seller_id;
 
     public function __construct()
     {
@@ -15,7 +15,7 @@ class Coupon {
         $this->reduction = 0;
         $this->used_amount = 0;
         $this->max_used_amount = 0;
-        $this->product_id = 0;
+        $this->seller_id = 0;
     }
 
     public function create(){
@@ -38,18 +38,18 @@ class Coupon {
         $this->max_used_amount = $q[0]['max_used_amount'];
         $this->reduction = $q[0]['reduction'];
         $this->name = $q[0]['name'];
-        $this->product_id = $q[0]['product_id'];
+        $this->seller_id = $q[0]['seller_id'];
         $this->used_amount = $q[0]['used_amount'];
 
         return true;
     }
 
-    public static function getCouponsByProduct($pid)
+    public static function getCouponsByUser($uid)
     {
         $coupons = array();
 
-        $q = DB::getInstance()->prepare('SELECT id FROM product_coupons WHERE product_id = ?');
-        $q->execute(array($pid));
+        $q = DB::getInstance()->prepare('SELECT id FROM product_coupons WHERE seller_id = ?');
+        $q->execute(array($uid));
         $q = $q->fetchAll();
 
         foreach($q as $c){
@@ -109,5 +109,9 @@ class Coupon {
 
     public function setProductId($productId){
         $this->product_id = $productId;
+    }
+
+    public function getOrders(){
+        return Order::getOrdersByCoupon($this->id);
     }
 }

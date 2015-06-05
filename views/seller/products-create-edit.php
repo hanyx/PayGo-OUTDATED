@@ -9,6 +9,7 @@ if (count($url) == 4 && $url[2] == 'edit') {
         $uas->addMessage(new ErrorSuccessMessage('No product found'));
         $displayForm = false;
     }
+
 }
 
 if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['description']) && isset($_POST['type']) && isset($_POST['details']) && isset($_POST['aff_percent']) && isset($_POST['secondary-aff-link'])) {

@@ -262,13 +262,6 @@ class Product {
 		
 		return $products;
 	}
-
-    public function getCoupons()
-    {
-        if($this->id === 0)
-            return array();
-        return Coupon::getCouponsByProduct($this->id);
-    }
 	
 	public function getNotes() {
 		return '';

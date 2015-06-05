@@ -136,6 +136,10 @@ class User {
 	public function getProducts($showDeleted = false) {
 		return Product::getProductsByUser($this->id, $showDeleted);
 	}
+
+    public function getCoupons($showDeleted = false){
+        return Coupon::getCouponsByUser($this->id);
+    }
 	
 	public function getMessages($folder = MessageFolder::INBOX, $showDeleted = false) {
 		return Message::getMessagesByUser($this->id, $folder, $showDeleted);

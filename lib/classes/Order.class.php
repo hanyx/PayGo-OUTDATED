@@ -135,6 +135,23 @@ class Order {
 		return $orders;
 	}
 
+    public static function getOrdersByCoupon($cid){
+        $orders = array();
+
+        $q = DB::getInstance()->prepare("SELECT id FROM orders WHERE coupon_id = ?");
+        $q->execute(array($cid));
+        $q = $q->fetchAll();
+
+        foreach($q as $c){
+            $order = new Order();
+            if($order->read($c['id'])){
+                $orders[] = $order;
+            }
+        }
+
+        return $orders;
+    }
+
     public function process() {
         //Process order, email user, etc
 
