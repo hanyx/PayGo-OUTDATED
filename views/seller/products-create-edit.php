@@ -288,7 +288,9 @@ include_once('header.php');
                                     <div class="col-lg-10">
                                         <textarea name='details' type='text' class='form-control' id='description' style='height: 160px;' placeholder='Codes / Serials separated by commas'><?php echo ($product->getType() == ProductType::SERIAL) ? implode(',', $product->getSerials()) : '' ?></textarea>
                                     </div>
+
                                 </div>
+                                <br/>
                                 <div class="line line-dashed m-t-large"></div>
                                 <div class='product-type product-type-2 <?php echo $product->getType() == 2 ? '' : 'hide'; ?>'>
                                     <div class="form-group">
@@ -339,6 +341,7 @@ include_once('header.php');
                                 </div>
                                 <div class="line line-dashed m-t-large"></div>
                                 <div class="form-group">
+
                                     <label class="col-lg-2 control-label">Custom Questions</label>
                                     <div class="col-lg-10">
                                         <div class='question-entries'>

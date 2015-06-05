@@ -33,7 +33,13 @@ if ($url['1'] == 'paypal') {
         die();
     }
 
-    if ($order->getFiat() * $order->getQuantity() != $data['mc_gross']) {
+    $coupon = new ProductCoupon();
+    $coupon->read($order->getCoupon());
+
+    $percentage = $coupon->getReduction() / 100;
+
+
+    if (($order->getFiat() * $order->getQuantity()) - (($order->getFiat() *$order->getQuantity()) * $percentage) != $data['mc_gross']) {
         die();
     }
 
@@ -73,6 +79,10 @@ if ($url['1'] == 'paypal') {
     $order = new Order();
 
     if (!$order->readByTxid($_POST['custom'])) {
+        die();
+    }
+
+    if($order->getProcessorTxid() != $_POST['txn_id']){
         die();
     }
 
@@ -164,7 +174,7 @@ if ($url['1'] == 'paypal') {
 
             $percentage = $coupon->getReduction() / 100;
 
-            if($order->getFiat() - ($order->getFiat() * $percentage) != $info['ap_amount']){
+            if(($order->getFiat() * $order->getQuantity()) - ($order->getFiat() * $order->getFiat() * $percentage) != $info['ap_amount']){
                 die();
             }
 
