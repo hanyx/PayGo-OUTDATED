@@ -159,13 +159,23 @@ class Mailer {
 
                 $subject = 'Your product download from PayIvy.com';
 
-                $message =
-                'Hey there,
+                if ($arg2 != null) {
+                    $message =
+                    'Hey there,
 
-				Thanks for your recent purchase on PayIvy.com.
+                    Thanks for your recent purchase on PayIvy.com.
 
-				Here\'s a link to download your product: <b>' . $arg1 . '</b>
-				';
+                    Here\'s a custom message from the seller of the item: ' . $arg2;
+                } else {
+                    $message =
+                    'Hey there,
+
+                    Thanks for your recent purchase on PayIvy.com.';
+                }
+
+                $message .= '
+
+                Here\'s a link to download your product: <b>' . $arg1 . '</b>';
 
                 break;
             case EmailTemplate::OUTOFSTOCK:
@@ -185,14 +195,26 @@ class Mailer {
 
                 $subject = 'Your purchase on PayIvy';
 
-                $message =
-                'Hey there,
+                if ($arg2 != null) {
+                    $message =
+                    'Hey there,
 
-				Here are the serials you purchased:
+                    Thanks for your recent purchase on PayIvy.com.';
+                } else {
+                    $message =
+                    'Hey there,
 
-				<b>' . implode('</b><br>', $arg1) . '</b>
+                    Thanks for your recent purchase on PayIvy.com.
 
-				';
+                    Here\'s a custom message from the seller of the item: ' . $arg2;
+                }
+
+                $message .= 'Here are the serials you purchased:
+
+                <b>' . implode('</b><br>', $arg1) . '</b>
+
+                ';
+
 
                 break;
             case EmailTemplate::NETSEALS:
@@ -202,11 +224,25 @@ class Mailer {
 
                 $subject = 'Your purchase on PayIvy';
 
-                $message =
-                'Hey there,
+                if ($arg2 != null) {
+                    $message =
+                    'Hey there,
 
-				Here is the product you purchased:
-                ';
+                    Thanks for your recent purchase on PayIvy.com.
+
+                    Here\'s a custom message from the seller of the item: ' . $arg2 . '
+
+                    Here is the product you purchased:
+                    ';
+                } else {
+                    $message =
+                    'Hey there,
+
+                    Thanks for your recent purchase on PayIvy.com.
+
+                    Here is the product you purchased:
+                    ';
+                }
 
                 $x = 0;
                 foreach ($arg1 as $key) {

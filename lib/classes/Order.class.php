@@ -153,7 +153,7 @@ class Order {
 
                     $mailer = new Mailer();
 
-                    $mailer->sendTemplate(EmailTemplate::DOWNLOAD, $this->email, '', $download->getLink());
+                    $mailer->sendTemplate(EmailTemplate::DOWNLOAD, $this->email, '', $download->getLink(), $product->getCustomDelivery());
 
                     break;
                 case ProductType::NETSEAL:
@@ -167,7 +167,7 @@ class Order {
 
                     $mailer = new Mailer();
 
-                    $mailer->sendTemplate(EmailTemplate::NETSEALS, $this->email, '', $seals);
+                    $mailer->sendTemplate(EmailTemplate::NETSEALS, $this->email, '', $seals, $product->getCustomDelivery());
 
                     break;
                 case ProductType::SERIAL:
@@ -183,7 +183,7 @@ class Order {
 
                         $mailer = new Mailer();
 
-                        $mailer->sendTemplate(EmailTemplate::SERIALS, $this->email, '', $keys);
+                        $mailer->sendTemplate(EmailTemplate::SERIALS, $this->email, '', $keys, $product->getCustomDelivery());
 
                     }
 

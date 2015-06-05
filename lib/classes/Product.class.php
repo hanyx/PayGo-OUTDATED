@@ -22,7 +22,6 @@ class Product {
 	private $affiliateSecondaryLink;
 	private $affiliateId;
 
-    private $coupons;
     private $successUrl;
 	
 	public function __construct() {
@@ -41,7 +40,6 @@ class Product {
         $this->paypalSubUnit = -1;
         $this->requireShipping = 0;
         $this->questions = array();
-        $this->coupons = array();
 
         $this->affiliateEnabled = false;
         $this->affiliatePercent = 0;
@@ -78,14 +76,9 @@ class Product {
         $this->readByUrl($this->url);
 
         foreach ($this->questions as $question) {
-            $q = DB::getInstance()->prepare('INSERT into products_questions (product_id, question_index, question) VALUES (?, ?, ?)');
+            $q = DB::getInstance()->prepare('INSERT into product_questions (product_id, question_index, question) VALUES (?, ?, ?)');
 
             $q->execute(array($this->id, array_search($question, $this->questions), $question));
-        }
-
-        foreach ($this->coupons as $coupon){
-            $q = DB::getInstance()->prepare('INSERT INTO products_coupons(name, reduction, max_used_amount, product_id) VALUES (?,?,?,?)');
-            $q->execute(array($coupon->getName(), $coupon->getReduction(), $coupon->getMaxUsedAmount(),  $this->id));
         }
     }
 	
@@ -119,7 +112,7 @@ class Product {
 		$this->affiliateId = $q[0]['affiliate_id'];
         $this->successUrl = $q[0]['after_success_url'];
 
-        $q = DB::getInstance()->prepare('SELECT question FROM products_questions WHERE product_id = ?');
+        $q = DB::getInstance()->prepare('SELECT question FROM product_questions WHERE product_id = ?');
         $q->execute(array($this->id));
         $q = $q->fetchAll();
 
@@ -127,8 +120,6 @@ class Product {
             $this->questions[] = $question['question'];
         }
 
-        //$q = DB::getInstance()->prepare('SELECT ')
-		
 		return true;
 	}
 	
@@ -172,14 +163,14 @@ class Product {
 		$q = DB::getInstance()->prepare('UPDATE products SET deleted = ?, title = ?, description = ?, price = ?, currency = ?, visible = ?, custom_delivery = ?, pp_sub_length = ?, pp_sub_unit = ?, require_shipping = ?, affiliate_enabled = ?, affiliate_percent = ?, affiliate_secondary_link = ?, after_success_url = ? WHERE id = ?');
         $q->execute(array($this->deleted, $this->title, $this->description, $this->price, implode(',', $this->currency), $this->visible, $this->customDelivery, $this->paypalSubLength, $this->paypalSubUnit, $this->requireShipping, $this->affiliateEnabled, $this->affiliatePercent, $this->affiliateSecondaryLink, $this->successUrl, $this->id));
 
-        $q = DB::getInstance()->prepare('SELECT count(id) as `num` FROM products_questions WHERE product_id = ?');
+        $q = DB::getInstance()->prepare('SELECT count(id) as `num` FROM product_questions WHERE product_id = ?');
         $q->execute(array($this->id));
         $q = $q->fetchAll();
 
         $questions = $q[0]['num'];
 
         if ($questions > count($this->questions)) {
-            $q = DB::getInstance()->prepare('DELETE FROM products_questions WHERE product_id = ? AND question_index >= ?');
+            $q = DB::getInstance()->prepare('DELETE FROM product_questions WHERE product_id = ? AND question_index >= ?');
             $q->execute(array($this->id, count($this->questions)));
         }
 
@@ -187,22 +178,17 @@ class Product {
             $index = array_search($question, $this->questions);
 
             if ($index + 1 <= $questions) {
-                $q = DB::getInstance()->prepare('UPDATE products_questions SET question = ? WHERE question_index = ? AND product_id = ?');
+                $q = DB::getInstance()->prepare('UPDATE product_questions SET question = ? WHERE question_index = ? AND product_id = ?');
 
                 $q->execute(array($question, $index, $this->id));
             } else {
-                $q = DB::getInstance()->prepare('INSERT into products_questions (question_index, product_id, question) VALUES (?, ?, ?)');
+                $q = DB::getInstance()->prepare('INSERT into product_questions (question_index, product_id, question) VALUES (?, ?, ?)');
 
                 $q->execute(array($index, $this->id, $question));
             }
         }
     }
 
-    public function setCoupons($coupons)
-    {
-        $this->coupons = $coupons;
-    }
-	
 	public function getOrders() {
 		return Order::getOrdersByProduct($this->id);
 	}
@@ -281,7 +267,7 @@ class Product {
     {
         if($this->id === 0)
             return array();
-        return ProductCoupon::getCouponsByProduct($this->id);
+        return Coupon::getCouponsByProduct($this->id);
     }
 	
 	public function getNotes() {

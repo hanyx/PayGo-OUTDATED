@@ -1,6 +1,6 @@
 <?php
 
-class ProductCoupon {
+class Coupon {
     private $id;
     private $name;
     private $reduction;
@@ -19,13 +19,13 @@ class ProductCoupon {
     }
 
     public function create(){
-        $q = DB::getInstance()->prepare("INSERT INTO products_coupons(name, reduction, used_amount, max_used_amount, product_id) VALUES (?,?,?,?,?)");
+        $q = DB::getInstance()->prepare("INSERT INTO coupons(name, reduction, used_amount, max_used_amount, product_id) VALUES (?,?,?,?,?)");
         $q->execute(array($this->name, $this->reduction, 0, $this->max_used_amount, $this->product_id));
     }
 
     public function read($id)
     {
-        $q = DB::getInstance()->prepare('SELECT * FROM products_coupons WHERE id = ?');
+        $q = DB::getInstance()->prepare('SELECT * FROM coupons WHERE id = ?');
 
         $q->execute(array($id));
         $q = $q->fetchAll();
@@ -48,12 +48,12 @@ class ProductCoupon {
     {
         $coupons = array();
 
-        $q = DB::getInstance()->prepare('SELECT id FROM products_coupons WHERE product_id = ?');
+        $q = DB::getInstance()->prepare('SELECT id FROM coupons WHERE product_id = ?');
         $q->execute(array($pid));
         $q = $q->fetchAll();
 
         foreach($q as $c){
-            $coupon = new ProductCoupon();
+            $coupon = new Coupon();
             $coupon->read($c['id']);
 
             if($coupon != null){

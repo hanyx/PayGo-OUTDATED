@@ -68,7 +68,7 @@ if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['descriptio
     $product->setCustomDelivery(htmlspecialchars($_POST['custom-delivery'], ENT_QUOTES));
     $product->setRequireShipping(isset($_POST['require-shipping']) && $_POST['require-shipping'] == '1');
     $product->setVisible(isset($_POST['display']) && $_POST['display'] == '1');
-    $product->setSuccessUrl($_POST["success-url"]);
+    $product->setSuccessUrl(htmlspecialchars($_POST["success-url"], ENT_QUOTES));
 
     $questions = array();
 
@@ -79,21 +79,6 @@ if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['descriptio
     }
 
     $product->setQuestions($questions);
-
-    $coupons = array();
-
-    for ($x = 0; $x < 10; $x++) {
-        if (isset($_POST['coupon-q-' . $x]) && isset($_POST['coupon-reduction-q-' . $x]) && isset($_POST['coupon-amount-q-' . $x])) {
-            $coupon = new ProductCoupon();
-            $coupon->setName(htmlspecialchars($_POST['coupon-q-' . $x], ENT_QUOTES));
-            $coupon->setReduction(htmlspecialchars($_POST['coupon-reduction-q-' . $x], ENT_QUOTES));
-            $coupon->setMaxUsedAmount(htmlspecialchars($_POST['coupon-amount-q-' . $x], ENT_QUOTES));
-
-            $coupons[] = $coupon;
-        }
-    }
-
-    $product->setCoupons($coupons);
 
     if ($_POST['title'] == '') {
         $uas->addMessage(new ErrorSuccessMessage('Product title cannot be empty'));
@@ -304,6 +289,7 @@ include_once('header.php');
                                         <textarea name='details' type='text' class='form-control' id='description' style='height: 160px;' placeholder='Codes / Serials separated by commas'><?php echo ($product->getType() == ProductType::SERIAL) ? implode(',', $product->getSerials()) : '' ?></textarea>
                                     </div>
                                 </div>
+                                <div class="line line-dashed m-t-large"></div>
                                 <div class='product-type product-type-2 <?php echo $product->getType() == 2 ? '' : 'hide'; ?>'>
                                     <div class="form-group">
                                         <label class="col-lg-2 control-label">Netseal Codes</label>
@@ -351,6 +337,7 @@ include_once('header.php');
                                         </div>
                                     </div>
                                 </div>
+                                <div class="line line-dashed m-t-large"></div>
                                 <div class="form-group">
                                     <label class="col-lg-2 control-label">Custom Questions</label>
                                     <div class="col-lg-10">
@@ -370,41 +357,6 @@ include_once('header.php');
                                             <span class='fa fa-plus'></span>
                                         </button>
                                         <button type='button' class='btn btn-primary' id='question-remove'>
-                                            <span class='fa fa-minus'></span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-lg-2 control-label">Coupons</label>
-                                    <div class="col-lg-10">
-                                        <div class='coupon-entries'>
-                                            <?php
-                                            $x = 0;
-                                            foreach ($product->getCoupons() as $coupon) {
-                                                $cp = new ProductCoupon();
-                                                $cp->read($coupon->getId());
-                                                $x++;
-                                                echo '<div class="panel coupon-' . $x . '"><header class="panel-heading font-bold">Question ' . $x . '</header><div class="panel-body">
-                                                        <div class="row">
-                                                            <div class="col-md-2">
-                                                                <input name="coupon-q-' . $x . '" required="true" type="text" placeholder="Name" value="' . $cp->getName() . '" class="form-control">
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                <input name="coupon-reduction-q-' . $cp->getReduction() . '" value="' . $x . '" required="true" type="number" min="1" max="99" placeholder="Reduction %" class="form-control">
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                 <input name="coupon-amount-q-' . $x . '" required="true" type="number" min="0" value="' . $cp->getMaxUsedAmount() . '" placeholder="Maximum amount of times to use" class="form-control">
-                                                            </div>
-                                                        </div>
-                                                    </div>';
-                                            }
-                                            ?>
-                                        </div>
-                                        <br>
-                                        <button type='button' class='btn btn-primary' id='coupon-add'>
-                                            <span class='fa fa-plus'></span>
-                                        </button>
-                                        <button type='button' class='btn btn-primary' id='coupon-remove'>
                                             <span class='fa fa-minus'></span>
                                         </button>
                                     </div>
@@ -459,7 +411,7 @@ include_once('header.php');
                                 </div>
                                 <div class="form-group">
                                     <div class="col-lg-offset-2 col-lg-10">
-                                        <button class="btn btn-sm btn-primary" type="submit"><?php echo (count($url) == 4 && $url['3'] == 'edit') ? 'Edit' : 'Create'; ?></button>
+                                        <button class="btn btn-sm btn-primary" type="submit"><?php echo (count($url) == 4 && $url['2'] == 'edit') ? 'Update' : 'Create'; ?></button>
                                     </div>
                                 </div>
                             </form>
@@ -496,10 +448,6 @@ include_once('header.php');
                 }
             }
 
-            $('#form-wizard').on('finished.fu.wizard', function() {
-                document.getElementById('form').submit();
-            });
-
             $('#type').change(function() {
                 $('.product-type').addClass('hide');
 
@@ -522,23 +470,11 @@ include_once('header.php');
                 addQuestion($('.question-entries').children().length + 1);
             });
 
-            $('#coupon-add').click(function() {
-                addCoupon($('.coupon-entries').children().length + 1);
-            });
-
             $('#question-remove').click(function() {
                 var x = $('.question-entries').children().length;
 
                 if (x > 0) {
                     $('.question-' + x).remove();
-                }
-            });
-
-            $('#coupon-remove').click(function() {
-                var x = $('.coupon-entries').children().length;
-
-                if (x > 0) {
-                    $('.coupon-' + x).remove();
                 }
             });
 
@@ -579,14 +515,6 @@ include_once('header.php');
         function addQuestion(offset) {
             $('.question-entries').append('<div class="panel question-' + offset + '"> <header class="panel-heading font-bold">Question ' + offset + '</header><div class="panel-body">\
                 <input name=\'question-q-' + offset + '\' type=\'text\' class=\'form-control\'>\
-            </div></div>');
-        }
-
-        function addCoupon(offset) {
-            $('.coupon-entries').append('<div class="panel coupon-' + offset + '"> <header class="panel-heading font-bold">Coupon ' + offset + '</header><div class="panel-body">\
-                ' + (offset != 1 ? '<div class=\'line line-dashed m-t-large\'></div>' : '') + '\
-                <p>Coupon ' + offset + ':</p>\
-                <div class=\'row\'> <div class=\'col-md-2\'><input name=\'coupon-q-' + offset + '\' required="true" type=\'text\' placeholder=\'Name\' class=\'form-control\'/></div><div class=\'col-md-2\'><input name=\'coupon-reduction-q-' + offset + '\' required="true" type=\'number\' min=1 max=99 placeholder=\'Reduction %\' class=\'form-control\'/></div><div class=\'col-md-2\'><input name=\'coupon-amount-q-' + offset + '\' required="true" type=\'number\' min=0 placeholder=\'Maximum amount of times to use\' class=\'form-control\'/></div></div>\
             </div></div>');
         }
     </script>

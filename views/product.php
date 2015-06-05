@@ -67,7 +67,6 @@ if (count($url) == 3 && $url[2] == 'buy') {
                     $order->setQuestions($questions);
                     $order->setCoupon($_POST['couponCode']);
                     $order->setSuccessUrl($product->getSuccessUrl());
-                    $order->setReferrer(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
 
                     $order->create();
 
@@ -171,7 +170,7 @@ if(isset($_GET['redeemcoupon']) && $_GET['redeemcoupon'] == "true" && isset($_GE
     $result = "false";
 
     foreach($coupons as $coupon){
-        $cp = new ProductCoupon();
+        $cp = new Coupon();
         $cp->read($coupon->getId());
 
         if($cp->getName() == $_GET['couponcode']){
