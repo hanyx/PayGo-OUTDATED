@@ -19,13 +19,13 @@ class Coupon {
     }
 
     public function create(){
-        $q = DB::getInstance()->prepare("INSERT INTO coupons(name, reduction, used_amount, max_used_amount, product_id) VALUES (?,?,?,?,?)");
+        $q = DB::getInstance()->prepare("INSERT INTO product_coupons(name, reduction, used_amount, max_used_amount, product_id) VALUES (?,?,?,?,?)");
         $q->execute(array($this->name, $this->reduction, 0, $this->max_used_amount, $this->product_id));
     }
 
     public function read($id)
     {
-        $q = DB::getInstance()->prepare('SELECT * FROM coupons WHERE id = ?');
+        $q = DB::getInstance()->prepare('SELECT * FROM product_coupons WHERE id = ?');
 
         $q->execute(array($id));
         $q = $q->fetchAll();
@@ -48,7 +48,7 @@ class Coupon {
     {
         $coupons = array();
 
-        $q = DB::getInstance()->prepare('SELECT id FROM coupons WHERE product_id = ?');
+        $q = DB::getInstance()->prepare('SELECT id FROM product_coupons WHERE product_id = ?');
         $q->execute(array($pid));
         $q = $q->fetchAll();
 
