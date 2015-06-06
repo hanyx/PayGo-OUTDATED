@@ -153,7 +153,7 @@ include_once('header.php');
 <script>
     function productsChanged(e){
         var current = $('#enteredProducts').html();
-        current += '<span class="tag label label-info" id="coupon-pd-' + e.val() + '">' + e.text() + '<input type="hidden" name="coupon-p-' + e.val() + '" value="' + e.val() + '"/><span data-role="remove" onclick="productsRemove(' + e.val() + ');"></span></span>';
+        current += '<span class="tag label label-primary" id="coupon-pd-' + e.val() + '">' + e.text() + '<input type="hidden" name="coupon-p-' + e.val() + '" value="' + e.val() + '"/><span data-role="remove" onclick="productsRemove(' + e.val() + ');"></span></span>';
         $('#enteredProducts').html(current);
 
         e.remove();
