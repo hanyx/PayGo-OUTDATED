@@ -152,33 +152,22 @@ include_once('header.php');
 
 <script>
     function productsChanged(e){
-        var htmlEncoded = escapeHtml(e.text());
-        alert(htmlEncoded);
         var current = $('#enteredProducts').html();
-        current += '<span class="tag label label-info" id="coupon-pd-' + e.val() + '">' +  htmlEncoded + '<input type="hidden" name="coupon-p-' + e.val() + '" value="' + e.val() + '"/><span data-role="remove" onclick="productsRemove(' + e.val() + ', \''+ htmlEncoded +'\');"></span></span>';
+        current += '<span class="tag label label-info" id="coupon-pd-' + e.val() + '">' + e.text() + '<input type="hidden" name="coupon-p-' + e.val() + '" value="' + e.val() + '"/><span data-role="remove" onclick="productsRemove(' + e.val() + ');"></span></span>';
         $('#enteredProducts').html(current);
 
         e.remove();
     }
 
-    function productsRemove(i, t){
+    function productsRemove(i){
         var layout = $('#coupon-pd-' + i);
 
         var current = $('#products').html();
-        current += "<option value='" + i + "'>" + t + "</option>";
+        current += "<option value='" + i + "'>" + layout.text() + "</option>";
 
         $('#products').html(current);
 
         layout.remove();
-    }
-
-    function escapeHtml(text) {
-        return text
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
     }
 </script>
 
