@@ -7,6 +7,7 @@ class Coupon {
     private $used_amount;
     private $max_used_amount;
     private $seller_id;
+    private $products;
 
     public function __construct()
     {
@@ -16,11 +17,25 @@ class Coupon {
         $this->used_amount = 0;
         $this->max_used_amount = 0;
         $this->seller_id = 0;
+        $this->products = array();
     }
 
     public function create(){
-        $q = DB::getInstance()->prepare("INSERT INTO product_coupons(name, reduction, used_amount, max_used_amount, product_id) VALUES (?,?,?,?,?)");
-        $q->execute(array($this->name, $this->reduction, 0, $this->max_used_amount, $this->product_id));
+        $q = DB::getInstance()->prepare("INSERT INTO product_coupons(name, reduction, used_amount, max_used_amount, seller_id, products) VALUES (?,?,?,?,?,?)");
+        $q->execute(array($this->name, $this->reduction, 0, $this->max_used_amount, $this->seller_id, implode(",",$this->products)));
+    }
+
+    public function update(){
+        $q = DB::getInstance()->prepare("UPDATE product_coupons SET name = ?, max_used_amount = ?, reduction = ?, products = ? WHERE id = ?");
+        $q->execute(array($this->name, $this->max_used_amount, $this->reduction, implode(",",$this->products), $this->id));
+    }
+
+    public function setProducts($products){
+        $this->products = $products;
+    }
+
+    public function getProducts(){
+        return $this->products;
     }
 
     public function read($id)
@@ -40,6 +55,7 @@ class Coupon {
         $this->name = $q[0]['name'];
         $this->seller_id = $q[0]['seller_id'];
         $this->used_amount = $q[0]['used_amount'];
+        $this->products = explode(',', $q[0]['products']);
 
         return true;
     }
@@ -54,13 +70,22 @@ class Coupon {
 
         foreach($q as $c){
             $coupon = new Coupon();
-            $coupon->read($c['id']);
 
-            if($coupon != null){
+            if($coupon->read($c['id'])){
                 $coupons[] = $coupon;
             }
         }
         return $coupons;
+    }
+
+    public static function getCoupon($id){
+        $coupon = new Coupon();
+
+        if(!$coupon->read($id)){
+            return false;
+        }
+
+        return $coupon;
     }
 
     public function getId(){
@@ -83,12 +108,8 @@ class Coupon {
         return $this->max_used_amount;
     }
 
-    public function getProductId(){
-        return $this->product_id;
-    }
-
-    public function getProduct(){
-        return Product::getProduct($this->product_id);
+    public function getSellerId(){
+        return $this->seller_id;
     }
 
     public function setName($name){
@@ -107,8 +128,8 @@ class Coupon {
         $this->max_used_amount = $maxUsedAmount;
     }
 
-    public function setProductId($productId){
-        $this->product_id = $productId;
+    public function setSellerId($sellerId){
+        $this->seller_id = $sellerId;
     }
 
     public function getOrders(){

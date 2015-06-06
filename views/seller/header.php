@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/seller-theme/js/select2/select2.css" type="text/css" />
     <link rel="stylesheet" href="/seller-theme/js/wysihtml5/wysihtml5.css" type="text/css" />
     <link rel="stylesheet" href="/seller-theme/js/dropzone/dropzone.css" type="text/css" />
+    <link rel="stylesheet" href="/seller-theme/css/bootstrap-tagsinput.css" type="text/css" />
 
 
     <!--[if lt IE 9]>
@@ -46,6 +47,7 @@
     <script src="/seller-theme/js/wysiwyg/jquery.hotkeys.js" cache="false"></script>
     <script src="/seller-theme/js/wysihtml5/wysihtml5.js" cache="false"></script>
     <script src="/seller-theme/js/dropzone/dropzone.js" cache="false"></script>
+    <script src="/seller-theme/js/bootstrap-tagsinput.min.js" cache="false"></script>
 
     <script src="/seller-theme/js/app.js"></script>
     <script src="/seller-theme/js/app.plugin.js"></script>

@@ -21,7 +21,7 @@ if (isset($_GET['getdata'])) {
                 'reduction' => $coupon->getReduction() . ' %',
                 'used' => $coupon->getUsedAmount(),
                 'maximum' => $coupon->getMaxUsedAmount(),
-                'configure' => '<a href=\'/seller/products/edit/' . $coupon->getId() . '\'><i class=\'fa fa-cog\'></i></a>'
+                'configure' => '<a href=\'/seller/coupons/edit/' . $coupon->getId() . '\'><i class=\'fa fa-cog\'></i></a>'
             );
         }
 	}

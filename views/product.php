@@ -165,22 +165,20 @@ if (count($url) == 3 && $url[2] == 'buy') {
 
 if(isset($_GET['redeemcoupon']) && $_GET['redeemcoupon'] == "true" && isset($_GET['couponcode']) && ctype_alnum($_GET['couponcode']))
 {
-    $coupons = $product->getCoupons();
+    $coupons = $uas->getUser()->getCoupons();
 
     $result = "false";
-
-    foreach($coupons as $coupon){
-        $cp = new Coupon();
-        $cp->read($coupon->getId());
-
+    foreach($coupons as $cp){
         if($cp->getName() == $_GET['couponcode']){
-            if($cp->getMaxUsedAmount() == $cp->getUsedAmount()){
+            if($cp->getMaxUsedAmount() <= $cp->getUsedAmount()){
                 $result = "used";
-            } else {
+            } else if(!in_array($product->getId(), $cp->getProducts())){
+                $result = "false";
+            }else {
                 $result = $cp->getId();
             }
+            break;
         }
-        break;
     }
 
     die($result);
@@ -376,9 +374,6 @@ include_once('seller/header.php');
                         }
                         ?>
 
-                        <?php
-                        if(count($product->getCoupons()) > 0){
-                            ?>
                             <p>Coupon:</p>
                             <div class="input-group">
                             <input type="text" id="couponCode" class="form-control"/>
@@ -391,9 +386,6 @@ include_once('seller/header.php');
                             </div>
                             <input type="hidden" value="-1" id="couponCodeResult" name="couponCode"/>
                             <br>
-                        <?php
-                        }
-                        ?>
 
                         <input type='button' onClick='checkout()' class='btn btn-success' value='Continue to Payment'>
                     </div>

@@ -62,8 +62,8 @@ $products->addPage(		    new Page(						array(	array('seller', 'products', 'orde
 $products->addPage(			new Page(						array(	array('seller', 'products', 'files'),
                                                                     array('seller', 'products', 'files', 'upload')),				'views/seller/files.php', 			        	'Files'	        	));
 
-$coupons->addPage(new Page(array(array('seller', 'coupons', 'view')), 'views/seller/coupons-list.php', 'View'));
-$coupons->addPage(new Page(array(array('seller', 'coupons', 'create')), 'views/seller/coupons-create-edit.php', 'Create'));
+$coupons->addPage(new Page(array(array('seller', 'coupons', 'view')), 'views/seller/coupons-list.php', 'View / Edit'));
+$coupons->addPage(new Page(array(array('seller', 'coupons', 'create'), array('seller', 'coupons', 'edit', '*')), 'views/seller/coupons-create-edit.php', 'Create'));
 
 $spbox->addPage(		    new Page(						array(	array('seller', 'proxy')), 										'views/seller/proxy.php', 						'Proxy/VPN Detector'));
 $spbox->addPage(		    new Page(						array(	array('seller', 'tracking')), 									'views/seller/tracking.php', 					'Sales & Tracking'  ));
