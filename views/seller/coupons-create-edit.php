@@ -125,7 +125,7 @@ include_once('header.php');
                                         $product = new Product();
                                             $product->read($p);
                                     ?>
-                                            <span class="tag label label-info" id="coupon-pd-<?php echo $product->getId(); ?>"><?php echo $product->getTitle(); ?>
+                                            <span class="tag label label-primary" id="coupon-pd-<?php echo $product->getId(); ?>"><?php echo $product->getTitle(); ?>
                                                 <input type="hidden" name="coupon-p-<?php echo $product->getId(); ?>" value="<?php echo $product->getId(); ?>"/>
                                                 <span data-role="remove" onclick="productsRemove(<?php echo $product->getId(); ?>, '<?php echo htmlspecialchars($product->getTitle()); ?>');"></span>
                                             </span>
