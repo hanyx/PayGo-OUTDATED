@@ -113,6 +113,9 @@
                 </nav>
             </section>
             <footer class="footer bg-gradient hidden-xs">
+                <a class="btn btn-sm btn-link m-r-n-xs pull-right" href="/seller/logout">
+                    <i class="fa fa-power-off"></i>
+                </a>
                 <a class="btn btn-sm btn-link m-l-n-sm" data-toggle="class:nav-vertical" href="#nav" onclick="toggleSidebar();">
                     <i class="fa fa-bars"></i>
                 </a>
@@ -129,6 +132,8 @@
                 <div class="col-sm-4">
                     <h4 class="m-t m-b-none"><?php echo $pageManager->getCurrentPage()->getName(); ?></h4>
                 </div>
+
             </div>
+
         </div>
         <?php } ?>
