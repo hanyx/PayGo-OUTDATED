@@ -18,6 +18,8 @@ class User {
 	private $litecoin;
 	private $omnicoin;
     private $payza;
+
+    private $bigSizeBar;
 	
 	public function __construct() {
         $this->id = 0;
@@ -36,6 +38,7 @@ class User {
         $this->litecoin = '';
         $this->omnicoin = '';
         $this->payza = '';
+        $this->bigSizeBar = 1;
 	}
 	
 	public function create() {
@@ -47,7 +50,7 @@ class User {
 	}
 	
 	public function read($id) {
-		$q = DB::getInstance()->prepare('SELECT id, session, username, password, email, active, account_type, last_login_timestamp, last_login_ip, paypal, bitcoin, litecoin, omnicoin, payza FROM users WHERE id = ?');
+		$q = DB::getInstance()->prepare('SELECT id, session, username, password, email, active, account_type, last_login_timestamp, last_login_ip, paypal, bitcoin, litecoin, omnicoin, payza, big_size_bar FROM users WHERE id = ?');
 		$q->execute(array($id));
 		$q = $q->fetchAll();
 		
@@ -73,7 +76,9 @@ class User {
 		$this->litecoin = $q[0]['litecoin'];
 		$this->omnicoin = $q[0]['omnicoin'];
         $this->payza = $q[0]['payza'];
-		
+
+        $this->bigSizeBar = $q[0]['big_size_bar'];
+
 		return true;
 	}
 	
@@ -102,8 +107,8 @@ class User {
     }
 	
 	public function update() {
-		$q = DB::getInstance()->prepare('UPDATE users SET session = ?, username = ?, password = ?, email = ?, active = ?, account_type = ?, last_login_timestamp = ?, last_login_ip = ?, paypal = ?, bitcoin = ?, litecoin = ?, omnicoin = ?, payza = ? WHERE id = ?');
-		$q->execute(array($this->session, $this->username, $this->password, $this->email, $this->active, $this->accountType,$this->lastLoginTimestamp, $this->lastLoginIp, $this->paypal, $this->bitcoin, $this->litecoin, $this->omnicoin, $this->payza, $this->id));
+		$q = DB::getInstance()->prepare('UPDATE users SET session = ?, username = ?, password = ?, email = ?, active = ?, account_type = ?, last_login_timestamp = ?, last_login_ip = ?, paypal = ?, bitcoin = ?, litecoin = ?, omnicoin = ?, payza = ?, big_size_bar = ? WHERE id = ?');
+		$q->execute(array($this->session, $this->username, $this->password, $this->email, $this->active, $this->accountType,$this->lastLoginTimestamp, $this->lastLoginIp, $this->paypal, $this->bitcoin, $this->litecoin, $this->omnicoin, $this->payza, $this->bigSizeBar, $this->id));
 	}
 
     public function getViews() {
@@ -229,4 +234,11 @@ class User {
         return File::getFilesByUser($this->id, $showDeleted);
     }
 
+    public function getBigSizeBar(){
+        return $this->bigSizeBar;
+    }
+
+    public function setBigSizeBar($bigSizeBar){
+        $this->bigSizeBar = $bigSizeBar;
+    }
 }

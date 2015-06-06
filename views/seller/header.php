@@ -54,12 +54,18 @@
     <script src="/seller-theme/js/app.data.js"></script>
 
     <script src="/js/seller.js"></script>
+
+    <script>
+        function toggleSidebar(){
+            $.post("/seller/settings", {switch_toggle: "true"});
+        }
+    </script>
 </head>
 <body>
 <section class="hbox stretch">
     <?php if ($uas->isAuthenticated() && !$pageManager->getCurrentPage()->noAuth()) { ?>
     <!-- .aside -->
-    <aside class="bg-success dk aside-sm" id="nav">
+    <aside class="bg-success dk aside-sm <?php echo $uas->getUser()->getBigSizeBar() ? "" : "nav-vertical"; ?>" id="nav">
         <section class="vbox">
             <header class="nav-bar">
                 <a class="btn btn-link visible-xs" data-toggle="class:nav-off-screen" data-target="#nav">
@@ -107,7 +113,7 @@
                 </nav>
             </section>
             <footer class="footer bg-gradient hidden-xs">
-                <a class="btn btn-sm btn-link m-l-n-sm" data-toggle="class:nav-vertical" href="#nav">
+                <a class="btn btn-sm btn-link m-l-n-sm" data-toggle="class:nav-vertical" href="#nav" onclick="toggleSidebar();">
                     <i class="fa fa-bars"></i>
                 </a>
             </footer>

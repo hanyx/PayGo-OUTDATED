@@ -4,6 +4,13 @@ include_once('header.php');
 if (isset($_POST['update-password']) && isset($_POST['password-old']) && isset($_POST['password']) && isset($_POST['password-confirm'])) {
 	$uas->processUpdatePassword($_POST['password-old'], $_POST['password'], $_POST['password-confirm']);
 }
+
+if(isset($_POST['switch_toggle'])){
+    $user = $uas->getUser();
+    $user->setBigSizeBar(!$user->getBigSizeBar());
+    $user->update();
+    die();
+}
 ?>
 	<section class="wrapper">
         <div class='clearfix'>
