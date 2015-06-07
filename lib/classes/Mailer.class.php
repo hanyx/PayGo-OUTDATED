@@ -341,7 +341,7 @@ class Mailer {
 		);
 		
 		try {
-			$send = $this->mandrill->messages->send($message);
+			//$send = $this->mandrill->messages->send($message);
 		} catch (Mandrill_Error $e) {
 			return false;
 		}

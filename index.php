@@ -28,9 +28,6 @@ $uncategorized->addPage(	new Page(						array(	array('ipn', 'paypal'),
                                                                     array('ipn', 'coinpayments')), 									'views/home.php' 													));
 $uncategorized->addPage(	new Page(						array(	array('download', '*')), 										'views/download.php' 												));
 
-$uncategorized->addPage(new Page(array(array('l', '*')), 'views/licensing_product.php'));
-$uncategorized->addPage(new Page(array(array('gateway')), 'views/gateway.php'));
-$uncategorized->addPage(new Page(array(array('gatewayview')), 'views/gatewayview.php'));
 
 $authPages->addPage(		new Page(						array(	array('seller', 'login'),
 																	array('seller', 'login', 'activate', '*'),
