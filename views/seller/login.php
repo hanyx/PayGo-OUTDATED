@@ -35,7 +35,7 @@ if (isset($_GET['update'])) {
 	$uas->addMessage(new ErrorSuccessMessage('Password updated', false));
 }
 
-include_once('header.php');
+__header('Login');
 ?>
     <div class="wrapper">
         <div class='row'>
@@ -77,4 +77,4 @@ include_once('header.php');
         </div>
     </div>
 <?php
-include_once('footer.php');
+__footer();

@@ -1,5 +1,5 @@
 <?php
-include_once('seller/header.php');
+__header('404');
 ?>
     <style>
         .btn-success {
@@ -17,4 +17,4 @@ include_once('seller/header.php');
         </div>
     </div>
 <?php
-include_once('seller/footer.php');
+__footer();

@@ -62,7 +62,7 @@ if(isset($_POST['name']) && isset($_POST['reduction']) && isset($_POST['maximum'
     }
 }
 
-include_once('header.php');
+__header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Coupon');
 ?>
 <section class='wrapper'>
         <div class='clearfix'>
@@ -172,4 +172,4 @@ include_once('header.php');
 </script>
 
     <?php
-include_once('footer.php');
+__footer();

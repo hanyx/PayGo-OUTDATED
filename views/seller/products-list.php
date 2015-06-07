@@ -46,7 +46,7 @@ if(isset($_GET['delete']) && is_numeric($_GET['delete'])){
     die();
 }
 
-include_once('header.php');
+__header('Products');
 ?>
 <script>
     function deleteProduct(id){
@@ -103,4 +103,4 @@ include_once('header.php');
         loadData(true);
 	</script>
 <?php
-include_once('footer.php');
+__footer();

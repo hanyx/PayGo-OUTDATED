@@ -1,4 +1,11 @@
 <?php
+
+require_once('lib/password.php');
+require_once('lib/config.php');
+require_once('views/seller/header.php');
+require_once('views/seller/footer.php');
+
+
 abstract class PaypalSubscriptionUnit {
     const DAY = 0;
     const MONTH = 1;
@@ -64,35 +71,33 @@ function __autoload($name) {
     foreach ($try as $file) {
         if (file_exists($file)) {
             require_once($file);
+            return;
         }
     }
 }
 
 function validateReCaptcha($verify) {
-	return true; //Remove before flight
-	
-	global $config;
-	
-	if (preg_match('/[^A-Za-z0-9_-]/', $verify)) {
-		echo 'mhm';
-		return false;
-	}
-	
-	var_dump(('https://www.google.com/recaptcha/api/siteverify?secret=' . $config['recaptcha']['secret'] . '&response=' . $verify));
-	
-	curl_setopt($ch = curl_init(), CURLOPT_URL, 'https://www.google.com/recaptcha/api/siteverify?secret=' . $config['recaptcha']['secret'] . '&response=' . $verify);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-	$output = curl_exec($ch);
-	curl_close($ch);
-	var_dump($output);
-	if ($output == null){
-		return false;
-	} else if (!json_decode($output, true)['success']) {
-		return false;
-	}
-	
-	return true;
+    return true;
+    global $config;
+
+    if (preg_match('/[^A-Za-z0-9_-]/', $verify)) {
+        return false;
+    }
+
+    curl_setopt($ch = curl_init(), CURLOPT_URL, 'https://www.google.com/recaptcha/api/siteverify?secret=' . $config['recaptcha']['secret'] . '&response=' . $verify);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+    $output = curl_exec($ch);
+    curl_close($ch);
+
+    if ($output == null){
+        return false;
+    } else if (!json_decode($output, true)['success']) {
+        return false;
+    }
+
+    return true;
 }
 
 function getRealIp() {

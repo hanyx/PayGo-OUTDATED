@@ -1,12 +1,12 @@
 <?php
-include_once('header.php');
+__header('Payment Settings');
 
 if (isset($_POST['update-password']) && isset($_POST['password-old']) && isset($_POST['password']) && isset($_POST['password-confirm'])) {
     $uas->processUpdatePassword($_POST['password-old'], $_POST['password'], $_POST['password-confirm']);
 }
 
-if (isset($_POST['update-payment-details']) && isset($_POST['paypal']) && isset($_POST['bitcoin']) && isset($_POST['litecoin']) && isset($_POST['omnicoin']) && isset($_POST['payza'])) {
-    $uas->processUpdatePaymentDetails($_POST['paypal'], $_POST['bitcoin'], $_POST['litecoin'], $_POST['omnicoin'], $_POST['payza']);
+if (isset($_POST['update-payment-details'])) {
+    $uas->processUpdatePaymentDetails(isset($_POST['paypal']) ? $_POST['paypal'] : '', isset($_POST['bitcoin']) ? $_POST['bitcoin'] : '', isset($_POST['litecoin']) ? $_POST['litecoin'] : '', isset($_POST['omnicoin']) ? $_POST['omnicoin'] : '', isset($_POST['payza']) ? $_POST['payza'] : '');
 }
 ?>
     <section class="wrapper">
@@ -102,7 +102,7 @@ if (isset($_POST['update-payment-details']) && isset($_POST['paypal']) && isset(
             $("#form").prepend("<div class='form-group'>\
                 <label class='col-lg-3 control-label'>" + label + "</label>\
                 <div class='col-lg-8'>\
-                    <input type='email' name='" + name + "' class='form-control' placeholder='" + placeholder + "' value='" + value + "'>\
+                    <input type='text' name='" + name + "' class='form-control' placeholder='" + placeholder + "' value='" + value + "'>\
                     <div class='line line-dashed m-t-large'></div>\
                 </div>\
             </div>");
@@ -111,4 +111,4 @@ if (isset($_POST['update-payment-details']) && isset($_POST['paypal']) && isset(
         }
     </script>
 <?php
-include_once('footer.php');
+__footer();

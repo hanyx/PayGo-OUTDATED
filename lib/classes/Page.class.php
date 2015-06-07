@@ -36,7 +36,7 @@ class Page {
 	public function render($uas, $url) {		
 		global $config;
 		global $pageManager;
-		
+
 		include_once($this->file);
 	}
 	

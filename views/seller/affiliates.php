@@ -43,7 +43,7 @@ if (count($url) == 4 && $url[2] == 'pay') {
 	}
 }
 
-include_once('header.php');
+__header('Affiliates');
 ?>
     <div class="wrapper">
         <div class='clearfix'>

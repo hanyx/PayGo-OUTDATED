@@ -41,7 +41,7 @@ if (count($url) == 4 && $url[3] == 'upload') {
     die($_SESSION['file_error'] = 'UPLOAD_ERROR');
 }
 
-include_once('header.php');
+__header('Files');
 ?>
     <div class="wrapper">
         <div class='clearfix'>
@@ -91,4 +91,4 @@ include_once('header.php');
         });
     </script>
 <?php
-include_once('footer.php');
+__footer();

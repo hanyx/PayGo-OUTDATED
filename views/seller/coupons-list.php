@@ -30,7 +30,7 @@ if (isset($_GET['getdata'])) {
 	die();
 }
 
-include_once('header.php');
+__header('Coupons')
 ?>
     <div class="wrapper">
         <div class='clearfix'>
@@ -68,4 +68,4 @@ include_once('header.php');
 		} );
 	</script>
 <?php
-include_once('footer.php');
+__footer();

@@ -120,7 +120,7 @@ foreach ($referrers as $referrer) {
     }
 }
 
-include_once('header.php');
+__header('Dashbard');
 ?>
     <section class="wrapper">
         <div class='clearfix'>
@@ -327,4 +327,4 @@ include_once('header.php');
         }
     </script>
 <?php
-include_once('footer.php');
+__footer();

@@ -23,7 +23,7 @@ if (count($messages) == 0) {
     $uas->addMessage(new ErrorSuccessMessage("No messages found"));
 }
 
-include_once('header.php');
+__header('Product Delivery');
 ?>
     <section class="hbox stretch">
         <?php
@@ -80,4 +80,4 @@ include_once('header.php');
         ?>
     </section>
 <?php
-include_once('footer.php');
+__footer();

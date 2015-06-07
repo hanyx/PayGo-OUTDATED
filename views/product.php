@@ -229,7 +229,7 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 
 $view->create();
 
-include_once('seller/header.php');
+__header($product->getTitle());
 ?>
 <style>
     .btn-success {
@@ -457,7 +457,7 @@ include_once('seller/header.php');
             } else {
                 switch (data.response.action) {
                     case 'pp-checkout':
-                        $('body').append('<form action=\'https://www.paypal.com/cgi-bin/webscr\' method=\'post\' id=\'ppform\'>\
+                        $('body').append('<form action=\'https://www.sandbox.paypal.com/cgi-bin/webscr\' method=\'post\' id=\'ppform\'>\
                         	<input type=\'hidden\' name=\'cmd\' id=\'paycmd\' value=\'' + (data.response.data.sub ? '_xclick-subscriptions' : '_xclick') + '\'>\
                             <input type=\'hidden\' name=\'currency_code\' value=\'USD\'>\
                             <input type=\'hidden\' name=\'business\' value=\'' + data.response.data.business + '\'>\
@@ -525,4 +525,4 @@ include_once('seller/header.php');
     }
 </script>
 <?php
-include_once('seller/footer.php');
+__footer();

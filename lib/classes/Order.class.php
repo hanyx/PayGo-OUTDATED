@@ -65,11 +65,11 @@ class Order {
         }
 	}
 	
-	public function read($id) {
-		$q = DB::getInstance()->prepare('SELECT id, completed, txid, processor_txid, date, product_id, quantity, currency, fiat, native, email, ip, coupon_id, after_success_url, merchant FROM orders WHERE id = ?');
-		$q->execute(array($id));
+	public function read($id, $completedOnly = true) {
+		$q = DB::getInstance()->prepare('SELECT id, completed, txid, processor_txid, date, product_id, quantity, currency, fiat, native, email, ip, coupon_id, after_success_url, merchant FROM orders WHERE id = ? AND (completed = ? OR completed = ?)');
+		$q->execute(array($id, $completedOnly, true));
 		$q = $q->fetchAll();
-		
+
 		if (count($q) != 1) {
 			return false;
 		}
@@ -90,8 +90,8 @@ class Order {
         $this->successUrl = $q[0]['after_success_url'];
         $this->merchant = $q[0]['merchant'];
 
-        $q = DB::getInstance()->prepare('SELECT question, response FROM order_questions WHERE order_id = ?');
-        $q->execute(array($id));
+        $q = DB::getInstance()->prepare('SELECT question, response FROM order_questions WHERE order_id = ? AND (completed = ? OR completed = ?)');
+        $q->execute(array($id, $completedOnly, true));
         $q = $q->fetchAll();
 
         foreach ($q as $question) {
@@ -101,16 +101,16 @@ class Order {
 		return true;
 	}
 	
-	public function readByTxid($txid) {
-		$q = DB::getInstance()->prepare('SELECT id FROM orders WHERE txid = ?');
-		$q->execute(array($txid));
+	public function readByTxid($txid, $completedOnly = true) {
+		$q = DB::getInstance()->prepare('SELECT id FROM orders WHERE txid = ? AND (completed = ? OR completed = ?)');
+		$q->execute(array($txid, $completedOnly, true));
 		$q = $q->fetchAll();
-		
+
 		if (count($q) != 1) {
 			return false;
 		}
 
-		return $this->read($q[0]['id']);
+		return $this->read($q[0]['id'], $completedOnly);
 	}
 
     public function update() {
@@ -118,16 +118,16 @@ class Order {
         $q->execute(array($this->completed, $this->processorTxid, $this->id));
     }
 	
-	public static function getOrdersByProduct($pid, $completed = true) {
+	public static function getOrdersByProduct($pid, $completedOnly = true) {
 		$orders = array();
 		
-		$q = DB::getInstance()->prepare('SELECT id FROM orders WHERE product_id = ? AND completed = ?');
-		$q->execute(array($pid, $completed));
+		$q = DB::getInstance()->prepare('SELECT id FROM orders WHERE product_id = ? AND (completed = ? OR completed = ?)');
+		$q->execute(array($pid, $completedOnly, true));
 		$q = $q->fetchAll();
 
         foreach ($q as $p) {
             $order = new Order();
-            if ($order->read($p['id'])) {
+            if ($order->read($p['id'], $completedOnly)) {
                 $orders[] = $order;
             }
         }
@@ -135,16 +135,16 @@ class Order {
 		return $orders;
 	}
 
-    public static function getOrdersByCoupon($cid){
+    public static function getOrdersByCoupon($cid, $completedOnly = true){
         $orders = array();
 
-        $q = DB::getInstance()->prepare("SELECT id FROM orders WHERE coupon_id = ?");
-        $q->execute(array($cid));
+        $q = DB::getInstance()->prepare("SELECT id FROM orders WHERE coupon_id = ? AND (completed = ? OR completed = ?)");
+        $q->execute(array($cid, $completedOnly, true));
         $q = $q->fetchAll();
 
         foreach($q as $c){
             $order = new Order();
-            if($order->read($c['id'])){
+            if($order->read($c['id'], $completedOnly)) {
                 $orders[] = $order;
             }
         }
@@ -153,8 +153,6 @@ class Order {
     }
 
     public function process() {
-        //Process order, email user, etc
-
         $product = new Product();
 
         if ($product->read($this->productId)) {
@@ -209,16 +207,16 @@ class Order {
         }
     }
 
-    public static function getOrdersByUser($uid) {
+    public static function getOrdersByUser($uid, $completedOnly = true) {
         $orders = array();
 
-        $q = DB::getInstance()->prepare('SELECT o.id FROM orders AS `o` JOIN products AS `p` ON (p.id = o.product_id) WHERE p.seller_id = ? AND o.completed = 0');
-        $q->execute(array($uid));
+        $q = DB::getInstance()->prepare('SELECT o.id FROM orders AS `o` JOIN products AS `p` ON (p.id = o.product_id) WHERE p.seller_id = ? AND (o.completed = ? OR o.completed = ?)');
+        $q->execute(array($uid, $completedOnly, true));
         $q = $q->fetchAll();
 
         foreach ($q as $p) {
             $order = new Order();
-            if ($order->read($p['id'])) {
+            if ($order->read($p['id'], $completedOnly)) {
                 $orders[] = $order;
             }
         }
@@ -334,5 +332,9 @@ class Order {
 
     public function setMerchant($merchant) {
         $this->merchant = $merchant;
+    }
+
+    public function setCompleted($completed) {
+        $this->completed = $completed;
     }
 }

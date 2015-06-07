@@ -6,8 +6,6 @@
  *
  */
 
-namespace PayPal;
-
 
 /**
  * Class IPN

@@ -1,20 +1,19 @@
 <?php
 date_default_timezone_set('America/Chicago');
 
-require_once('lib/config.php');
 require_once('lib/functions.php');
 
 $uas = new UserAuthenticationSystem();
 $pageManager = new PageManager($uas);
 
-$uncategorized = 	new PageCategory(			'',				'', 			false);
-$authPages = 		new SellerAuthPageCategory(	'', 			'', 			false);
-$dashboard = 		new SellerPageCategory(		'Dashboard', 	'fa-eye',	true, 0);
-$messages = 		new PageCategory(			'Messages', 	'fa fa-envelope-o', 	true, 0);
-$affiliates = 		new PageCategory(			'Affiliates', 	'fa-user', 		true, 0);
-$products =			new PageCategory(			'Products', 	'fa-list-alt', 	true, 0);
-$coupons = new PageCategory('Coupons', 'fa-ticket', true,0);
-$admin = 			new PageCategory(			'Admin', 		'fa-wrench', 	true, 1);
+$uncategorized = 	new PageCategory(			'',				'', 			    false);
+$authPages = 		new SellerAuthPageCategory(	'', 			'', 			    false);
+$dashboard = 		new SellerPageCategory(		'Dashboard', 	'fa-eye',	        true, 0);
+$messages = 		new PageCategory(			'Messages', 	'fa fa-envelope-o', true, 0);
+$affiliates = 		new PageCategory(			'Affiliates', 	'fa-user', 		    true, 0);
+$products =			new PageCategory(			'Products', 	'fa-list-alt',  	true, 0);
+$coupons =          new PageCategory(           'Coupons',      'fa-ticket',        true,   0);
+$admin = 			new PageCategory(			'Admin', 		'fa-wrench', 	    true, 1);
 
 $pageManager->set404Page(	new Page(						array(	array('')), 													'views/404.php' 													));
 $pageManager->setPermsPage(	new Page(						array(	array('')), 													'views/nopermission.php' 						                    ));
@@ -24,7 +23,7 @@ $uncategorized->addPage(	new Page(						array(	array('v', '*'),
     																array('v', '*', 'a', '*'),
     														        array('v', '*', 'buy')), 							        	'views/product.php', 							'', true			));
 $uncategorized->addPage(	new Page(						array(	array('ipn', 'paypal'),
-                                                                    array('ipn', 'coinpayments')), 									'views/home.php' 													));
+                                                                    array('ipn', 'coinpayments')), 									'views/ipn.php' 													));
 $uncategorized->addPage(	new Page(						array(	array('download', '*')), 										'views/download.php' 												));
 
 
@@ -37,7 +36,7 @@ $authPages->addPage(		new Page(						array(	array('seller', 'reset'),
 																	array('seller', 'reset', '*')),									'views/seller/reset.php' 						 					));
 $dashboard->addPage(		new Page(						array(	array('seller'),
                                                                     array('seller', 'chart')), 										'views/seller/home.php', 						'Dashboard'			));
-$dashboard->addPage(		new Page(						array(	array('seller', 'settings')),				                	'views/seller/settings-user.php', 				'User Settings'			));
+$dashboard->addPage(		new Page(						array(	array('seller', 'settings')),				                	'views/seller/settings-user.php', 				'User Settings'		));
 $dashboard->addPage(		new Page(						array(	array('seller', 'settings', 'payments')),		               	'views/seller/settings-payment.php', 			'Payment Settings'	));
 $messages->addPage(			new SellerMessagesInboxPage(	array(	array('seller', 'messages', 'inbox'),
 																	array('seller', 'messages', 'inbox', 'view', '*'),
@@ -58,8 +57,9 @@ $products->addPage(		    new Page(						array(	array('seller', 'products', 'orde
 $products->addPage(			new Page(						array(	array('seller', 'products', 'files'),
                                                                     array('seller', 'products', 'files', 'upload')),				'views/seller/files.php', 			        	'Files'	        	));
 
-$coupons->addPage(new Page(array(array('seller', 'coupons', 'view')), 'views/seller/coupons-list.php', 'View / Edit'));
-$coupons->addPage(new Page(array(array('seller', 'coupons', 'create'), array('seller', 'coupons', 'edit', '*')), 'views/seller/coupons-create-edit.php', 'Create'));
+$coupons->addPage(          new Page(                       array(  array('seller', 'coupons', 'view')),                            'views/seller/coupons-list.php',                'View / Edit'       ));
+$coupons->addPage(          new Page(                       array(  array('seller', 'coupons', 'create'),
+                                                                    array('seller', 'coupons', 'edit', '*')),                       'views/seller/coupons-create-edit.php',         'Create'            ));
 
 $pageManager->addCategory($uncategorized);
 $pageManager->addCategory($authPages);

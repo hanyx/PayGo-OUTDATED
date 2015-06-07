@@ -19,7 +19,7 @@ if (isset($_POST['reset']) && isset($_POST['password']) && isset($_POST['passwor
 	$uas->reset($_POST['password'], $_POST['password_repeat'], $_POST['token']);
 }
 
-include_once('header.php');
+__header('Reset Password');
 ?>
 	<section id='content'>
 		<div class='main padder'>
@@ -67,4 +67,4 @@ include_once('header.php');
 		</div>
 	</section>
 <?php
-include_once('footer.php');
+__footer();

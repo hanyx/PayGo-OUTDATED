@@ -29,7 +29,7 @@ if (isset($_POST['send']) && isset($_POST['recipient']) && isset($_POST['message
 	}
 }
 
-include_once('header.php');
+__header('Compose Message');
 ?>
     <div class="wrapper">
         <?php
@@ -69,4 +69,4 @@ include_once('header.php');
     </div>
     </div>
 <?php
-include_once('footer.php');
+__footer();

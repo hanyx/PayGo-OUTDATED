@@ -63,7 +63,7 @@ class PageManager {
 				}
 			}
 		}
-		
+
 		if (!isset($this->currentPage) && isset($this->four04Page)) {
 			$this->currentPage = $this->four04Page;
 		}

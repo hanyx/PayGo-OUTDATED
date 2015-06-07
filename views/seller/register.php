@@ -3,7 +3,7 @@ if (isset($_POST['register']) && isset($_POST['username']) && isset($_POST['pass
 	$uas->register($_POST['username'], $_POST['email'], $_POST['password'], $_POST['password_repeat'], $_POST['g-recaptcha-response']);
 }
 
-include_once('header.php');
+__header('Register')
 ?>
 	<section id='content'>
 		<div class='main padder'>
@@ -45,4 +45,4 @@ include_once('header.php');
 		</div>
 	</section>
 <?php
-include_once('footer.php');
+__footer();

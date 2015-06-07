@@ -50,7 +50,7 @@ class User {
 	}
 	
 	public function read($id) {
-		$q = DB::getInstance()->prepare('SELECT id, session, username, password, email, active, account_type, last_login_timestamp, last_login_ip, paypal, bitcoin, litecoin, omnicoin, payza, big_size_bar FROM users WHERE id = ?');
+		$q = DB::getInstance()->prepare('SELECT id, session, username, password, email, active, account_type, last_login_timestamp, last_login_ip, paypal, bitcoin, litecoin, omnicoin, payza, big_sidebar FROM users WHERE id = ?');
 		$q->execute(array($id));
 		$q = $q->fetchAll();
 		
@@ -69,15 +69,14 @@ class User {
 
 		$this->lastLoginTimestamp = $q[0]['last_login_timestamp'];
 		$this->lastLoginIp = $q[0]['last_login_ip'];
-					
-		
+
 		$this->paypal = $q[0]['paypal'];
 		$this->bitcoin = $q[0]['bitcoin'];
 		$this->litecoin = $q[0]['litecoin'];
 		$this->omnicoin = $q[0]['omnicoin'];
         $this->payza = $q[0]['payza'];
 
-        $this->bigSizeBar = $q[0]['big_size_bar'];
+        $this->bigSizeBar = $q[0]['big_sidebar'];
 
 		return true;
 	}
@@ -107,8 +106,8 @@ class User {
     }
 	
 	public function update() {
-		$q = DB::getInstance()->prepare('UPDATE users SET session = ?, username = ?, password = ?, email = ?, active = ?, account_type = ?, last_login_timestamp = ?, last_login_ip = ?, paypal = ?, bitcoin = ?, litecoin = ?, omnicoin = ?, payza = ?, big_size_bar = ? WHERE id = ?');
-		$q->execute(array($this->session, $this->username, $this->password, $this->email, $this->active, $this->accountType,$this->lastLoginTimestamp, $this->lastLoginIp, $this->paypal, $this->bitcoin, $this->litecoin, $this->omnicoin, $this->payza, $this->bigSizeBar, $this->id));
+		$q = DB::getInstance()->prepare('UPDATE users SET session = ?, username = ?, password = ?, email = ?, active = ?, account_type = ?, last_login_timestamp = ?, last_login_ip = ?, paypal = ?, bitcoin = ?, litecoin = ?, omnicoin = ?, payza = ?, big_sidebar = ? WHERE id = ?');
+		$q->execute(array($this->session, $this->username, $this->password, $this->email, $this->active, $this->accountType, $this->lastLoginTimestamp, $this->lastLoginIp, $this->paypal, $this->bitcoin, $this->litecoin, $this->omnicoin, $this->payza, $this->bigSizeBar, $this->id));
 	}
 
     public function getViews() {

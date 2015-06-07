@@ -145,7 +145,7 @@ if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['descriptio
     };
 }
 
-include_once('header.php');
+__header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Product');
 ?>
     <section class='wrapper'>
         <div class='clearfix'>
@@ -523,4 +523,4 @@ include_once('header.php');
         }
     </script>
 <?php
-include_once('footer.php');
+__footer();

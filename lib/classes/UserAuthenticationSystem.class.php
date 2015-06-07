@@ -32,10 +32,10 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 	}
 	
 	public function login($username, $password, $captcha) {
-		if ($this->authenticated) {
+        if ($this->authenticated) {
 			return false;
 		}
-		
+
 		if ($this->requireCaptcha && !validateReCaptcha($captcha)) {
 			$this->addMessage(new ErrorSuccessMessage('Invalid Captcha'));
 			return false;
