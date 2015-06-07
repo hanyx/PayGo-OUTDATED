@@ -14,7 +14,6 @@ $messages = 		new PageCategory(			'Messages', 	'fa fa-envelope-o', 	true, 0);
 $affiliates = 		new PageCategory(			'Affiliates', 	'fa-user', 		true, 0);
 $products =			new PageCategory(			'Products', 	'fa-list-alt', 	true, 0);
 $coupons = new PageCategory('Coupons', 'fa-ticket', true,0);
-$spbox = 			new PageCategory(			'SPBox', 		'fa-star', 		true, 0);
 $admin = 			new PageCategory(			'Admin', 		'fa-wrench', 	true, 1);
 
 $pageManager->set404Page(	new Page(						array(	array('')), 													'views/404.php' 													));
@@ -62,9 +61,6 @@ $products->addPage(			new Page(						array(	array('seller', 'products', 'files')
 $coupons->addPage(new Page(array(array('seller', 'coupons', 'view')), 'views/seller/coupons-list.php', 'View / Edit'));
 $coupons->addPage(new Page(array(array('seller', 'coupons', 'create'), array('seller', 'coupons', 'edit', '*')), 'views/seller/coupons-create-edit.php', 'Create'));
 
-$spbox->addPage(		    new Page(						array(	array('seller', 'proxy')), 										'views/seller/proxy.php', 						'Proxy/VPN Detector'));
-$spbox->addPage(		    new Page(						array(	array('seller', 'tracking')), 									'views/seller/tracking.php', 					'Sales & Tracking'  ));
-
 $pageManager->addCategory($uncategorized);
 $pageManager->addCategory($authPages);
 $pageManager->addCategory($dashboard);
@@ -72,7 +68,6 @@ $pageManager->addCategory($messages);
 $pageManager->addCategory($affiliates);
 $pageManager->addCategory($products);
 $pageManager->addCategory($coupons);
-//$pageManager->addCategory($spbox);
 $pageManager->addCategory($admin);
 
 $pageManager->render(strtolower($_SERVER['REQUEST_URI']));
