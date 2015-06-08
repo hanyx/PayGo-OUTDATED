@@ -1,17 +1,10 @@
 <?php
 
 class Mailer {
-	
-	private $mandrill;
+
 	
 	public function __construct() {
-		global $config;
-		
-		try {
-			$this->mandrill = new Mandrill($config['mandrill']['key']);
-		} catch (Mandrill_Error $e) {
-			
-		}
+
 	}
 	
 	public function sendTemplate($template, $email, $username, $arg1 = null, $arg2 = null, $arg3 = null) {
@@ -327,29 +320,30 @@ class Mailer {
 		</body>
 		</html>';
 
-		$message = array(
-			'html' => $html,
-			'subject' => $subject,
-			'from_email' => 'noreply@payivy.com',
-			'from_name' => 'PayIvy',
-			'to' => array(
-				array(
-					'email' => $email,
-					'type' => 'to'
-				)
-			)
-		);
-		
-		try {
-			//$send = $this->mandrill->messages->send($message);
-		} catch (Mandrill_Error $e) {
-			return false;
-		}
 
-		if ($send === false) {
-			return false;
-		}
-		
+        $url = 'https://api.sendgrid.com/';
+
+        $params = array(
+            'api_user'  => $config['sendgrid']['username'],
+            'api_key'   => $config['sendgrid']['password'],
+            'to'        => $email,
+            'subject'   => $subject,
+            'html'      => $html,
+            'from'      => 'noreply@payivy.com',
+        );
+
+
+        $request =  $url.'api/mail.send.json';
+
+
+        $session = curl_init($request);
+        curl_setopt ($session, CURLOPT_POST, true);
+        curl_setopt ($session, CURLOPT_POSTFIELDS, $params);
+        curl_setopt($session, CURLOPT_HEADER, false);
+        curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+
+        $response = curl_exec($session);
+        curl_close($session);
 		return true;
 	}
 	

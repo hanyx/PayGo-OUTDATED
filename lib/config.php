@@ -18,6 +18,8 @@ $config = array(
 	'mandrill' => array(
 		'key' => ''
 	),
+    'sendgrid' => array('username' => 'linh721990',
+        'password' => 'david123'),
     'upload' => array(
         'directory' => '',
         'allowedFiles' => array(
