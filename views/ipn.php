@@ -9,8 +9,6 @@ if ($url['1'] == 'paypal') {
 
     $ipn = new PayPalIpnCheck();
 
-    $ipn->setSandbox();
-
     if (!$ipn->verify()) {
         Logger::logAndDie('IPN Fail: Verify Fail');
     }
