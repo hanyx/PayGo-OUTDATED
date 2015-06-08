@@ -21,8 +21,7 @@ if (isset($_POST['reset']) && isset($_POST['password']) && isset($_POST['passwor
 
 __header('Reset Password');
 ?>
-	<section id='content'>
-		<div class='main padder'>
+	<div class="wrapper">
 			<div class='row'>
 				<div class='col-lg-4 col-lg-offset-4 m-t-large'>
 					<section class='panel'>
@@ -65,6 +64,5 @@ __header('Reset Password');
 				</div>
 			</div>
 		</div>
-	</section>
 <?php
 __footer();
