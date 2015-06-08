@@ -22,7 +22,7 @@ if(isset($_POST['switch_toggle'])){
             ?>
         </div>
         <div class='row'>
-            <div class='col-sm-6'>
+            <div class='col-md-6'>
                 <section class='panel'>
                     <div class='panel-body'>
                         <form class='form-horizontal' method='get' data-validate='parsley'>
@@ -42,7 +42,7 @@ if(isset($_POST['switch_toggle'])){
                                 <label class='col-lg-3 control-label'>My URL</label>
                                 <div class='col-lg-8 control-label' style='text-align: left;'>
                                     <?php
-                                    $link = $config['url']['protocol'] . $config['url']['domain'] . '/u/' . $uas->getUser()->getUsername();
+                                    $link = '/u/' . $uas->getUser()->getUniqueId();
                                     echo '<a href=\'' . $link . '\'>' . $link . '</a>';
                                     ?>
                                 </div>

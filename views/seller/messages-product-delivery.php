@@ -39,7 +39,7 @@ __header('Product Delivery');
                                 <li class="list-group-item <?php echo $viewMessage ? ($currentMessage->getId() == $message->getId() ? "active" : "") : ""; ?>">
                                     <a class="clear" href="/seller/messages/product-delivery/view/<?php echo $message->getId(); ?>">
                                         <small class="pull-right"><?php echo formatTime(strtotime($message->getDate())); ?> ago</small>
-                                        <strong>Drew Wllon</strong> -
+                                        <strong><?php echo $message->getRecipient(); ?></strong> -
                                         <span><?php if (!$message->getRead()) { ?><strong><?php } ?><?php echo $message->getExcerpt(); ?><?php if (!$message->getRead()) { ?></strong><?php } ?></span>
                                     </a>
                                 </li>
