@@ -6,7 +6,7 @@ if (isset($_POST['update-password']) && isset($_POST['password-old']) && isset($
 }
 
 if (isset($_POST['update-payment-details'])) {
-    $uas->processUpdatePaymentDetails(isset($_POST['paypal']) ? $_POST['paypal'] : '', isset($_POST['bitcoin']) ? $_POST['bitcoin'] : '', isset($_POST['litecoin']) ? $_POST['litecoin'] : '', isset($_POST['omnicoin']) ? $_POST['omnicoin'] : '', isset($_POST['payza']) ? $_POST['payza'] : '');
+    $uas->processUpdatePaymentDetails(isset($_POST['paypal']) ? $_POST['paypal'] : '', isset($_POST['bitcoin']) ? $_POST['bitcoin'] : '', isset($_POST['litecoin']) ? $_POST['litecoin'] : '', isset($_POST['omnicoin']) ? $_POST['omnicoin'] : '');
 }
 ?>
     <section class="wrapper">
@@ -63,7 +63,6 @@ if (isset($_POST['update-payment-details'])) {
             <?php echo $uas->getUser()->getBitcoin() != '' ? "printInput(1, '" . $uas->getUser()->getBitcoin() . "');" : ""; ?>
             <?php echo $uas->getUser()->getLitecoin() != '' ? "printInput(2, '" . $uas->getUser()->getLitecoin() . "');" : ""; ?>
             <?php echo $uas->getUser()->getOmnicoin() != '' ? "printInput(3, '" . $uas->getUser()->getOmnicoin() . "');" : ""; ?>
-            <?php echo $uas->getUser()->getPayza() != '' ? "printInput(4, '" . $uas->getUser()->getPayza() . "');" : ""; ?>
 
             $("#add-payment-method").change(function() {
                 printInput(parseInt($(this).val()), '');

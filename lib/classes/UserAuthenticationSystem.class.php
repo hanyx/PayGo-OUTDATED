@@ -253,7 +253,7 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 		return true;
 	}
 	
-	public function processUpdatePaymentDetails($paypal, $bitcoin, $litecoin, $omnicoin, $payza) {
+	public function processUpdatePaymentDetails($paypal, $bitcoin, $litecoin, $omnicoin) {
 		if (!$this->authenticated) {
 			return false;
 		}
@@ -263,11 +263,6 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 			return false;
 		}
 
-        if($payza != '' && ! filter_var($payza, FILTER_VALIDATE_EMAIL)) {
-            $this->addMessage(new ErrorSuccessMessage('Payza email is invalid'));
-            return false;
-        }
-		
 		if ($bitcoin != '' && !ctype_alnum($bitcoin)) {
 			$this->addMessage(new ErrorSuccessMessage('Bitcoin address is invalid'));
 			return false;
@@ -287,8 +282,6 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
         $this->user->setBitcoin($bitcoin);
         $this->user->setLitecoin($litecoin);
         $this->user->setOmnicoin($omnicoin);
-        $this->user->setPayza($payza);
-
         $this->user->update();
 
         $this->addMessage(new ErrorSuccessMessage('Payment Details Updated', false));

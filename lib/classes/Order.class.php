@@ -51,7 +51,7 @@ class Order {
 			
 			$order = new Order();
             
-			if (!$order->readByTxid($this->txid)) {
+			if (!$order->readByTxid($this->txid, false)) {
 				break;
 			}
 		}
@@ -62,13 +62,13 @@ class Order {
 		
 		$q->execute(array($this->txid, $this->date, $this->productId, $this->quantity, $this->currency, $this->fiat, $this->email, $this->ip, $this->successUrl, $this->merchant, $this->couponUsed, $this->couponName, $this->couponReduction));
 
-        $this->readByTxid($this->txid);
-
         foreach ($this->questions as $question) {
             $q = DB::getInstance()->prepare('INSERT into order_questions (order_id, question_index, question, response) VALUES (?, ?, ?, ?)');
 
             $q->execute(array($this->id, array_search($question, $this->questions), $question[0], $question[1]));
         }
+
+        $this->readByTxid($this->txid, false);
 	}
 	
 	public function read($id, $completedOnly = true) {
@@ -365,5 +365,9 @@ class Order {
 
     public function calculateFiatWithCoupon() {
         return $this->couponUsed ? ($this->fiat * ((100 - $this->couponReduction) / 100)) : $this->fiat;
+    }
+
+    public function getId() {
+        return $this->id;
     }
 }

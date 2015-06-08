@@ -66,11 +66,13 @@ if (count($url) == 3 && $url[2] == 'buy') {
                     $order->setIp(getRealIp());
                     $order->setQuestions($questions);
 
+
                     if ($_POST['couponCode'] != '') {
                         $coupon = new Coupon();
 
                         if (!$coupon->readByNameAndSellerId($_POST['couponCode'], $seller->getId()) || $coupon->getUsedAmount() >= $coupon->getMaxUsedAmount()) {
                             $errorMessage = 'RELOAD';
+                            break;
                         } else {
                             $order->setCouponUsed(true);
                             $order->setCouponName($coupon->getName());
@@ -110,7 +112,7 @@ if (count($url) == 3 && $url[2] == 'buy') {
                                 break;
                         }
 
-                        $tx = $cp->CreateTransaction(array('buyer_name' => '', 'buyer_email' => $_POST['email'], 'amount' => $order->calculateFiatWithCoupon() * $order->getQuantity(), 'currency1' => 'USD', 'currency2' => $currency, 'address' => $address, 'item_name' => $product->getTitle(), 'item_number' => $product->getId(), 'custom' => $order->getTxid(), 'ipn_url' => $config['url']['protocol'] . $config['url']['domain'] . '/ipn/coinpayments/', 'quantity' => 1, 'success_url' => $product->getSuccessUrl()));
+                        $tx = $cp->CreateTransaction(array('buyer_name' => '', 'buyer_email' => '', 'amount' => $order->calculateFiatWithCoupon() * $order->getQuantity(), 'currency1' => 'USD', 'currency2' => $currency, 'address' => $address, 'item_name' => $product->getTitle(), 'item_number' => $product->getId(), 'custom' => $order->getTxid(), 'ipn_url' => $config['url']['protocol'] . $config['url']['domain'] . '/ipn/coinpayments/', 'quantity' => 1, 'success_url' => $product->getSuccessUrl()));
 
                         if ($tx['error'] != 'ok') {
                             $errorMessage = 'RELOAD';
@@ -118,8 +120,6 @@ if (count($url) == 3 && $url[2] == 'buy') {
                         }
 
                         $order->setProcessorTxid($tx['result']['txn_id']);
-
-                        var_dump($tx['result']['txn_id']);
 
                         $order->update();
 
@@ -150,7 +150,7 @@ if (count($url) == 3 && $url[2] == 'buy') {
                             $tx = $cp->GetTransactionInfo($order->getProcessorTxid());
 
                             if ($tx['error'] == 'ok') {
-                                $response = array('title' => $product->getTitle(), 'totalPrice' => $order->getQuantity() * $order->getFiat(), 'txid' => $order->getTxid(), 'quantity' => $order->getQuantity(), 'price' => $order->getFiat(), 'created' => $tx['result']['time_created'], 'expires' => $tx['result']['time_expires'], 'status' => $tx['result']['status'], 'coin' => $tx['result']['coin'], 'amount' => $tx['result']['amountf'], 'received' => $tx['result']['receivedf'], 'confirms' => $tx['result']['recv_confirms'], 'address' => $tx['result']['payment_address'], 'success_url' => $product->getSuccessUrl());
+                                $response = array('title' => $product->getTitle(), 'txid' => $order->getTxid(), 'price' => $order->calculateFiatWithCoupon() * $order->getQuantity(), 'created' => $tx['result']['time_created'], 'expires' => $tx['result']['time_expires'], 'status' => $tx['result']['status'], 'coin' => $tx['result']['coin'], 'amount' => $tx['result']['amountf'], 'received' => $tx['result']['receivedf'], 'confirms' => $tx['result']['recv_confirms'], 'address' => $tx['result']['payment_address'], 'success_url' => $product->getSuccessUrl());
                             }
                         } else {
                             $errorMessage = 'RELOAD';
@@ -389,7 +389,7 @@ __header($product->getTitle());
                             <div class="form-goup">
                                 <label>Applied coupon: </label><span id="coupon"> None</span>
                             </div>
-                            <input type="hidden" value="-1" id="couponCodeResult" name="couponCode"/>
+                            <input type="hidden" value="" id="couponCodeResult" name="couponCode"/>
                             <br>
 
                         <input type='button' onClick='checkout()' class='btn btn-success' value='Continue to Payment'>
@@ -499,7 +499,7 @@ __header($product->getTitle());
                                 } else if (((data.response.expires - ((new Date).getTime() / 1000)) / 60) <= 0) {
                                     $('.step-3 .panel-body').html("<p>Transaction has expired.</p><p style='text-align: center; font-size: 12px;'>Powered by <a href='https://coinpayments.net'>CoinPayments</a></p>");
                                 } else {
-                                    $('.step-3 .panel-body').html("<p>Please send <code>" + data.response.amount + " " + data.response.coin + "</code> to <code>" + data.response.address + "</code> in the next <b>" + Math.floor((data.response.expires - ((new Date).getTime() / 1000)) / 60) + "</b> minutes.</p><p><b>Transaction ID:</b> " + data.response.txid + "<br /><b>Product:</b> " + data.response.title + "<br /><b>Price:</b> " + data.response.price + " USD<br /><b>Quantity:</b> " + data.response.quantity + "<br /><b>Total Price:</b> " + data.response.totalPrice + " USD<br /><b>Total Received:</b> " + data.response.received + " " + data.response.coin + "<br /><b>Total Left:</b> " + (data.response.amount - data.response.received) + " " + data.response.coin + "</p><p style='text-align: center; font-size: 30px;'><i class='fa fa-spinner fa-spin'></i> Awaiting Payment</p><p><i>After payment is sent, please wait 2-15 minutes for your product to be delivered through email. If you have any issues, please contact us with your transaction ID at <a href='http://support.payivy.com/'>support.payivy.com</a></i></p><p style='text-align: center; font-size: 12px;'>Powered by <a href='https://coinpayments.net'>CoinPayments</a></p>");
+                                    $('.step-3 .panel-body').html("<p>Please send <code>" + data.response.amount + " " + data.response.coin + "</code> to <code>" + data.response.address + "</code> in the next <b>" + Math.floor((data.response.expires - ((new Date).getTime() / 1000)) / 60) + "</b> minutes.</p><p><b>Transaction ID:</b> " + data.response.txid + "<br /><b>Product:</b> " + data.response.title + "<br /><b>Price:</b> " + data.response.price + " USD<br /><b>Total Received:</b> " + data.response.received + " " + data.response.coin + "<br /><b>Total Left:</b> " + (data.response.amount - data.response.received) + " " + data.response.coin + "</p><p style='text-align: center; font-size: 30px;'><i class='fa fa-spinner fa-spin'></i> Awaiting Payment</p><p><i>After payment is sent, please wait 2-15 minutes for your product to be delivered through email. If you have any issues, please contact us with your transaction ID at <a href='http://support.payivy.com/'>support.payivy.com</a></i></p><p style='text-align: center; font-size: 12px;'>Powered by <a href='https://coinpayments.net'>CoinPayments</a></p>");
                                 }
                             });
                         }

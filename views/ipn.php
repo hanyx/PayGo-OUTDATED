@@ -86,17 +86,17 @@ if ($url['1'] == 'paypal') {
         Logger::logAndDie('IPN Fail: Empty Post');
     }
 
-    if (!isset($_POST['merchant']) || $_POST['merchant'] != trim($config['coinpayments']['merchant-id'])) {
+    if (!isset($_POST['merchant']) || $_POST['merchant'] != $config['coinpayments']['merchant-id']) {
         Logger::logAndDie('IPN Fail: Invalid Merchant ID');
     }
 
-    if ($_SERVER['HTTP_HMAC'] != hash_hmac("sha512", $request, trim($config['coinpayments']['ipn-secret']))) {
+    if ($_SERVER['HTTP_HMAC'] != hash_hmac("sha512", $request, $config['coinpayments']['ipn-secret'])) {
         Logger::logAndDie('IPN Fail: Invalid IPN Secret');
     }
 
     $order = new Order();
 
-    if (!$order->readByTxid($_POST['custom'])) {
+    if (!$order->readByTxid($_POST['custom'], false)) {
         Logger::logAndDie('IPN Fail: No Order Found');
     }
 
@@ -120,107 +120,4 @@ if ($url['1'] == 'paypal') {
 
     Logger::log('IPN End: Order Complete');
 
-} else if($url['1'] == 'payza'){
-    Logger::log('IPN Start: Payza');
-    Logger::log(serialize($_POST));
-
-    define("IPN_V2_HANDLER", "https://secure.payza.com/ipn2.ashx");
-    define("TOKEN_IDENTIFIER", "token=");
-
-    $token = urlencode($_POST['token']);
-    $token = TOKEN_IDENTIFIER.$token;
-
-    $response = '';
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, IPN_V2_HANDLER);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $token);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HEADER, false);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-    $response = curl_exec($ch);
-    curl_close($ch);
-
-    if(strlen($response) <= 0) {
-        Logger::logAndDie('IPN Fail: Invalid Response');
-    }
-
-    if(urldecode($response) == "INVALID TOKEN"){
-        Logger::logAndDie('IPN Fail: Invalid Token');
-    }
-
-    $response = urldecode($response);
-
-    $aps = explode("&", $response);
-
-    $info = array();
-
-    foreach ($aps as $ap)
-    {
-        $ele = explode("=", $ap);
-        $info[$ele[0]] = $ele[1];
-    }
-
-    if($info['ap_status'] != "Success" || $info['ap_transactionstate'] != "Completed"){
-        Logger::logAndDie('IPN Fail: Invalid Transaction Status');
-    }
-
-    if($info['ap_purchasetype'] != 'item-goods'){
-        Logger::logAndDie('IPN Fail: Invalid Purchase Type');
-    }
-
-    if($info['ap_test'] != 0){
-        Logger::logAndDie('IPN Fail: Invalid AP Test');
-    }
-
-    if($info['apc_1'] == ''){
-        Logger::logAndDie('IPN Fail: Invalid APC');
-    }
-
-    if($info['ap_discountamount'] != '0.00'){
-        Logger::logAndDie('IPN Fail: Invalid Discount');
-    }
-
-    if($info['ap_currency'] != 'USD'){
-        Logger::logAndDie('IPN Fail: Invalid Currency');
-    }
-
-    $order_txn = $info['apc_1'];
-
-    $order = new Order();
-
-    if(!$order->readByTxid($order_txn)){
-        Logger::logAndDie('IPN Fail: No Order Found');
-    }
-
-    Logger::log('IPN TXID: ' . $order->getTxid());
-
-    if ($order->isCompleted()) {
-        Logger::logAndDie('IPN Fail: Order Already Complete');
-    }
-
-    $order->setProcessorTxid($info['ap_referencenumber']);
-
-    if($order->getMerchant() != $info['ap_merchant']){
-        Logger::logAndDie('IPN Fail: Invalid Merchant');
-    }
-
-    if($info['ap_quantity'] != 1){
-        Logger::logAndDie('IPN Fail: Invalid Quantity');
-    }
-
-    if($info['ap_amount'] != ($order->calculateFiatWithCoupon() * $order->getQuantity())) {
-        Logger::logAndDie('IPN Fail: Invalid Amount');
-    }
-
-    $order->setNative($info['ap_amount']);
-
-    $order->process();
-    $order->setCompleted(true);
-    $order->update();
-
-    Logger::log('IPN End: Order Complete');
 }

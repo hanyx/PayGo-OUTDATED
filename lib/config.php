@@ -32,7 +32,7 @@ $config = array(
     'coinpayments' => array(
         'private' => '',
         'public' => '',
-        'mercant-id' => '',
+        'merchant-id' => '',
         'ipn-secret' => ''
     ),
     'encryption' => array(

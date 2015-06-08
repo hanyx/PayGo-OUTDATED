@@ -47,7 +47,6 @@ abstract class ProductType {
 abstract class ProductCurrency {
 	const PAYPAL = 0;
     const PAYPALSUB = 1;
-    const PAYZA = 2;
 
 	const BITCOIN = 50;
 	const LITECOIN = 51;
@@ -77,7 +76,6 @@ function __autoload($name) {
 }
 
 function validateReCaptcha($verify) {
-    return true;
     global $config;
 
     if (preg_match('/[^A-Za-z0-9_-]/', $verify)) {
