@@ -179,6 +179,8 @@ class Order {
             $message->setSender($product->getSellerId());
             $message->setRecipient($this->getEmail());
 
+            $mailer = new Mailer();
+
             switch ($product->getType()) {
                 case ProductType::DOWNLOAD:
                     $download = new Download();
@@ -187,7 +189,7 @@ class Order {
 
                     $download->create();
 
-                    $mailer = new Mailer();
+
 
                     $mailer->sendTemplate(EmailTemplate::DOWNLOAD, $this->email, '', $download->getLink(), $product->getCustomDelivery());
 
@@ -201,14 +203,11 @@ class Order {
                         $seals[] = array($seal[0], $netseal->createCode($seal[1], $seal[2], $seal[3], $seal[4], $seal[5]));
                     }
 
-                    $mailer = new Mailer();
-
                     $mailer->sendTemplate(EmailTemplate::NETSEALS, $this->email, '', $seals, $product->getCustomDelivery());
 
                     break;
                 case ProductType::SERIAL:
                     if (count($product->getSerials()) < $this->getQuantity()) {
-                        $mailer = new Mailer();
 
                         $mailer->sendTemplate(EmailTemplate::OUTOFSTOCK, $this->email, '');
                     } else {
@@ -216,8 +215,6 @@ class Order {
                         $keys = array_slice($product->getSerials(), 0, $this->quantity);
 
                         $product->setSerials(array_slice($product->getSerials(), $this->quantity));
-
-                        $mailer = new Mailer();
 
                         $mailer->sendTemplate(EmailTemplate::SERIALS, $this->email, '', $keys, $product->getCustomDelivery());
 
