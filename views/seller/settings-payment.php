@@ -32,7 +32,7 @@ if (isset($_POST['update-payment-details'])) {
                                         <option value='1'>Bitcoin</option>
                                         <option value='2'>Litecoin</option>
                                         <option value='3'>Omnicoin</option>
-                                        <option value='4'>Payza</option>
+
                                     </select>
                                 </div>
                             </div>

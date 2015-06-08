@@ -5,10 +5,10 @@ $config = array(
 		'domain' => ''
 	),
 	'db' => array(
-		'host' => '',
-		'port' => '',
-		'database' => '',
-		'user' => '',
+		'host' => 'localhost',
+		'port' => '3306',
+		'database' => 'payivy',
+		'user' => 'root',
 		'pass' => ''
 	),
 	'recaptcha' => array(

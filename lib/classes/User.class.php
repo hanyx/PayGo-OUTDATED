@@ -19,6 +19,7 @@ class User {
 	private $omnicoin;
 
     private $bigSizeBar;
+    private $uniqueId;
 	
 	public function __construct() {
         $this->id = 0;
@@ -37,18 +38,31 @@ class User {
         $this->litecoin = '';
         $this->omnicoin = '';
         $this->bigSizeBar = 1;
+        $this->uniqueId = '';
+
 	}
 	
 	public function create() {
-		$q = DB::getInstance()->prepare('INSERT into users (username, password, email) VALUES (?, ?, ?)');
+
+        while (true) {
+            $this->uniqueId = generateRandomString(64);
+
+            $user = new User();
+
+            if (!$user->readByUniqueId($this->uniqueId)) {
+                break;
+            }
+        }
+
+		$q = DB::getInstance()->prepare('INSERT into users (username, password, email, unique_id) VALUES (?, ?, ?, ?)');
 		
-		$q->execute(array($this->username, $this->password, $this->email));
+		$q->execute(array($this->username, $this->password, $this->email, $this->uniqueId));
 
         $this->readByEmail($this->email);
 	}
 	
 	public function read($id) {
-		$q = DB::getInstance()->prepare('SELECT id, session, username, password, email, active, account_type, last_login_timestamp, last_login_ip, paypal, bitcoin, litecoin, omnicoin, big_sidebar FROM users WHERE id = ?');
+		$q = DB::getInstance()->prepare('SELECT id, session, username, password, email, active, account_type, last_login_timestamp, last_login_ip, paypal, bitcoin, litecoin, omnicoin, big_sidebar, unique_id FROM users WHERE id = ?');
 		$q->execute(array($id));
 		$q = $q->fetchAll();
 		
@@ -74,6 +88,7 @@ class User {
 		$this->omnicoin = $q[0]['omnicoin'];
 
         $this->bigSizeBar = $q[0]['big_sidebar'];
+        $this->uniqueId = $q[0]['unique_id'];
 
 		return true;
 	}
@@ -93,6 +108,18 @@ class User {
     public function readByEmail($email) {
         $q = DB::getInstance()->prepare('SELECT id FROM users WHERE email = ?');
         $q->execute(array($email));
+        $q = $q->fetchAll();
+
+        if (count($q) != 1) {
+            return false;
+        }
+
+        return $this->read($q[0]['id']);
+    }
+
+    public function readByUniqueId($unique_id) {
+        $q = DB::getInstance()->prepare('SELECT id FROM users WHERE unique_id = ?');
+        $q->execute(array($unique_id));
         $q = $q->fetchAll();
 
         if (count($q) != 1) {
@@ -228,5 +255,9 @@ class User {
 
     public function setBigSizeBar($bigSizeBar){
         $this->bigSizeBar = $bigSizeBar;
+    }
+
+    public function getUniqueId(){
+        return $this->uniqueId;
     }
 }

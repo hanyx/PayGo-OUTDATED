@@ -36,10 +36,10 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 			return false;
 		}
 
-		if ($this->requireCaptcha && !validateReCaptcha($captcha)) {
+		/*if ($this->requireCaptcha && !validateReCaptcha($captcha)) {
 			$this->addMessage(new ErrorSuccessMessage('Invalid Captcha'));
 			return false;
-		}
+		}*/
 		
 		$user = new User();
 
@@ -95,9 +95,9 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 		$username = strtolower($username);
 		
 		if (!validateReCaptcha($captcha)) {
-			$this->addMessage(new ErrorSuccessMessage('Invalid Captcha'));
-			return false;
-		}
+            $this->addMessage(new ErrorSuccessMessage('Invalid Captcha'));
+            return false;
+        }
 		
 		if (!ctype_alnum($username)) {
 			$this->addMessage(new ErrorSuccessMessage('Invalid Username. Only alpha-numerical characters allowed'));
@@ -148,9 +148,9 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 
 		$this->addMessage(new ErrorSuccessMessage('Account registered. Please check your email to activate your account', false));
 		
-		$mailer = new Mailer();
+		/*$mailer = new Mailer();
 		
-		$mailer->sendTemplate(EmailTemplate::ACTIVATE, $user->getEmail(), $user->getUsername(), $tfr->getToken());
+		$mailer->sendTemplate(EmailTemplate::ACTIVATE, $user->getEmail(), $user->getUsername(), $tfr->getToken());*/
 				
 		return true;
 	}

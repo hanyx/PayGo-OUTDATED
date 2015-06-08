@@ -25,7 +25,7 @@ $uncategorized->addPage(	new Page(						array(	array('v', '*'),
 $uncategorized->addPage(	new Page(						array(	array('ipn', 'paypal'),
                                                                     array('ipn', 'coinpayments')), 									'views/ipn.php' 													));
 $uncategorized->addPage(	new Page(						array(	array('download', '*')), 										'views/download.php' 												));
-
+$uncategorized->addPage(	new Page(						array(	array('u', '*')), 													'views/user.php', '', true 													));
 
 $authPages->addPage(		new Page(						array(	array('seller', 'login'),
 																	array('seller', 'login', 'activate', '*'),
