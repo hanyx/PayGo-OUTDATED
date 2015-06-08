@@ -268,7 +268,7 @@ __header($product->getTitle());
                         <div class='col-lg-6 visible-xs' style='margin-bottom: 50px;'>
                             <button class='btn btn-success pull-right' style='margin-top: 3px;' data-toggle='modal' data-target='#contact'>Contact Seller <span class='fa fa-envelope'></span></button>
                             <span class='thumb-small avatar pull-right' style='margin: 0 7px; width: 43px;'>
-                               <img class='img-circle' src='/images/avatar.png'>
+                               <img class='img-circle' src='/images/avatar.png' style="width: 43px;">
                             </span>
                             <div class='pull-right text-right' style='font-size: 15px;'>
                                 <b><?php echo $seller->getUsername(); ?></b>

@@ -72,22 +72,37 @@ __header('Files');
         </div>
     </div>
     <script>
-        $('[data-ride=\'products\']').dataTable( {
-            'bProcessing': true,
-            'sAjaxSource': '/seller/products/files/?getdata=true',
-            'sDom': '<\'row\'<\'col-sm-6\'l><\'col-sm-6\'f>r>t<\'row\'<\'col-sm-6\'i><\'col col-sm-6\'p>>',
-            'sPaginationType': 'full_numbers',
-            'aoColumns': [
-                { 'mData': 'file' },
-                { 'mData': 'delete' },
-            ]
-        });
+        function loadData(newTable){
+            if(!newTable){
+                $('[data-ride=\'products\']').dataTable().fnDestroy();
+            }
+
+            $('[data-ride=\'products\']').dataTable( {
+                'bProcessing': true,
+                'sAjaxSource': '/seller/products/files/?getdata=true',
+                'sDom': '<\'row\'<\'col-sm-6\'l><\'col-sm-6\'f>r>t<\'row\'<\'col-sm-6\'i><\'col col-sm-6\'p>>',
+                'sPaginationType': 'full_numbers',
+                'aoColumns': [
+                    { 'mData': 'file' },
+                    { 'mData': 'delete' },
+                ]
+            });
+        }
+
+        loadData(true);
 
         $('.fileupload').dropzone({
             url: '/seller/products/files/upload',
             maxFilesize: 50,
             uploadMultiple: false,
-            maxFiles: 10000
+            maxFiles: 10000,
+            init: function(){
+                var thisDropzone = this;
+
+                thisDropzone.on('addedfile', function(){
+                loadData(false);
+                });
+            }
         });
     </script>
 <?php
