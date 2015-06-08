@@ -5,7 +5,7 @@ if(!isset($url[1])){
 }
 $seller = new User();
 
-if(!$seller->readByUniqueId($url[1])){
+if(!$seller->readByUniqueId($url[1]) && !$seller->readByUrlUsername($url[1])){
     include_once '404.php';
     die();
 }

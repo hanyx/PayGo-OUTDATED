@@ -102,7 +102,7 @@ if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['descriptio
                     $uas->addMessage(new ErrorSuccessMessage('Invalid file'));
                     break;
                 } else {
-                    $product->setFileId($fileHandler->getId());
+                    $product->setFileId($_POST['file']);
                 }
 
                 break;
@@ -266,7 +266,7 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                                                 $files = $uas->getUser()->getFiles();
 
                                                 foreach ($files as $file) {
-                                                    echo '<option value=\'' . $file->getId() . '\'>' . $file->getName() . '</option>';
+                                                    echo '<option ' . ($file->getId() == $product->getFileId() ? 'selected=1' : '') . 'value=\'' . $file->getId() . '\'>' . $file->getName() . '</option>';
                                                 }
                                                 ?>
                                             </select>

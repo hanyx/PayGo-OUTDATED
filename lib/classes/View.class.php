@@ -44,11 +44,11 @@ class View {
     public static function getViewsByUser($uid) {
         $views = array();
 
-        $q = DB::getInstance()->prepare('SELECT v.id FROM views AS `v` JOIN products AS `p` ON (p.id = v.product_id) JOIN users AS `u` WHERE u.id = ? ORDER BY date DESC');
+        $q = DB::getInstance()->prepare('SELECT v.id FROM views AS `v` JOIN products AS `p` ON (p.id = v.product_id) JOIN users AS `u` ON (u.id = p.seller_id) WHERE u.id = ? ORDER BY date DESC');
         $q->execute(array($uid));
         $q = $q->fetchAll();
 
-       foreach ($q as $p) {
+        foreach ($q as $p) {
             $view = new View();
             if ($view->read($p['id'])) {
                 $views[] = $view;

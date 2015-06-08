@@ -32,6 +32,10 @@ class ProductSerial extends Product {
 
 		$this->serials = explode(',', $q[0]['serials']);
 
+        if (count($this->serials) == 1 && $this->serials[0] == '') {
+            $this->serials = array();
+        }
+
 		return true;
 	}
 

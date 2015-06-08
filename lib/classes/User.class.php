@@ -20,6 +20,7 @@ class User {
 
     private $bigSizeBar;
     private $uniqueId;
+    private $urlUsername;
 	
 	public function __construct() {
         $this->id = 0;
@@ -39,13 +40,13 @@ class User {
         $this->omnicoin = '';
         $this->bigSizeBar = 1;
         $this->uniqueId = '';
-
+        $this->urlUsername = '';
 	}
 	
 	public function create() {
 
         while (true) {
-            $this->uniqueId = generateRandomString(64);
+            $this->uniqueId = generateRandomString(20);
 
             $user = new User();
 
@@ -62,10 +63,10 @@ class User {
 	}
 	
 	public function read($id) {
-		$q = DB::getInstance()->prepare('SELECT id, session, username, password, email, active, account_type, last_login_timestamp, last_login_ip, paypal, bitcoin, litecoin, omnicoin, big_sidebar, unique_id FROM users WHERE id = ?');
+		$q = DB::getInstance()->prepare('SELECT id, session, username, password, email, active, account_type, last_login_timestamp, last_login_ip, paypal, bitcoin, litecoin, omnicoin, big_sidebar, unique_id, url_username FROM users WHERE id = ?');
 		$q->execute(array($id));
 		$q = $q->fetchAll();
-		
+
 		if (count($q) != 1) {
 			return false;
 		}
@@ -89,6 +90,8 @@ class User {
 
         $this->bigSizeBar = $q[0]['big_sidebar'];
         $this->uniqueId = $q[0]['unique_id'];
+
+        $this->urlUsername = $q[0]['url_username'];
 
 		return true;
 	}
@@ -120,6 +123,18 @@ class User {
     public function readByUniqueId($unique_id) {
         $q = DB::getInstance()->prepare('SELECT id FROM users WHERE unique_id = ?');
         $q->execute(array($unique_id));
+        $q = $q->fetchAll();
+
+        if (count($q) != 1) {
+            return false;
+        }
+
+        return $this->read($q[0]['id']);
+    }
+
+    public function readByUrlUsername($urlUsername) {
+        $q = DB::getInstance()->prepare('SELECT id FROM users WHERE url_username = ?');
+        $q->execute(array($urlUsername));
         $q = $q->fetchAll();
 
         if (count($q) != 1) {
@@ -259,5 +274,9 @@ class User {
 
     public function getUniqueId(){
         return $this->uniqueId;
+    }
+
+    public function setSession($session) {
+        $this->session = $session;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 $product = new Product();
 
-if (!$product->readByUrl($url[1])) {
+if (!$product->readByUrl($url[1]) && !$product->readByUrlTitle($url[1])) {
     include_once('404.php');
     die();
 }
@@ -26,7 +26,7 @@ if (count($url) == 3 && $url[2] == 'buy') {
                         break;
                     }
 
-                    if (!$product->acceptsCurrency($_POST['currency'])) {
+                    if (!$product->acceptsCurrency((int)$_POST['currency'])) {
                         $errorMessage = 'RELOAD';
                         break;
                     }
@@ -306,7 +306,7 @@ __header($product->getTitle());
                         <tbody>
                         <tr>
                             <td>
-                                <h5 class='semibold mt0 mb5'><?php echo $product->getDescription(); ?></h5>
+                                <h5 class='semibold mt0 mb5'><?php echo $product->getTitle(); ?></h5>
                             </td>
                             <td class='valign-top text-center'><input min='1' max='<?php echo $product->getType() == ProductType::SERIAL ? count($product->getSerials()) : '100'; ?>' style='width: 60px;' value='1' id='quantity' type='number'></td>
                             <td class='valign-top text-center'><span class='bold'>$<?php echo $product->getPrice(); ?></span></td>

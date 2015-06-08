@@ -23,6 +23,8 @@ class Product {
 	private $affiliateId;
 
     private $successUrl;
+
+    private $urlTitle;
 	
 	public function __construct() {
         $this->id = 0;
@@ -46,6 +48,8 @@ class Product {
         $this->affiliateSecondaryLink = '';
         $this->affiliateId = '';
         $this->successUrl = '';
+
+        $this->urlTitle = '';
 	}
 	
 	public function create() {
@@ -83,10 +87,10 @@ class Product {
     }
 	
 	public function read($id, $showDeleted = false) {
-		$q = DB::getInstance()->prepare('SELECT id, url, deleted, seller_id, title, description, price, type, currency, visible, custom_delivery, pp_sub_length, pp_sub_unit, require_shipping, affiliate_enabled, affiliate_percent, affiliate_secondary_link, affiliate_id, after_success_url FROM products WHERE id = ? AND (deleted = ? OR deleted = ?)');
+		$q = DB::getInstance()->prepare('SELECT id, url, deleted, seller_id, title, description, price, type, currency, visible, custom_delivery, pp_sub_length, pp_sub_unit, require_shipping, affiliate_enabled, affiliate_percent, affiliate_secondary_link, affiliate_id, after_success_url, url_title FROM products WHERE id = ? AND (deleted = ? OR deleted = ?)');
 		$q->execute(array($id, $showDeleted, false));
 		$q = $q->fetchAll();
-		
+
 		if (count($q) != 1) {
 			return false;
 		}
@@ -111,6 +115,8 @@ class Product {
 		$this->affiliateSecondaryLink = $q[0]['affiliate_secondary_link'];
 		$this->affiliateId = $q[0]['affiliate_id'];
         $this->successUrl = $q[0]['after_success_url'];
+
+        $this->urlTitle = $q[0]['url_title'];
 
         $q = DB::getInstance()->prepare('SELECT question FROM product_questions WHERE product_id = ?');
         $q->execute(array($this->id));
@@ -158,6 +164,18 @@ class Product {
 
         return $this->read($q[0]['id']);
     }
+
+    public function readByUrlTitle($urlTitle, $showDeleted = false) {
+        $q = DB::getInstance()->prepare('SELECT id FROM products WHERE url_title = ? AND (deleted = ? OR deleted = ?)');
+        $q->execute(array($urlTitle, $showDeleted, false));
+        $q = $q->fetchAll();
+
+        if (count($q) != 1) {
+            return false;
+        }
+
+        return $this->read($q[0]['id']);
+    }
 	
 	public function update() {
 		$q = DB::getInstance()->prepare('UPDATE products SET deleted = ?, title = ?, description = ?, price = ?, currency = ?, visible = ?, custom_delivery = ?, pp_sub_length = ?, pp_sub_unit = ?, require_shipping = ?, affiliate_enabled = ?, affiliate_percent = ?, affiliate_secondary_link = ?, after_success_url = ? WHERE id = ?');
@@ -189,8 +207,8 @@ class Product {
         }
     }
 
-	public function getOrders() {
-		return Order::getOrdersByProduct($this->id);
+	public function getOrders($completedOnly = true) {
+		return Order::getOrdersByProduct($this->id, $completedOnly);
 	}
 	
 	public function getAffiliates($showDeleted = false) {

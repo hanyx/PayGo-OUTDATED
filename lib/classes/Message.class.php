@@ -181,4 +181,9 @@ class Message {
         return $this->recipient;
     }
 
+    public function setFolder($folder)
+    {
+        $this->folder = $folder;
+    }
+
 }

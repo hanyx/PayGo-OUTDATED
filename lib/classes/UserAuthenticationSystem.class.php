@@ -36,10 +36,10 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 			return false;
 		}
 
-		/*if ($this->requireCaptcha && !validateReCaptcha($captcha)) {
+		if ($this->requireCaptcha && !validateReCaptcha($captcha)) {
 			$this->addMessage(new ErrorSuccessMessage('Invalid Captcha'));
 			return false;
-		}*/
+		}
 		
 		$user = new User();
 
@@ -64,6 +64,7 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 
 		$this->user = $user;
 		$this->user->setLastLogin(getRealIp());
+        $this->user->setSession(generateRandomString());
 		$this->user->update();
 		
 		$this->authenticated = true;

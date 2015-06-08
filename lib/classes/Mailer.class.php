@@ -147,7 +147,7 @@ class Mailer {
 
                 $subject = 'Your product download from PayIvy.com';
 
-                if ($arg2 != null) {
+                if ($arg2 != '') {
                     $message =
                     'Hey there,
 
@@ -163,7 +163,7 @@ class Mailer {
 
                 $message .= '
 
-                Here\'s a link to download your product: <b>' . $arg1 . '</b>';
+                Here\'s a link to download your product: <b><a href="' . $config['url']['protocol'] . $config['url']['domain'] . '/download/' . $arg1 . '">' . $config['url']['protocol'] . $config['url']['domain'] . '/download/' . $arg1 . '</a></b>';
 
                 break;
             case EmailTemplate::OUTOFSTOCK:
@@ -183,7 +183,7 @@ class Mailer {
 
                 $subject = 'Your purchase on PayIvy';
 
-                if ($arg2 != null) {
+                if ($arg2 != '') {
                     $message =
                     'Hey there,
 
@@ -212,7 +212,7 @@ class Mailer {
 
                 $subject = 'Your purchase on PayIvy';
 
-                if ($arg2 != null) {
+                if ($arg2 != '') {
                     $message =
                     'Hey there,
 
@@ -245,6 +245,17 @@ class Mailer {
 
                 break;
 		}
+
+        if ($template == EmailTemplate::DOWNLOAD || $template == EmailTemplate::OUTOFSTOCK || $template == EmailTemplate::SERIALS || $template == EmailTemplate::NETSEALS) {
+            $messaged = new Message();
+
+            $messaged->setMessage($message);
+            $messaged->setRecipient($email);
+            $messaged->setSender($arg3);
+            $messaged->setFolder(MessageFolder::PRODUCTDELIVERY);
+
+            $messaged->create();
+        }
 
 		$this->send($email, $message, $subject);
 		return true;
@@ -339,6 +350,9 @@ class Mailer {
 
         $response = curl_exec($session);
         curl_close($session);
+
+        Logger::log('Mail: ' . $content);
+
 		return true;
 	}
 	
