@@ -80,6 +80,18 @@ if (count($url) == 3 && $url[2] == 'buy') {
                         }
                     }
 
+                    if ($_POST['affiliate'] != '') {
+                        $affiliate = new Affiliate();
+
+                        if (!$affiliate->read($_POST['affiliate']) || $affiliate->getProductId() != $seller->getId()) {
+                            $errorMessage = 'RELOAD';
+                            break;
+                        } else {
+                            $order->setAffiliateUsed(true);
+                            $order->setAffiliate($affiliate->getId());
+                        }
+                    }
+
                     $order->setSuccessUrl($product->getSuccessUrl());
 
                     $order->create();
@@ -333,7 +345,7 @@ __header($product->getTitle());
                                 echo '<button onclick=\'pay(' . ProductCurrency::LITECOIN . ');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 20px; height: 19px; background-image: url("/images/crypto-icons.png"); background-position: -3px -78px; vertical-align: -2px;\'></span>Litecoin</button>';
                             }
                             if ($product->acceptsCurrency(ProductCurrency::OMNICOIN)) {
-                                echo '<button onclick=\'pay(' .ProductCurrency::OMNICOIN . ');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 23px; height: 22px; background-image: url("/images/crypto-icons.png"); background-position: -3px -137px; vertical-align: -4px;\'></span>Omnicoin</button>';
+                                echo '<button onclick=\'pay(' . ProductCurrency::OMNICOIN . ');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 23px; height: 22px; background-image: url("/images/crypto-icons.png"); background-position: -3px -137px; vertical-align: -4px;\'></span>Omnicoin</button>';
                             }
                             ?>
                         </div>
@@ -435,7 +447,18 @@ __header($product->getTitle());
     }
 
     function checkout() {
-        var data = {'action': 'purchase', 'price': <?php echo $product->getPrice(); ?>, 'currency': currency, 'email': $('#email').val(), 'quantity': $('#quantity').val(), 'couponCode': $('#couponCodeResult').val(), 'success_url': '<?php echo $product->getSuccessUrl(); ?>'};
+        <?php
+        $affId = false;
+
+        if (count($url) == 3) {
+            $affiliate = new Affiliate();
+
+            if ($affiliate->read($url['2']) && $affiliate->getProductId() == $seller->getId()) {
+                $affId = $affiliate->getId();
+            }
+        }
+        ?>
+        var data = {'action': 'purchase', 'price': <?php echo $product->getPrice(); ?>, 'currency': currency, 'email': $('#email').val(), 'quantity': $('#quantity').val(), 'couponCode': $('#couponCodeResult').val(), 'success_url': '<?php echo $product->getSuccessUrl(); ?>', 'affiliate': '<?php echo $affId; ?>'};
 
         for (var x = 1; x <= <?php echo count($product->getQuestions()); ?>; x++) {
             data['q-' + x] = $('#custom-question-' + x).val();

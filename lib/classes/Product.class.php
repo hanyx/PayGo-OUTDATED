@@ -210,7 +210,7 @@ class Product {
 	}
 	
 	public function getAffiliateLink() {
-		return $this->getUrl() . 'a/' . $this->affiliateId;
+		return $this->getUrl() . '/a/' . $this->affiliateId;
 	}
 	
 	public function acceptsCurrency($currency) {

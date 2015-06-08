@@ -65,7 +65,7 @@ abstract class FraudType {
 }
 
 function __autoload($name) {
-    $try = array(__DIR__ . '/classes/' . $name . '.class.php', __DIR__ . '/' . $name . '.php');
+    $try = array(__DIR__ . '/classes/' . $name . '.class.php');
 
     foreach ($try as $file) {
         if (file_exists($file)) {

@@ -2,11 +2,6 @@
 
 class Mailer {
 
-	
-	public function __construct() {
-
-	}
-	
 	public function sendTemplate($template, $email, $username, $arg1 = null, $arg2 = null, $arg3 = null) {
 		global $config;
 

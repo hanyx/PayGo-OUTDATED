@@ -22,6 +22,9 @@ class Order {
     private $couponUsed;
     private $couponName;
     private $couponReduction;
+
+    private $affiliate;
+    private $affiliateUsed;
 	
 	public function __construct() {
         $this->id = 0;
@@ -43,6 +46,9 @@ class Order {
         $this->couponUsed = false;
         $this->couponName = '';
         $this->couponReduction = 0;
+
+        $this->affiliate = 0;
+        $this->affiliateUsed = false;
 	}
 	
 	public function create() {
@@ -58,9 +64,9 @@ class Order {
 		
 		$this->date = date('Y-m-d H:i:s');
 		
-		$q = DB::getInstance()->prepare('INSERT into orders (txid, date, product_id, quantity, currency, fiat, email, ip, after_success_url, merchant, coupon_used, coupon_name, coupon_reduction) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+		$q = DB::getInstance()->prepare('INSERT into orders (txid, date, product_id, quantity, currency, fiat, email, ip, after_success_url, merchant, coupon_used, coupon_name, coupon_reduction, affiliate, affiliate_used) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 		
-		$q->execute(array($this->txid, $this->date, $this->productId, $this->quantity, $this->currency, $this->fiat, $this->email, $this->ip, $this->successUrl, $this->merchant, $this->couponUsed, $this->couponName, $this->couponReduction));
+		$q->execute(array($this->txid, $this->date, $this->productId, $this->quantity, $this->currency, $this->fiat, $this->email, $this->ip, $this->successUrl, $this->merchant, $this->couponUsed, $this->couponName, $this->couponReduction, $this->affiliate, $this->affiliateUsed));
 
         foreach ($this->questions as $question) {
             $q = DB::getInstance()->prepare('INSERT into order_questions (order_id, question_index, question, response) VALUES (?, ?, ?, ?)');
@@ -72,7 +78,7 @@ class Order {
 	}
 	
 	public function read($id, $completedOnly = true) {
-		$q = DB::getInstance()->prepare('SELECT id, completed, txid, processor_txid, date, product_id, quantity, currency, fiat, native, email, ip, after_success_url, merchant, coupon_used, coupon_name, coupon_reduction FROM orders WHERE id = ? AND (completed = ? OR completed = ?)');
+		$q = DB::getInstance()->prepare('SELECT id, completed, txid, processor_txid, date, product_id, quantity, currency, fiat, native, email, ip, after_success_url, merchant, coupon_used, coupon_name, coupon_reduction, affiliate, affiliate_used FROM orders WHERE id = ? AND (completed = ? OR completed = ?)');
 		$q->execute(array($id, $completedOnly, true));
 		$q = $q->fetchAll();
 
@@ -98,6 +104,9 @@ class Order {
         $this->couponUsed = $q[0]['coupon_used'];
         $this->couponName = $q[0]['coupon_name'];
         $this->couponReduction = $q[0]['coupon_reduction'];
+
+        $this->affiliate = $q[0]['affiliate'];
+        $this->affiliateUsed = $q[0]['affiliate_used'];
 
         $q = DB::getInstance()->prepare('SELECT question, response FROM order_questions WHERE order_id = ? AND (completed = ? OR completed = ?)');
         $q->execute(array($id, $completedOnly, true));
@@ -213,6 +222,16 @@ class Order {
 
                     break;
             }
+        }
+
+        if ($this->affiliateUsed) {
+            $affiliate = new Affiliate();
+
+            $affiliate->read($this->affiliate);
+
+            $affiliate->setUnpaidFiat($affiliate->getUnpaidFiat() + ($this->calculateFiatWithCoupon() * $this->getQuantity() * $product->getAffiliatePercent()));
+
+            $affiliate->setUnpaidOrders($affiliate->getUnpaidOrders() + 1);
         }
     }
 
@@ -369,5 +388,21 @@ class Order {
 
     public function getId() {
         return $this->id;
+    }
+
+    public function isAffiliateUsed() {
+        return $this->affiliateUsed;
+    }
+
+    public function setAffiliateUsed($affiliateUsed) {
+        $this->affiliateUsed = $affiliateUsed;
+    }
+
+    public function getAffiliate() {
+        return $this->affiliate;
+    }
+
+    public function setAffiliate($affiliate) {
+        $this->affiliate = $affiliate;
     }
 }
