@@ -16,9 +16,12 @@ class Order {
 	private $email;
 	private $ip;
 	private $questions;
-    private $coupon;
     private $successUrl;
     private $merchant;
+
+    private $couponUsed;
+    private $couponName;
+    private $couponReduction;
 	
 	public function __construct() {
         $this->id = 0;
@@ -34,9 +37,12 @@ class Order {
         $this->email = '';
         $this->ip = '';
         $this->questions = array();
-        $this->coupon = "0";
         $this->successUrl = '';
         $this->merchant = '';
+
+        $this->couponUsed = false;
+        $this->couponName = '';
+        $this->couponReduction = 0;
 	}
 	
 	public function create() {
@@ -52,9 +58,9 @@ class Order {
 		
 		$this->date = date('Y-m-d H:i:s');
 		
-		$q = DB::getInstance()->prepare('INSERT into orders (txid, date, product_id, quantity, currency, fiat, email, ip, coupon_id, after_success_url, merchant) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+		$q = DB::getInstance()->prepare('INSERT into orders (txid, date, product_id, quantity, currency, fiat, email, ip, after_success_url, merchant, coupon_used, coupon_name, coupon_reduction) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 		
-		$q->execute(array($this->txid, $this->date, $this->productId, $this->quantity, $this->currency, $this->fiat, $this->email, $this->ip, $this->coupon, $this->successUrl, $this->merchant));
+		$q->execute(array($this->txid, $this->date, $this->productId, $this->quantity, $this->currency, $this->fiat, $this->email, $this->ip, $this->successUrl, $this->merchant, $this->couponUsed, $this->couponName, $this->couponReduction));
 
         $this->readByTxid($this->txid);
 
@@ -66,7 +72,7 @@ class Order {
 	}
 	
 	public function read($id, $completedOnly = true) {
-		$q = DB::getInstance()->prepare('SELECT id, completed, txid, processor_txid, date, product_id, quantity, currency, fiat, native, email, ip, coupon_id, after_success_url, merchant FROM orders WHERE id = ? AND (completed = ? OR completed = ?)');
+		$q = DB::getInstance()->prepare('SELECT id, completed, txid, processor_txid, date, product_id, quantity, currency, fiat, native, email, ip, after_success_url, merchant, coupon_used, coupon_name, coupon_reduction FROM orders WHERE id = ? AND (completed = ? OR completed = ?)');
 		$q->execute(array($id, $completedOnly, true));
 		$q = $q->fetchAll();
 
@@ -86,9 +92,12 @@ class Order {
 		$this->native = $q[0]['native'];
 		$this->email = $q[0]['email'];
 		$this->ip = $q[0]['ip'];
-        $this->coupon = $q[0]['coupon_id'];
         $this->successUrl = $q[0]['after_success_url'];
         $this->merchant = $q[0]['merchant'];
+
+        $this->couponUsed = $q[0]['coupon_used'];
+        $this->couponName = $q[0]['coupon_name'];
+        $this->couponReduction = $q[0]['coupon_reduction'];
 
         $q = DB::getInstance()->prepare('SELECT question, response FROM order_questions WHERE order_id = ? AND (completed = ? OR completed = ?)');
         $q->execute(array($id, $completedOnly, true));
@@ -114,8 +123,8 @@ class Order {
 	}
 
     public function update() {
-        $q = DB::getInstance()->prepare('UPDATE orders SET completed = ?, processor_txid = ? WHERE id = ?');
-        $q->execute(array($this->completed, $this->processorTxid, $this->id));
+        $q = DB::getInstance()->prepare('UPDATE orders SET completed = ?, processor_txid = ?, native = ? WHERE id = ?');
+        $q->execute(array($this->completed, $this->processorTxid, $this->native, $this->id));
     }
 	
 	public static function getOrdersByProduct($pid, $completedOnly = true) {
@@ -276,14 +285,6 @@ class Order {
         $this->email = $email;
     }
 
-    public function getCoupon(){
-        return $this->coupon;
-    }
-
-    public function setCoupon($cid) {
-        $this->coupon = $cid;
-    }
-
     public function getIp() {
         return $this->ip;
     }
@@ -336,5 +337,33 @@ class Order {
 
     public function setCompleted($completed) {
         $this->completed = $completed;
+    }
+
+    public function isCouponUsed() {
+        return $this->couponUsed;
+    }
+
+    public function setCouponUsed($couponUsed) {
+        $this->couponUsed = $couponUsed;
+    }
+
+    public function getCouponName() {
+        return $this->couponName;
+    }
+
+    public function setCouponName($couponName) {
+        $this->couponName = $couponName;
+    }
+
+    public function getCouponReduction() {
+        return $this->couponReduction;
+    }
+
+    public function setCouponReduction($couponReduction) {
+        $this->couponReduction = $couponReduction;
+    }
+
+    public function calculateFiatWithCoupon() {
+        return $this->couponUsed ? ($this->fiat * ((100 - $this->couponReduction) / 100)) : $this->fiat;
     }
 }

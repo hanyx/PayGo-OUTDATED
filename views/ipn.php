@@ -43,17 +43,12 @@ if ($url['1'] == 'paypal') {
         }
     }
 
-    if ($order->getQuantity() != $data['quantity']) {
+    if ($data['quantity'] != 1) {
         Logger::logAndDie('IPN Fail: Invalid Quantity');
         die();
     }
 
-    $coupon = new Coupon();
-    $coupon->read($order->getCoupon());
-
-    $percentage = $coupon->getReduction() / 100;
-
-    if (($order->getFiat() * $order->getQuantity()) - (($order->getFiat() * $order->getQuantity()) * $percentage) != $data['mc_gross']) {
+    if (($order->calculateFiatWithCoupon() * $order->getQuantity()) != $data['mc_gross']) {
         Logger::logAndDie('IPN Fail: Invalid Amount');
     }
 
@@ -213,18 +208,15 @@ if ($url['1'] == 'paypal') {
         Logger::logAndDie('IPN Fail: Invalid Merchant');
     }
 
-    if($order->getQuantity() != $info['ap_quantity']){
+    if($info['ap_quantity'] != 1){
         Logger::logAndDie('IPN Fail: Invalid Quantity');
     }
 
-    $coupon = new Coupon();
-    $coupon->read($order->getCoupon());
-
-    $percentage = $coupon->getReduction() / 100;
-
-    if(($order->getFiat() * $order->getQuantity()) - ($order->getFiat() * $order->getFiat() * $percentage) != $info['ap_amount']){
+    if($info['ap_amount'] != ($order->calculateFiatWithCoupon() * $order->getQuantity())) {
         Logger::logAndDie('IPN Fail: Invalid Amount');
     }
+
+    $order->setNative($info['ap_amount']);
 
     $order->process();
     $order->setCompleted(true);

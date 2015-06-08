@@ -1,12 +1,11 @@
 <?php
 
 $coupon = new Coupon();
-$displayForm = true;
 
 if(count($url) == 4 && $url[2] == 'edit'){
-    $coupon = Coupon::getCoupon($url[3]);
+    $coupon = new Coupon();
 
-    if($coupon === false || $coupon->getSellerId() != $uas->getUser()->getId()){
+    if (!$coupon->read($url[3])|| $coupon->getSellerId() != $uas->getUser()->getId()) {
         $uas->addMessage(new ErrorSuccessMessage('No coupon found'));
         $displayForm = false;
     }
@@ -24,7 +23,9 @@ if(isset($_POST['name']) && isset($_POST['reduction']) && isset($_POST['maximum'
 
     if($_POST['name'] == ''){
         $uas->addMessage(new ErrorSuccessMessage('Coupon name cannot be empty'));
-    } else if(strlen($_POST['name']) < 3 || strlen($_POST['name']) > 10){
+    } else if(!ctype_alnum($_POST['name'])){
+        $uas->addMessage(new ErrorSuccessMessage('Coupon name can only contain alphanumerical characters'));
+    } else if(strlen($_POST['name']) < 3 || strlen($_POST['name']) > 10) {
         $uas->addMessage(new ErrorSuccessMessage('Coupon name must be between 3 and 10 characters in length'));
     } else if($_POST['reduction'] == ''){
         $uas->addMessage(new ErrorSuccessMessage('Coupon reduction percent cannot be empty'));
@@ -42,9 +43,17 @@ if(isset($_POST['name']) && isset($_POST['reduction']) && isset($_POST['maximum'
         $uas->addMessage(new ErrorSuccessMessage('Please select one or more products'));
     }
 
+    if (count($url) != 4 || $url[2] != 'edit') {
+        $check = new Coupon();
+
+        if ($check->readByNameAndSellerId($_POST['name'], $uas->getUser()->getId())) {
+            $uas->addMessage(new ErrorSuccessMessage('Coupon name is already in use'));
+        }
+    }
+
     $coupon->setName($_POST['name']);
-    $coupon->setReduction($_POST['reduction']);
-    $coupon->setMaxUsedAmount($_POST['maximum']);
+    $coupon->setReduction((int)$_POST['reduction']);
+    $coupon->setMaxUsedAmount((int)$_POST['maximum']);
     $coupon->setSellerId($uas->getUser()->getId());
 
     $coupon->setProducts($chosen_products);
@@ -69,7 +78,6 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Coupo
             <?php $uas->printMessages(); ?>
         </div>
 
-    <?php if($displayForm){ ?>
     <div class='row'>
         <div class="col-sm-12">
             <section class="panel">
@@ -97,7 +105,7 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Coupo
                                 <input name='used' type='number' class='form-control' readonly value='<?php echo $coupon->getUsedAmount(); ?>'/>
                             </div>
                         </div>
-        <?php }?>
+                         <?php }?>
                         <div class="form-group">
                             <label class="col-lg-2 control-label">Maximum</label>
                             <div class="col-lg-10">
@@ -147,7 +155,6 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Coupo
             </section>
         </div>
     </div>
-    <?php }?>
 </section>
 
 <script>

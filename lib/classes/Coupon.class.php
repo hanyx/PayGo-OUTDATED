@@ -60,6 +60,18 @@ class Coupon {
         return true;
     }
 
+    public function readByNameAndSellerId($name, $sellerId) {
+        $q = DB::getInstance()->prepare('SELECT id FROM product_coupons WHERE name = ? AND seller_id = ?');
+        $q->execute(array($name, $sellerId));
+        $q = $q->fetchAll();
+
+        if(count($q) != 1){
+            return false;
+        }
+
+        return $this->read($q[0]['id']);
+    }
+
     public static function getCouponsByUser($uid)
     {
         $coupons = array();
@@ -78,21 +90,11 @@ class Coupon {
         return $coupons;
     }
 
-    public static function getCoupon($id){
-        $coupon = new Coupon();
-
-        if(!$coupon->read($id)){
-            return false;
-        }
-
-        return $coupon;
-    }
-
     public function getId(){
         return $this->id;
     }
 
-    public function  getName(){
+    public function getName(){
         return $this->name;
     }
 

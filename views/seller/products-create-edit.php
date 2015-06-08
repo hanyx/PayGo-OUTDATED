@@ -168,7 +168,7 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                                     <div class="col-lg-10">
                                         <div class='input-group'>
                                             <span class='input-group-addon'>$</span>
-                                            <input name='price' type='number' class='form-control' value='<?php echo $product->getPrice(); ?>'>
+                                            <input name='price' type='text' class='form-control' value='<?php echo $product->getPrice(); ?>'>
                                         </div>
                                     </div>
                                 </div>

@@ -65,17 +65,28 @@ if (count($url) == 3 && $url[2] == 'buy') {
                     $order->setEmail($_POST['email']);
                     $order->setIp(getRealIp());
                     $order->setQuestions($questions);
-                    $order->setCoupon($_POST['couponCode']);
+
+                    if ($_POST['couponCode'] != '') {
+                        $coupon = new Coupon();
+
+                        if (!$coupon->readByNameAndSellerId($_POST['couponCode'], $seller->getId()) || $coupon->getUsedAmount() >= $coupon->getMaxUsedAmount()) {
+                            $errorMessage = 'RELOAD';
+                        } else {
+                            $order->setCouponUsed(true);
+                            $order->setCouponName($coupon->getName());
+                            $order->setCouponReduction($coupon->getReduction());
+                        }
+                    }
+
                     $order->setSuccessUrl($product->getSuccessUrl());
 
                     $order->create();
 
                     if ($order->getCurrency() == ProductCurrency::PAYPAL || $order->getCurrency() == ProductCurrency::PAYPALSUB) {
                         $response['action'] = 'pp-checkout';
-                        $response['data'] = array('sub' => $order->getCurrency() == ProductCurrency::PAYPALSUB, 'business' => $seller->getPaypal(), 'itemname' => $product->getTitle(), 'itemnumber' => $product->getId(), 'amount' => $order->getFiat(), 'custom' => $order->getTxid(), 'shipping' => $product->getRequireShipping(), 'quantity' => $order->getQuantity(), 'sub-length' => $product->getPaypalSubLength(), 'sub-unit' => $product->getPaypalSubUnit(), 'success_url' => $product->getSuccessUrl());
+                        $response['data'] = array('sub' => $order->getCurrency() == ProductCurrency::PAYPALSUB, 'business' => $seller->getPaypal(), 'itemname' => $product->getTitle(), 'itemnumber' => $product->getId(), 'amount' => $order->calculateFiatWithCoupon() * $order->getQuantity(), 'custom' => $order->getTxid(), 'shipping' => $product->getRequireShipping(), 'quantity' => 1, 'sub-length' => $product->getPaypalSubLength(), 'sub-unit' => $product->getPaypalSubUnit(), 'success_url' => $product->getSuccessUrl());
 
                         $order->setMerchant($seller->getPaypal());
-                        $order->setNative($order->getFiat());
                         $order->update();
                     } else if ($order->getCurrency() == ProductCurrency::BITCOIN || $order->getCurrency() == ProductCurrency::LITECOIN|| $order->getCurrency() == ProductCurrency::OMNICOIN) {
                         $cp = new CoinPaymentsAPI();
@@ -99,7 +110,7 @@ if (count($url) == 3 && $url[2] == 'buy') {
                                 break;
                         }
 
-                        $tx = $cp->CreateTransaction(array('buyer_name' => '', 'buyer_email' => $_POST['email'], 'amount' => $order->getFiat() * $order->getQuantity(), 'currency1' => 'USD', 'currency2' => $currency, 'address' => $address, 'item_name' => $product->getTitle(), 'item_number' => $product->getId(), 'custom' => $order->getTxid(), 'ipn_url' => $config['url']['protocol'] . $config['url']['domain'] . '/ipn/coinpayments/', 'quantity' => $order->getQuantity(), 'success_url' => $product->getSuccessUrl()));
+                        $tx = $cp->CreateTransaction(array('buyer_name' => '', 'buyer_email' => $_POST['email'], 'amount' => $order->calculateFiatWithCoupon() * $order->getQuantity(), 'currency1' => 'USD', 'currency2' => $currency, 'address' => $address, 'item_name' => $product->getTitle(), 'item_number' => $product->getId(), 'custom' => $order->getTxid(), 'ipn_url' => $config['url']['protocol'] . $config['url']['domain'] . '/ipn/coinpayments/', 'quantity' => 1, 'success_url' => $product->getSuccessUrl()));
 
                         if ($tx['error'] != 'ok') {
                             $errorMessage = 'RELOAD';
@@ -108,15 +119,16 @@ if (count($url) == 3 && $url[2] == 'buy') {
 
                         $order->setProcessorTxid($tx['result']['txn_id']);
 
+                        var_dump($tx['result']['txn_id']);
+
                         $order->update();
 
                         $response['action'] = 'display-crypto';
                         $response['data'] = array('txid' => $order->getTxid());
                     } else if($order->getCurrency() == ProductCurrency::PAYZA) {
                         $response['action'] = 'payza-checkout';
-                        $response['data'] = array('merchant' => $seller->getPayza(), 'itemname' => $product->getTitle(), 'itemcode' => $product->getId(), 'amount' => $order->getFiat(), 'apc_1' => $order->getTxid(), 'quantity' => $order->getQuantity(), 'success_url' => $product->getSuccessUrl());
+                        $response['data'] = array('merchant' => $seller->getPayza(), 'itemname' => $product->getTitle(), 'itemcode' => $product->getId(), 'amount' => $order->calculateFiatWithCoupon() * $order->getQuantity(), 'apc_1' => $order->getTxid(), 'quantity' => 1, 'success_url' => $product->getSuccessUrl());
 
-                        $order->setNative($order->getFiat());
                         $order->update();
                     }
 
@@ -129,7 +141,7 @@ if (count($url) == 3 && $url[2] == 'buy') {
                 if (isset($_POST['txid'])) {
                     $order = new Order();
 
-                    if ($order->readByTxid($_POST['txid'])) {
+                    if ($order->readByTxid($_POST['txid'], false)) {
 
                         if ($order->getCurrency() == ProductCurrency::BITCOIN || $order->getCurrency() == ProductCurrency::LITECOIN || $order->getCurrency() == ProductCurrency::OMNICOIN) {
                             $cp = new CoinPaymentsAPI();
@@ -163,25 +175,18 @@ if (count($url) == 3 && $url[2] == 'buy') {
     }
 }
 
-if(isset($_GET['redeemcoupon']) && $_GET['redeemcoupon'] == "true" && isset($_GET['couponcode']) && ctype_alnum($_GET['couponcode']))
-{
-    $coupons = $uas->getUser()->getCoupons();
+if(isset($_GET['redeemcoupon']) && $_GET['redeemcoupon'] == "true" && isset($_GET['couponcode']) && ctype_alnum($_GET['couponcode'])) {
+    $coupon = new Coupon();
 
-    $result = "false";
-    foreach($coupons as $cp){
-        if($cp->getName() == $_GET['couponcode']){
-            if($cp->getMaxUsedAmount() <= $cp->getUsedAmount()){
-                $result = "used";
-            } else if(!in_array($product->getId(), $cp->getProducts())){
-                $result = "false";
-            }else {
-                $result = $cp->getId();
-            }
-            break;
+    if ($coupon->readByNameAndSellerId($_GET['couponcode'], $seller->getId())) {
+        if ($coupon->getUsedAmount() >= $coupon->getMaxUsedAmount()) {
+            die('used');
+        } else {
+            die($coupon->getName());
         }
+    } else {
+        die('false');
     }
-
-    die($result);
 }
 
 foreach ($product->getCurrency() as $currency) {
