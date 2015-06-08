@@ -1,7 +1,7 @@
 <?php
 
 class Mailer {
-
+    public $content;
 	
 	public function __construct() {
 
@@ -257,6 +257,7 @@ class Mailer {
 	
 	public function send($email, $content, $subject) {
 		global $config;
+        $this->content = $content;
 		
 		$content = str_replace(array("\r\n","\r","\n"), '<br>', $content);
 

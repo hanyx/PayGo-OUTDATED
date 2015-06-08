@@ -119,5 +119,5 @@ if ($url['1'] == 'paypal') {
     $order->update();
 
     Logger::log('IPN End: Order Complete');
-
 }
+

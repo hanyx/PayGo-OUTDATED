@@ -166,6 +166,9 @@ class Order {
 
         if ($product->read($this->productId)) {
             $product = Product::getProduct($product->getId());
+            $message = new Message();
+            $message->setSender($product->getSellerId());
+            $message->setRecipient($this->getEmail());
 
             switch ($product->getType()) {
                 case ProductType::DOWNLOAD:
@@ -213,6 +216,9 @@ class Order {
 
                     break;
             }
+
+            $message->setMessage($mailer->content);
+            $message->create();
         }
     }
 

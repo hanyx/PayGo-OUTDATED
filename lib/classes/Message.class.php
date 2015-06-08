@@ -139,6 +139,10 @@ class Message {
         return $this->folder;
     }
 
+    public function setFolder($folder){
+        $this->folder = $folder;
+    }
+
     public function setSender($sender) {
         $this->sender = $sender;
     }
