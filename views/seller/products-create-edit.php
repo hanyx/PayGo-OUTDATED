@@ -49,10 +49,6 @@ if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['descriptio
         $currencies[] = ProductCurrency::OMNICOIN;
     }
 
-    if (isset($_POST['payza']) && $_POST['payza'] == '1') {
-        $currencies[] = ProductCurrency::PAYZA;
-    }
-
     $product->setSellerId($uas->getUser()->getId());
     $product->setTitle(htmlspecialchars($_POST['title'], ENT_QUOTES));
     $product->setPrice((double)$_POST['price']);
@@ -206,13 +202,6 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                                             Omnicoin
 
                                         </label>
-                                        <br>
-                                        <label class="switch">
-                                            <input type='checkbox' name='payza' value='1' <?php echo $product->acceptsCurrency(ProductCurrency::PAYZA) ? 'checked=\'1\'' : ''; ?>>
-                                            <span></span>
-                                            Payza
-                                        </label>
-                                        <br>
                                     </div>
                                 </div>
                                 <div class="line line-dashed m-t-large"></div>
