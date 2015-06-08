@@ -125,11 +125,6 @@ if (count($url) == 3 && $url[2] == 'buy') {
 
                         $response['action'] = 'display-crypto';
                         $response['data'] = array('txid' => $order->getTxid());
-                    } else if($order->getCurrency() == ProductCurrency::PAYZA) {
-                        $response['action'] = 'payza-checkout';
-                        $response['data'] = array('merchant' => $seller->getPayza(), 'itemname' => $product->getTitle(), 'itemcode' => $product->getId(), 'amount' => $order->calculateFiatWithCoupon() * $order->getQuantity(), 'apc_1' => $order->getTxid(), 'quantity' => 1, 'success_url' => $product->getSuccessUrl());
-
-                        $order->update();
                     }
 
                 } else {
@@ -214,11 +209,6 @@ foreach ($product->getCurrency() as $currency) {
         case ProductCurrency::OMNICOIN:
             if ($seller->getOmnicoin() == '') {
                 die('invalid payment setup 4');
-            }
-            break;
-        case ProductCurrency::PAYZA:
-            if ($seller->getPayza() == '') {
-                die('invalid payment setup 5');
             }
             break;
     }
@@ -344,9 +334,6 @@ __header($product->getTitle());
                             }
                             if ($product->acceptsCurrency(ProductCurrency::OMNICOIN)) {
                                 echo '<button onclick=\'pay(' .ProductCurrency::OMNICOIN . ');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 23px; height: 22px; background-image: url("/images/crypto-icons.png"); background-position: -3px -137px; vertical-align: -4px;\'></span>Omnicoin</button>';
-                            }
-                            if ($product->acceptsCurrency(ProductCurrency::PAYZA)) {
-                                echo '<button onclick=\'pay(' . ProductCurrency::PAYZA .');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'>Payza</button>';
                             }
                             ?>
                         </div>
@@ -508,21 +495,6 @@ __header($product->getTitle());
 
                         update();
 
-                        break;
-                    case 'payza-checkout':
-                        $('body').append('<form method="post" action="https://secure.payza.com/checkout" id="payza-form" >\
-                        <input type="hidden" name="ap_merchant" value="' + data.response.data.merchant + '"/>\
-                    <input type="hidden" name="ap_purchasetype" value="item-goods"/>\
-                    <input type="hidden" name="ap_itemname" value="' + data.response.data.itemname + '"/>\
-                    <input type="hidden" name="ap_amount" value="' + data.response.data.amount + '"/>\
-                    <input type="hidden" name="ap_currency" value="USD"/>\
-                    <input type="hidden" name="ap_quantity" value="' + data.response.data.quantity + '"/>\
-                    <input type="hidden" name="ap_itemcode" value="' + data.response.data.itemcode + '"/>\
-                    <input type="hidden" name="ap_returnurl" value="' + data.response.data.success_url + '"/>\
-                    <input type="hidden" name="apc_1" value="' + data.response.data.apc_1 + '"/>\
-                    </form>');
-
-                        $('#payza-form').submit();
                         break;
                 }
             }
