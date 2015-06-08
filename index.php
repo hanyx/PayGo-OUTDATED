@@ -23,11 +23,12 @@ $pageManager->setPermsPage(	new Page(						array(	array('')), 													'view
 $uncategorized->addPage(	new Page(						array(	array('')), 													'views/home.php' 													));
 $uncategorized->addPage(	new Page(						array(	array('v', '*'),
     																array('v', '*', 'a', '*'),
+                                                                    array('v', '*', '*'),
     														        array('v', '*', 'buy')), 							        	'views/product.php', 							'', true			));
 $uncategorized->addPage(	new Page(						array(	array('ipn', 'paypal'),
                                                                     array('ipn', 'coinpayments')), 									'views/ipn.php' 													));
 $uncategorized->addPage(	new Page(						array(	array('download', '*')), 										'views/download.php' 												));
-$uncategorized->addPage(	new Page(						array(	array('u', '*')), 													'views/user.php', '', true 													));
+$uncategorized->addPage(	new Page(						array(	array('u', '*')), 												'views/user.php', '', true 											));
 
 $authPages->addPage(		new Page(						array(	array('seller', 'login'),
 																	array('seller', 'login', 'activate', '*'),

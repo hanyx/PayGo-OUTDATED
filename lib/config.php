@@ -5,10 +5,10 @@ $config = array(
 		'domain' => ''
 	),
 	'db' => array(
-		'host' => 'localhost',
-		'port' => '3306',
-		'database' => 'payivy',
-		'user' => 'root',
+		'host' => '',
+		'port' => '',
+		'database' => '',
+		'user' => '',
 		'pass' => ''
 	),
 	'recaptcha' => array(
@@ -18,8 +18,10 @@ $config = array(
 	'mandrill' => array(
 		'key' => ''
 	),
-    'sendgrid' => array('username' => 'linh721990',
-        'password' => 'david123'),
+    'sendgrid' => array(
+        'username' => '',
+        'password' => ''
+    ),
     'upload' => array(
         'directory' => '',
         'allowedFiles' => array(

@@ -143,4 +143,16 @@ class Affiliate {
         return $this->id;
     }
 
+    public function getProductId() {
+        return $this->productId;
+    }
+
+    public function setUnpaidOrders($unpaidOrders) {
+        $this->unpaidOrders = $unpaidOrders;
+    }
+
+    public function setUnpaidFiat($unpaidFiat) {
+        $this->unpaidFiat = $unpaidFiat;
+    }
+
 }
