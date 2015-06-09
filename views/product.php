@@ -1,7 +1,7 @@
 <?php
 $product = new Product();
 
-if (!$product->readByUrl($url[1]) && !$product->readByUrlTitle($url[1])) {
+if (!$product->readByUrl($url[1]) && !$product->readByUrlTitle(urldecode($url[1]))) {
     include_once('404.php');
     die();
 }
