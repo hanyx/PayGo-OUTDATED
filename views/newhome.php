@@ -28,7 +28,12 @@
         <div class="w-container">
             <a class="w-nav-brand brand" href="https://payivy.com"><img class="logo" src="/home-theme/images/whitelogo.png" width="85">
             </a>
-            <nav class="w-nav-menu nav-menu" role="navigation"><a class="w-nav-link nav-link" href="http://payivy.com">Home</a><a class="w-nav-link nav-link" href="pricing">Pricing</a><a class="w-nav-link nav-link" href="built">Features</a><a class="w-nav-link nav-link" href="https://payivy.com/seller/login">Login</a><a class="button nav-button" href="https://payivy.com/seller/register">Create A Product</a>
+            <nav class="w-nav-menu nav-menu" role="navigation">
+                <a class="w-nav-link nav-link" href="https://payivy.com">Home</a>
+                <a class="w-nav-link nav-link" href="pricing">Pricing</a>
+                <a class="w-nav-link nav-link" href="built">Features</a>
+                <a class="w-nav-link nav-link" href="https://payivy.com/seller/login">Login</a>
+                <a class="button nav-button" href="https://payivy.com/seller/register">Create A Product</a>
             </nav>
             <div class="w-nav-button menu-button">
                 <div class="w-icon-nav-menu"></div>
