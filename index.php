@@ -17,10 +17,14 @@ $products =			new PageCategory(			'Products', 	'fa-list-alt',  	true, 0);
 $coupons =          new PageCategory(           'Coupons',      'fa-ticket',        true,   0);
 $admin = 			new PageCategory(			'Admin', 		'fa-wrench', 	    true, 1);
 
+$uncategorized->addPage(	new Page(						array(	array('')), 						    					'views/newhome.php'                                                 ));
+$uncategorized->addPage(	new Page(						array(	array('pricing')), 						    					'views/pricing.php'                                                 ));
+$uncategorized->addPage(	new Page(						array(	array('built')), 						    					'views/built.php'                                                 ));
+
 $pageManager->set404Page(	new Page(						array(	array('')), 													'views/404.php' 													));
 $pageManager->setPermsPage(	new Page(						array(	array('')), 													'views/nopermission.php' 						                    ));
 
-$uncategorized->addPage(	new Page(						array(	array('')), 													'views/home.php' 													));
+//$uncategorized->addPage(	new Page(						array(	array('')), 													'views/home.php' 													));
 $uncategorized->addPage(	new Page(						array(	array('v', '*'),
     																array('v', '*', 'a', '*'),
                                                                     array('v', '*', '*'),

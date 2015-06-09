@@ -7,7 +7,7 @@ if (isset($_GET['getdata'])) {
     foreach ($files as $file) {
         $data[] = array(
             'file' => ($file->getName()),
-            'delete' => '<a href=\'/seller/products/files/delete/' . $file->getId() . '\'><i class=\'fa fa-delete\'></i></a>'
+            'delete' => '<a href=\'/seller/products/files/delete/' . $file->getId() . '\'><i class="fa fa-trash-o"></i></a>'
         );
     }
 
@@ -54,7 +54,7 @@ __header('Files');
                         <thead>
                         <tr>
                             <th>File</th>
-                            <th>Delete</th>
+                            <th style="width: 150px;">Delete</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -66,28 +66,44 @@ __header('Files');
                 <section class='panel'>
                     <div class="panel-body">
                         <div class='fileupload dropzone'></div>
+                        <br>
+                        <div style="text-align: center;"><i>Allowed files types: <?php echo implode(', ', $config['upload']['allowedFiles']); ?></i></div>
                     </div>
                 </section>
             </div>
         </div>
     </div>
     <script>
-        $('[data-ride=\'products\']').dataTable( {
-            'bProcessing': true,
-            'sAjaxSource': '/seller/products/files/?getdata=true',
-            'sDom': '<\'row\'<\'col-sm-6\'l><\'col-sm-6\'f>r>t<\'row\'<\'col-sm-6\'i><\'col col-sm-6\'p>>',
-            'sPaginationType': 'full_numbers',
-            'aoColumns': [
-                { 'mData': 'file' },
-                { 'mData': 'delete' },
-            ]
-        });
+        function loadData(newTable){
+            if(!newTable){
+                $('[data-ride=\'products\']').dataTable().fnDestroy();
+            }
+
+            $('[data-ride=\'products\']').dataTable( {
+                'bProcessing': true,
+                'sAjaxSource': '/seller/products/files/?getdata=true',
+                'sDom': '<\'row\'<\'col-sm-6\'l><\'col-sm-6\'f>r>t<\'row\'<\'col-sm-6\'i><\'col col-sm-6\'p>>',
+                'sPaginationType': 'full_numbers',
+                'aoColumns': [
+                    { 'mData': 'file' },
+                    { 'mData': 'delete' },
+                ]
+            });
+        }
+        loadData(true);
 
         $('.fileupload').dropzone({
             url: '/seller/products/files/upload',
             maxFilesize: 50,
             uploadMultiple: false,
-            maxFiles: 10000
+            maxFiles: 10000,
+            init: function(){
+                var thisDropzone = this;
+
+                thisDropzone.on('addedfile', function(){
+                    loadData(false);
+                });
+            }
         });
     </script>
 <?php

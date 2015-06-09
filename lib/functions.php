@@ -31,6 +31,7 @@ abstract class EmailTemplate {
     const NETSEALS = 8;
     const SERIALS = 9;
     const OUTOFSTOCK = 10;
+    const SELLERSALE = 11;
 }
 
 abstract class UserAccountType {

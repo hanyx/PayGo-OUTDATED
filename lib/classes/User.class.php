@@ -46,7 +46,7 @@ class User {
 	public function create() {
 
         while (true) {
-            $this->uniqueId = generateRandomString(20);
+            $this->uniqueId = generateRandomString(5);
 
             $user = new User();
 

@@ -120,7 +120,7 @@ foreach ($referrers as $referrer) {
     }
 }
 
-__header('Dashbard');
+__header('Dashboard');
 ?>
     <section class="wrapper">
         <div class='clearfix'>

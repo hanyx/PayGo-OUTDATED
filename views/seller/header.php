@@ -65,19 +65,25 @@ function __header($title = 'Dashboard') {
                     $.post("/seller/settings", {switch_toggle: "true"});
                 }
             </script>
+
+            <style>
+                .tooltip-inner {
+                    max-width: 250px;
+                }
+            </style>
         </head>
     <body>
     <section class="hbox stretch">
         <?php if ($uas->isAuthenticated() && !$pageManager->getCurrentPage()->noAuth()) { ?>
         <!-- .aside -->
-        <aside class="bg-success dk aside-sm <?php echo $uas->getUser()->getBigSizeBar() ? "" : "nav-vertical"; ?>"
+        <aside class="bg-success dk aside-sm <?php echo $uas->getUser()->getBigSizeBar() && false ? "" : "nav-vertical"; ?> only-icon"
                id="nav">
             <section class="vbox">
                 <header class="nav-bar">
                     <a class="btn btn-link visible-xs" data-toggle="class:nav-off-screen" data-target="#nav">
                         <i class="fa fa-bars"></i>
                     </a>
-                    <a href="#" class="nav-brand">payivy</a>
+                    <a href="/seller/" class="nav-brand">PI</a>
                 </header>
                 <section class="w-f">
                     <nav class="nav-primary hidden-xs">
@@ -97,7 +103,7 @@ function __header($title = 'Dashboard') {
                                     }
 
                                     if (count($pages) > 1) {
-                                        echo '<li class=\'dropdown-submenu ' . ($category->isCurrent() ? 'active' : '') . '\'>';
+                                        echo '<li data-toggle="tooltip" title="' . $category->getName() . '" data-placement="bottom" class=\'dropdown-submenu ' . ($category->isCurrent() ? 'active' : '') . '\'>';
                                         echo '<a href=\'' . $link . '\'>' . (($alerts > 0) ? ('<b class=\'badge bg-danger pull-right\'>' . $alerts . '</b>') : '') . '<i class=\'fa ' . $category->getIcon() . '\'></i><span>' . $category->getName() . '</span></a>';
                                         echo '<ul class=\'dropdown-menu\'>';
 
@@ -108,7 +114,7 @@ function __header($title = 'Dashboard') {
                                         echo '</ul>';
                                         echo '</li>';
                                     } else {
-                                        echo '<li class=\'' . ($category->isCurrent() ? 'active' : '') . '\'>';
+                                        echo '<li data-toggle="tooltip" title="' . $category->getName() . '" data-placement="bottom" class=\'' . ($category->isCurrent() ? 'active' : '') . '\'>';
                                         echo '<a href=\'' . $link . '\'>' . (($alerts > 0) ? ('<b class=\'badge bg-primary pull-right\'>' . $alerts . '</b>') : '') . '<i class=\'fa ' . $category->getIcon() . '\'></i><span>' . $category->getName() . '</span></a>';
                                         echo '</li>';
                                     }
@@ -118,14 +124,14 @@ function __header($title = 'Dashboard') {
                         </ul>
                     </nav>
                 </section>
-                <footer class="footer bg-gradient hidden-xs">
-                    <a class="btn btn-sm btn-link m-r-n-xs pull-right" href="/seller/logout">
+                <footer class="footer bg-gradient hidden-xs text-center">
+                    <a class="btn btn-sm btn-link m-r-n-xs" old="pull-right" href="/seller/logout">
                         <i class="fa fa-power-off"></i>
                     </a>
-                    <a class="btn btn-sm btn-link m-l-n-sm" data-toggle="class:nav-vertical" href="#nav"
+                    <!--<a class="btn btn-sm btn-link m-l-n-sm" data-toggle="class:nav-vertical" href="#nav"
                        onclick="toggleSidebar();">
                         <i class="fa fa-bars"></i>
-                    </a>
+                    </a>-->
                 </footer>
             </section>
         </aside>
@@ -139,9 +145,14 @@ function __header($title = 'Dashboard') {
                     <div class="col-sm-4">
                         <h4 class="m-t m-b-none"><?php echo $pageManager->getCurrentPage()->getName(); ?></h4>
                     </div>
-
                 </div>
-
+            </div>
+            <div class="wrapper bg-light font-bold">
+                <a class="m-r" href="/seller/settings/payments"><i class="fa fa-cog fa-2x icon-muted v-middle"></i> Payment Settings</a>
+                <a class="m-r" href="/seller/products/create"><i class="fa fa-plus fa-2x icon-muted  v-middle"></i> Create Product</a>
+                <a class="m-r" href="/seller/products/view"><i class="fa fa-wrench fa-2x icon-muted  v-middle"></i> Manage Products</a>
+                <a class="m-r" href="/seller/products/orders/"><i class="fa fa-shopping-cart fa-2x icon-muted  v-middle"></i> Orders</a>
+                <a href="/seller/products/files"><i class="fa fa-upload fa-2x icon-muted  v-middle"></i> Upload File</a>
             </div>
             <?php }
 }

@@ -2,7 +2,7 @@
 
 class Mailer {
 
-	public function sendTemplate($template, $email, $username, $arg1 = null, $arg2 = null, $arg3 = null) {
+	public function sendTemplate($template, $email, $username, $arg1 = null, $arg2 = null, $arg3 = null, $arg4 = null, $arg5 = null, $arg6 = null, $arg7 = null) {
 		global $config;
 
 		switch ($template) {
@@ -241,6 +241,36 @@ class Mailer {
 
                     $message .= '<b>Download: ' . $key[0] . '</b>
                     <b>Serial: ' . $key[1] . '</b><br><br>';
+                }
+
+                break;
+            case EmailTemplate::SELLERSALE:
+                if ($arg1 == null) {
+                    return false;
+                }
+
+                if ($arg2 == null) {
+                    return false;
+                }
+
+                $subject = 'New purchase of ' . $arg1;
+
+                $message =
+                'Hey there, ' . $username . ',
+
+                We\'ve received a new purchase for your item <b>' . $arg1 . '</b>
+
+                Here are the details:
+
+                Amount Per Item: <b>' . $arg2 . '</b>
+                Quantity: <b>' . $arg3 . '</b>
+                Total Amount: <b>' . $arg4 . '</b>
+                Buyer Email: <b>' . $arg5 . '</b>
+                Transaction ID; <b>' . $arg6 . '</b>
+                ';
+
+                foreach ($arg7 as $question) {
+                    $message .= $question[0] . ': <b>' . $question[1] . '</b><br>';
                 }
 
                 break;

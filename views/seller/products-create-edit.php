@@ -164,7 +164,7 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                                     <div class="col-lg-10">
                                         <div class='input-group'>
                                             <span class='input-group-addon'>$</span>
-                                            <input name='price' type='text' class='form-control' value='<?php echo $product->getPrice(); ?>'>
+                                            <input name='price' type='number' step="any" min="0" class='form-control' value='<?php echo $product->getPrice(); ?>'>
                                         </div>
                                     </div>
                                 </div>
@@ -258,7 +258,7 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                                 </div>
                                 <div class='product-type product-type-0 <?php echo $product->getType() == 0 ? '' : 'hide'; ?>'>
                                     <div class="form-group">
-                                        <label class="col-lg-2 control-label">File</label>
+                                        <label class="col-lg-2 control-label">File </label>
                                         <div class="col-lg-10">
                                             <select style='width:260px' name='file'>
                                                 <option></option>
@@ -266,10 +266,11 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                                                 $files = $uas->getUser()->getFiles();
 
                                                 foreach ($files as $file) {
-                                                    echo '<option ' . ($file->getId() == $product->getFileId() ? 'selected=1' : '') . 'value=\'' . $file->getId() . '\'>' . $file->getName() . '</option>';
+                                                    echo '<option ' . (($product->getType() == ProductType::DOWNLOAD && $file->getId() == $product->getFileId()) ? 'selected=1' : '') . 'value=\'' . $file->getId() . '\'>' . $file->getName() . '</option>';
                                                 }
                                                 ?>
                                             </select>
+                                            <div class="btn-group btn-group-xs"><button class="btn btn-primary" type="button" data-toggle="tooltip" title="Files can be uploaded and managed from the Product Files page"><i class="fa fa-question"></i></button></div>
                                         </div>
                                     </div>
                                 </div>

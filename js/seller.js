@@ -6,4 +6,6 @@ $(function() {
     $('.wysi').each(function() {
        $(this).wysihtml5();
     });
+
+    $('[data-toggle="tooltip"]').tooltip();
 });

@@ -54,7 +54,7 @@ class Product {
 	
 	public function create() {
 		while (true) {
-			$this->affiliateId = generateRandomString(20);
+			$this->affiliateId = generateRandomString(5);
 			
 			$product = new Product();
 			
@@ -64,7 +64,7 @@ class Product {
 		}
 
         while (true) {
-            $this->url = generateRandomString(20);
+            $this->url = generateRandomString(5);
 
             $product = new Product();
 

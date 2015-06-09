@@ -14,8 +14,7 @@ if (isset($_GET['getdata'])) {
             'ip' => $order->getIp(),
             'txid' => $order->getTxid(),
             'currency' => ($order->getCurrency() == ProductCurrency::PAYPAL ? 'PayPal' : ($order->getCurrency() == ProductCurrency::PAYPALSUB ? 'PayPal Subscription' : ($order->getCurrency() == ProductCurrency::BITCOIN ? 'Bitcoin' : ($order->getCurrency() == ProductCurrency::LITECOIN ? 'Litecoin' : ($order->getCurrency() == ProductCurrency::OMNICOIN ? 'Omnicoin' : ''))))),
-            'fiat' => $order->getFiat(),
-            'native' => $order->getNative(),
+            'fiat' => '$' . $order->getFiat(),
             'product' => '<a href=\'' . $product->getUrl() . '\'>' . $product->getTitle() . '</a>'
         );
     }
@@ -39,8 +38,7 @@ __header('Orders');
                         <th>Buyer IP</th>
                         <th>Transaction ID</th>
                         <th>Currency</th>
-                        <th>Fiat</th>
-                        <th>Native</th>
+                        <th>Amount</th>
                         <th>Product</th>
                     </tr>
                 </thead>
@@ -62,7 +60,6 @@ __header('Orders');
                 { 'mData': 'txid' },
                 { 'mData': 'currency' },
                 { 'mData': 'fiat' },
-                { 'mData': 'native' },
                 { 'mData': 'product' }
             ]
         } );

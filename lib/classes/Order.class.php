@@ -186,7 +186,7 @@ class Order {
 
                     $mailer = new Mailer();
 
-                    $mailer->sendTemplate(EmailTemplate::DOWNLOAD, $this->email, '', $download->getLink(), $product->getCustomDelivery());
+                    $mailer->sendTemplate(EmailTemplate::DOWNLOAD, $this->email, '', $download->getLink(), $product->getCustomDelivery(), $product->getSellerId());
 
                     break;
                 case ProductType::NETSEAL:
@@ -200,23 +200,25 @@ class Order {
 
                     $mailer = new Mailer();
 
-                    $mailer->sendTemplate(EmailTemplate::NETSEALS, $this->email, '', $seals, $product->getCustomDelivery());
+                    $mailer->sendTemplate(EmailTemplate::NETSEALS, $this->email, '', $seals, $product->getCustomDelivery(), $product->getSellerId());
 
                     break;
                 case ProductType::SERIAL:
                     if (count($product->getSerials()) < $this->getQuantity()) {
                         $mailer = new Mailer();
 
-                        $mailer->sendTemplate(EmailTemplate::OUTOFSTOCK, $this->email, '');
+                        $mailer->sendTemplate(EmailTemplate::OUTOFSTOCK, $this->email, '', '', '', $product->getSellerId());
                     } else {
 
                         $keys = array_slice($product->getSerials(), 0, $this->quantity);
 
                         $product->setSerials(array_slice($product->getSerials(), $this->quantity));
 
+                        $product->update();
+
                         $mailer = new Mailer();
 
-                        $mailer->sendTemplate(EmailTemplate::SERIALS, $this->email, '', $keys, $product->getCustomDelivery());
+                        $mailer->sendTemplate(EmailTemplate::SERIALS, $this->email, '', $keys, $product->getCustomDelivery(), $product->getSellerId());
 
                     }
 
@@ -232,6 +234,16 @@ class Order {
             $affiliate->setUnpaidFiat($affiliate->getUnpaidFiat() + ($this->calculateFiatWithCoupon() * $this->getQuantity() * $product->getAffiliatePercent()));
 
             $affiliate->setUnpaidOrders($affiliate->getUnpaidOrders() + 1);
+        }
+
+        $user = new User();
+
+        if ($user->read($product->getSellerId())) {
+
+            $mailer = new Mailer();
+
+            $mailer->sendTemplate(EmailTemplate::SELLERSALE, $user->getEmail(), $user->getEmail(), $product->getTitle(), $this->calculateFiatWithCoupon(), $this->quantity, $this->calculateFiatWithCoupon() * $this->quantity, $this->email, $this->txid, $this->questions);
+
         }
     }
 

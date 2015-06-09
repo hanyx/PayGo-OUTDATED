@@ -100,16 +100,16 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Coupo
                         </div>
                         <?php if(count($url) == 4 && $url['2'] == 'edit'){?>
                         <div class="form-group">
-                            <label class="col-lg-2 control-label">Used</label>
+                            <label class="col-lg-2 control-label">Times Used</label>
                             <div class="col-lg-10">
                                 <input name='used' type='number' class='form-control' readonly value='<?php echo $coupon->getUsedAmount(); ?>'/>
                             </div>
                         </div>
                          <?php }?>
                         <div class="form-group">
-                            <label class="col-lg-2 control-label">Maximum</label>
+                            <label class="col-lg-2 control-label">Usage Limit</label>
                             <div class="col-lg-10">
-                                <input name='maximum' type='number' min="1" class='form-control' value='<?php echo $coupon->getMaxUsedAmount(); ?>'/>
+                                <input name='maximum' type='number' min="0" placeholder="(0 for unlimited)" class='form-control' value='<?php echo $coupon->getMaxUsedAmount(); ?>'/>
                             </div>
                         </div>
                         <div class="form-group">

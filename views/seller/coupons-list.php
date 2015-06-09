@@ -42,8 +42,8 @@ __header('Coupons')
                     <tr>
                         <th>Name</th>
                         <th>Reduction</th>
-                        <th>Used</th>
-                        <th>Maximum</th>
+                        <th>Times Used</th>
+                        <th>Usage Limit</th>
                         <th>Configure</th>
                     </tr>
                 </thead>
