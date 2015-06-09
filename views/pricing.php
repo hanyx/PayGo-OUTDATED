@@ -25,9 +25,14 @@
 <body>
 <div class="w-nav navbar whitebg" data-collapse="medium" data-animation="default" data-duration="400" data-contain="1">
     <div class="w-container">
-        <a class="w-nav-brand brand" href="#"><img class="logo" src="/home-theme/images/davidisaG.png" width="70">
+        <a class="w-nav-brand brand" href=""><img class="logo" src="/home-theme/images/davidisaG.png" width="70">
         </a>
-        <nav class="w-nav-menu nav-menu" role="navigation"><a class="w-nav-link nav-link whitebg" href="#">Home</a><a class="w-nav-link nav-link whitebg" href="#">Pricing</a><a class="w-nav-link nav-link whitebg" href="#">Features</a><a class="w-nav-link nav-link whitebg" href="#">Login</a><a class="button nav-button" href="#">Create A Product</a>
+        <nav class="w-nav-menu nav-menu" role="navigation">
+            <a class="w-nav-link nav-link" href="https://payivy.com">Home</a>
+            <a class="w-nav-link nav-link" href="pricing">Pricing</a>
+            <a class="w-nav-link nav-link" href="built">Features</a>
+            <a class="w-nav-link nav-link" href="https://payivy.com/seller/login">Login</a>
+            <a class="button nav-button" href="https://payivy.com/seller/register">Create A Product</a>
         </nav>
         <div class="w-nav-button menu-button">
             <div class="w-icon-nav-menu"></div>
@@ -51,7 +56,7 @@
     </div>
 </div>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script type="text/javascript" src="js/webflow.js"></script>
+<script type="text/javascript" src="/js/webflow.js"></script>
 <!--[if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif]-->
 </body>
 </html>
