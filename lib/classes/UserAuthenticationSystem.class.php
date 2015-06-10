@@ -149,9 +149,9 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 
 		$this->addMessage(new ErrorSuccessMessage('Account registered. Please check your email to activate your account', false));
 		
-		/*$mailer = new Mailer();
+		$mailer = new Mailer();
 		
-		$mailer->sendTemplate(EmailTemplate::ACTIVATE, $user->getEmail(), $user->getUsername(), $tfr->getToken());*/
+		$mailer->sendTemplate(EmailTemplate::ACTIVATE, $user->getEmail(), $user->getUsername(), $tfr->getToken());
 				
 		return true;
 	}

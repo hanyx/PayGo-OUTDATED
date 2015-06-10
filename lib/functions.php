@@ -1,7 +1,7 @@
 <?php
 
 require_once('lib/password.php');
-require_once('lib/config.php');
+require_once('../private/config.php');
 require_once('views/seller/header.php');
 require_once('views/seller/footer.php');
 

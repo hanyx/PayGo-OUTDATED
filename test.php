@@ -1,30 +1,27 @@
 <?php
-die();
 require_once('lib/functions.php');
 
-$x = DB::getInstance()->prepare('SELECT COUNT(*) AS `Rows`, `url` FROM `products` GROUP BY `url` ORDER BY `Rows` DESC ');
+$x = DB::getInstance()->prepare('SELECT id FROM users WHERE id >= 12035');
 $x->execute();
 
 $x = $x->fetchAll();
 
 foreach ($x as $y) {
-    if ($y['Rows'] != 1) {
-        echo '1';
+    $user = new User();
 
-        $t = '';
+    if ($user->read($y['id']) && !$user->getActive()) {
+        $tfr = new TwoFactorRequest();
 
-        while (true) {
-            $t = generateRandomString(5);
+        $x = DB::getInstance()->prepare('SELECT token FROM 2fa WHERE user_id = ? AND used = 0 AND action = ?');
+        $x->execute(array($user->getId(), TwoFactorRequestAction::ACTIVATE));
 
-            $x = DB::getInstance()->prepare('SELECT id FROM products WHERE url = ?');
-            $x->execute(array($t));
+        $x = $x->fetchAll();
 
-            if (count($x->fetchAll()) == 0) {
-                break;
-            }
+        if (count($x) == 1) {
+
+            $mailer = new Mailer();
+
+            $mailer->sendTemplate(EmailTemplate::ACTIVATE, $user->getEmail(), $user->getUsername(), $x[0]['token']);
         }
-
-        $x = DB::getInstance()->prepare('UPDATE products SET url = ? WHERE url = ? LIMIT 1');
-        $x->execute(array($t, $y['url']));
     }
 }

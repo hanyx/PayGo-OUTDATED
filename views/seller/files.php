@@ -97,10 +97,9 @@ __header('Files');
             maxFilesize: 50,
             uploadMultiple: false,
             maxFiles: 10000,
+            acceptedFiles: '.<?php echo implode(',.', $config['upload']['allowedFiles']); ?>',
             init: function(){
-                var thisDropzone = this;
-
-                thisDropzone.on('addedfile', function(){
+                this.on('success', function(a, b){
                     loadData(false);
                 });
             }
