@@ -6,12 +6,14 @@ class Page {
 	private $name;
 	private $current;
     private $noAuth;
+    private $sitemap;
 	
-	public function __construct($url, $file, $name = "", $noAuth = false) {
+	public function __construct($url, $file, $name = "", $noAuth = false, $sitemap = false) {
 		$this->url = $url;
 		$this->file = $file;
 		$this->name = $name;
         $this->noAuth = $noAuth;
+        $this->sitemap = $sitemap;
 	}
 	
 	public function urlMatch($url) {
@@ -69,5 +71,9 @@ class Page {
     public function noAuth() {
         return $this->noAuth;
     }
-	
+
+    public function isSitemap() {
+        return $this->sitemap;
+    }
+
 }
