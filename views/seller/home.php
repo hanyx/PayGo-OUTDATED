@@ -105,6 +105,8 @@ $x = 0;
 
 $referrerPie = array();
 
+$referrerList = array();
+
 foreach ($referrers as $referrer) {
     $label = array_search($referrer, $referrers);
 
@@ -112,10 +114,11 @@ foreach ($referrers as $referrer) {
         $label = 'Direct';
     }
 
-    $referrerPie[] = array('label' => $label, 'data' => $referrer);
+    $referrerList[] = array('label' => $label, 'data' => $referrer);
+    $referrerPie[] = array('label' => '', 'data' => $referrer);
 
     $x++;
-    if ($x >= 10) {
+    if ($x >= 5) {
         break;
     }
 }
@@ -191,6 +194,22 @@ __header('Dashboard');
                         <div class="panel-body">
                             <div id="referrers" style="height:250px"></div>
                         </div>
+                        <ul class="list-group no-radius">
+                            <?php
+                            $colors = array("#5c677c", "#594f8d", "#92cf5c", "#fb6b5b", "#5dcff3");
+                            $x = 0;
+                            foreach ($referrerList as $referrer) {
+                                ?>
+                                <li class="list-group-item">
+                                    <span class="fa fa-circle" style="color: <?php echo $colors[$x]; ?>"></span>
+                                    <span class="pull-right"><?php echo $referrer['data']; ?></span>
+                                    <?php echo $referrer['label']; ?>
+                                </li>
+                               <?php
+                                $x++;
+                            }
+                            ?>
+                        </ul>
                     </div>
                 </div>
             </div>

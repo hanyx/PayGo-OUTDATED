@@ -274,6 +274,27 @@ class Mailer {
                 }
 
                 break;
+            case EmailTemplate::AFFILIATEREGISTER:
+                if ($arg1 == null) {
+                    return false;
+                }
+
+                if ($arg2 == null) {
+                    return false;
+                }
+
+                $subject = 'Affiliate Registration on PayIvy.com';
+
+                $message =
+                'Hey there,
+
+                Thanks for signing up as an affiliate. Here is your affiliate information:
+
+                Affiliate Url: <b>' . $arg1 . '</b>
+                Password: <b>' . $arg2 . '</b>
+                ';
+
+                break;
 		}
 
         if ($template == EmailTemplate::DOWNLOAD || $template == EmailTemplate::OUTOFSTOCK || $template == EmailTemplate::SERIALS || $template == EmailTemplate::NETSEALS) {

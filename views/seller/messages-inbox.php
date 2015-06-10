@@ -39,7 +39,7 @@ __header('Inbox');
                     <li class="list-group-item <?php echo $viewMessage ? ($currentMessage->getId() == $message->getId() ? "active" : "") : ""; ?>">
                         <a class="clear" href="/seller/messages/inbox/view/<?php echo $message->getId(); ?>">
                             <small class="pull-right"><?php echo formatTime(strtotime($message->getDate())); ?> ago</small>
-                            <strong><?php echo $message->getRecipient(); ?></strong> -
+                            <strong><?php echo $message->getSender(); ?></strong> -
                             <span><?php if (!$message->getRead()) { ?><strong><?php } ?><?php echo $message->getExcerpt(); ?><?php if (!$message->getRead()) { ?></strong><?php } ?></span>
                         </a>
                     </li>
@@ -61,7 +61,7 @@ __header('Inbox');
                     <div class="text-sm padder m-t">
                         <div class="block clearfix m-b">
                             <span class="inline m-t-xs">
-                                <?php echo $currentMessage->getRecipient(); ?>
+                                <?php echo $currentMessage->getSender(); ?>
                             </span>
                             <div class="pull-right inline">
                                 <?php echo formatDate(strtotime($currentMessage->getDate())) . " (" . formatTime(strtotime($currentMessage->getDate())) . " ago)"; ?>

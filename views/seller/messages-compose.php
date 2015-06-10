@@ -49,7 +49,7 @@ __header('Compose Message');
                     </div>
                 </div>
                 <div class='form-group'>
-                    <textarea name='message' id='message-body' class='form-control' placeholder='Message' style='height: 120px;'>
+                    <textarea name='message' id='message-body' class='form-control wysi' placeholder='Message' style='height: 120px;'>
                         <?php
                             if ($reply) {
                                 echo '<br><br>';

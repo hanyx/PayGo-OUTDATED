@@ -427,4 +427,8 @@ class Product {
         return View::getViewsByProduct($this->id);
     }
 
+    public function getAffiliateId() {
+        return $this->affiliateId;
+    }
+
 }

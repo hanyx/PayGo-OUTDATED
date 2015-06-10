@@ -61,7 +61,7 @@ __header('Product Delivery');
                         <div class="text-sm padder m-t">
                             <div class="block clearfix m-b">
                             <span class="inline m-t-xs">
-                                <?php echo $currentMessage->getSender(); ?>
+                                <?php echo $currentMessage->getRecipient(); ?>
                             </span>
                                 <div class="pull-right inline">
                                     <?php echo formatDate(strtotime($currentMessage->getDate())) . " (" . formatTime(strtotime($currentMessage->getDate())) . " ago)"; ?>

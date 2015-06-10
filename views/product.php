@@ -196,6 +196,22 @@ if(isset($_GET['redeemcoupon']) && $_GET['redeemcoupon'] == "true" && isset($_GE
     }
 }
 
+if (isset($_POST['contact-seller']) && isset($_POST['email']) && isset($_POST['name']) && isset($_POST['message'])) {
+    if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+        $uas->addMessage(new ErrorSuccessMessage('Invalid Email'));
+    } else {
+        $message = new Message();
+
+        $message->setSender($_POST['email']);
+        $message->setRecipient($seller->getId());
+        $message->setMessage(htmlspecialchars($_POST['message'], ENT_QUOTES));
+
+        $message->send();
+
+        $uas->addMessage(new ErrorSuccessMessage('Message sent!', false));
+    }
+}
+
 foreach ($product->getCurrency() as $currency) {
     switch ($currency) {
         case ProductCurrency::PAYPAL:
@@ -230,11 +246,46 @@ $view = new View();
 
 $view->setProductId($product->getId());
 $view->setIp(getRealIp());
+
 if (isset($_SERVER['HTTP_REFERER'])) {
-    $view->setReferrer(htmlspecialchars($_SERVER['HTTP_REFERER']));
+    $view->setReferrer(htmlspecialchars($_SERVER['HTTP_REFERER'], ENT_QUOTES));
 }
 
 $view->create();
+
+$affiliate = false;
+
+if (count($url) == 4 && $url[2] == 'a') {
+    $affiliate = strcasecmp($url[3], $product->getAffiliateId()) == 0;
+}
+
+if ($affiliate && isset($_POST['affiliate-register']) && isset($_POST['email'])) {
+    if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+        $uas->addMessage(new ErrorSuccessMessage('Invalid Email'));
+    } else {
+        $aff = new Affiliate();
+
+        if ($aff->readByEmailProductId($_POST['email'], $product->getId())) {
+            $uas->addMessage(new ErrorSuccessMessage('Email is already registered as an affiliate for this product'));
+        } else {
+            $password = generateRandomString(10);
+
+            $aff = new Affiliate();
+
+            $aff->setEmail($_POST['email']);
+            $aff->setProductId($product->getId());
+            $aff->setPassword($password);
+
+            $aff->create();
+
+            $mailer = new Mailer();
+
+            $mailer->sendTemplate(EmailTemplate::AFFILIATEREGISTER, $_POST['email'], '', $product->getUrl() . '/' . $aff->getId(), $password);
+
+            $uas->addMessage(new ErrorSuccessMessage('Affiliate Registered. Please check your email for more information', false));
+        }
+    }
+}
 
 __header($product->getTitle());
 ?>
@@ -244,6 +295,11 @@ __header($product->getTitle());
     }
 </style>
 <div style='max-width: 700px; margin: 70px auto 0 auto;'>
+<?php
+if ($uas->hasMessage()) {
+    $uas->printMessages();
+}
+?>
     <div class='row'>
         <div class='col-lg-12'>
             <div class='step-1'>
@@ -266,7 +322,7 @@ __header($product->getTitle());
                 <section class='panel'>
                     <div class='row' style='margin: 20px 0px;'>
                         <div class='col-lg-6 visible-xs' style='margin-bottom: 50px;'>
-                            <button class='btn btn-success pull-right' style='margin-top: 3px;' data-toggle='modal' data-target='#contact'>Contact Seller <span class='fa fa-envelope'></span></button>
+                            <button class='btn btn-success pull-right' style='margin-top: 3px;' data-toggle='modal' data-target='#contact-seller'>Contact Seller <span class='fa fa-envelope'></span></button>
                             <span class='thumb-small avatar pull-right' style='margin: 0 7px; width: 43px;'>
                                <img class='img-circle' src='/images/avatar.png' style="width: 43px;">
                             </span>
@@ -281,7 +337,7 @@ __header($product->getTitle());
                             <div class='btn btn-success'>4</div>
                         </div>
                         <div class='col-lg-12 hidden-xs'>
-                            <button class='btn btn-success pull-right' style='margin-top: 3px;' data-toggle='modal' data-target='#contact'>Contact Seller <span class='fa fa-envelope'></span></button>
+                            <button class='btn btn-success pull-right' style='margin-top: 3px;' data-toggle='modal' data-target='#contact-seller'>Contact Seller <span class='fa fa-envelope'></span></button>
                             <span class='thumb-small avatar pull-right' style='margin: 0 7px; width: 43px;'>
                                 <img class='img-circle' src='/images/avatar.png' style="width: 43px;">
                             </span>
@@ -409,8 +465,72 @@ __header($product->getTitle());
                 </div>
             </div>
     </div>
+    <div class="modal fade" id="contact-seller" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Contact Seller</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post" style="margin-top:10px;">
+                        <div class="form-group">
+                            <input name="email" type="email" class="form-control" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input name="name" type="text" class="form-control" placeholder="Name" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="message" id="email_message" class="form-control" placeholder="Message" style="height: 120px;" required></textarea>
+                        </div>
+                        <button type="submit" name='contact-seller' class="btn btn-flat btn-success">Send</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php
+    if ($affiliate) {
+        ?>
+        <div class="modal fade" id="affiliate" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                                class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Become an Affiliate</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="#" method="post">
+                            <p>The seller has enabled the affiliate system for this product. By becoming
+                                an affiliate you will receive a commission per sale determined by the
+                                seller. To signup all you need is a paypal email address. Please note
+                                that for each sale, both the seller and the affiliate will be notified,
+                                but the payout will be sent manually by the seller and not
+                                instantly.</p>
+
+                            <p>The seller has agreed to give
+                                affiliates <?php echo $product->getAffiliatePercent(); ?>% of each
+                                sale.</p>
+
+                            <div class="form-group">
+                                <input name="email" type="email" class="form-control" placeholder="Email Address">
+                            </div>
+
+                            <button name='affiliate-register' type="submit" class="btn btn-flat btn-success btn-block">Become an Affiliate</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
+    ?>
 </div>
 <script>
+    $('#affiliate').modal('show');
+
     var apiEndpoint = '<?php echo $product->getUrl(); ?>/buy';
     var currency = '0';
 

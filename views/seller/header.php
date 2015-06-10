@@ -44,7 +44,6 @@ function __header($title = 'Dashboard') {
             <script src="/seller-theme/js/slider/bootstrap-slider.js"></script>
             <script src="/seller-theme/js/select2/select2.min.js" cache="false"></script>
             <script src="/seller-theme/js/charts/flot/jquery.flot.min.js" cache="false"></script>
-            <script src="/seller-theme/js/charts/flot/jquery.flot.tooltip.min.js" cache="false"></script>
             <script src="/seller-theme/js/charts/flot/jquery.flot.resize.js" cache="false"></script>
             <script src="/seller-theme/js/charts/flot/jquery.flot.orderBars.js" cache="false"></script>
             <script src="/seller-theme/js/charts/flot/jquery.flot.pie.min.js" cache="false"></script>

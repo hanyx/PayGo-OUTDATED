@@ -96,13 +96,13 @@ class Message {
 		
 		switch ($folder) {
 			case MessageFolder::INBOX:
-				$q = DB::getInstance()->prepare('SELECT id FROM messages WHERE folder = ? AND recipient = ? AND (deleted = ? OR deleted = ?)');
+				$q = DB::getInstance()->prepare('SELECT id FROM messages WHERE folder = ? AND recipient = ? AND (deleted = ? OR deleted = ?) ORDER BY date DESC');
 				break;
 			case MessageFolder::SENT:
-				$q = DB::getInstance()->prepare('SELECT id FROM messages WHERE folder = ? AND sender = ? AND (deleted = ? OR deleted = ?)');
+				$q = DB::getInstance()->prepare('SELECT id FROM messages WHERE folder = ? AND sender = ? AND (deleted = ? OR deleted = ?) ORDER BY date DESC');
 				break;
 			case MessageFolder::PRODUCTDELIVERY:
-				$q = DB::getInstance()->prepare('SELECT id FROM messages WHERE folder = ? AND sender = ? AND (deleted = ? OR deleted = ?)');
+				$q = DB::getInstance()->prepare('SELECT id FROM messages WHERE folder = ? AND sender = ? AND (deleted = ? OR deleted = ?) ORDER BY date DESC');
 				break;
 		}
 

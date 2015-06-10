@@ -25,6 +25,8 @@ class Affiliate {
 		$q = DB::getInstance()->prepare('INSERT into affiliates (email, password, product_id) VALUES (?, ?, ?)');
 		
 		$q->execute(array($this->email, $this->password, $this->productId));
+
+        $this->readByEmailProductId($this->email, $this->productId);
 	}
 	
 	public function read($id, $showDeleted = false) {
@@ -59,6 +61,18 @@ class Affiliate {
 
 		return $this->read($q[0]['id'], $showDeleted);
 	}
+
+    public function readByEmailProductId($email, $productId, $showDeleted = false) {
+        $q = DB::getInstance()->prepare('SELECT id FROM affiliates WHERE email = ? AND product_id = ? AND (deleted = ? OR deleted = ?)');
+        $q->execute(array($email, $productId, $showDeleted, false));
+        $q = $q->fetchAll();
+
+        if (count($q) != 1) {
+            return false;
+        }
+
+        return $this->read($q[0]['id'], $showDeleted);
+    }
 		
 	public function update() {
 		$q = DB::getInstance()->prepare('UPDATE affiliates SET deleted = ?, orders = ?, unpaid_orders = ?, unpaid_fiat = ? WHERE id = ?');
@@ -153,6 +167,22 @@ class Affiliate {
 
     public function setUnpaidFiat($unpaidFiat) {
         $this->unpaidFiat = $unpaidFiat;
+    }
+
+    public function setEmail($email) {
+        $this->email = $email;
+    }
+
+    public function getPassword() {
+        return $this->password;
+    }
+
+    public function setPassword($password) {
+        $this->password = password_hash($password, 1);
+    }
+
+    public function setProductId($productId) {
+        $this->productId = $productId;
     }
 
 }

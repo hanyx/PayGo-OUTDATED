@@ -32,6 +32,7 @@ abstract class EmailTemplate {
     const SERIALS = 9;
     const OUTOFSTOCK = 10;
     const SELLERSALE = 11;
+    const AFFILIATEREGISTER = 12;
 }
 
 abstract class UserAccountType {
