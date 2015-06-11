@@ -403,7 +403,7 @@ class Mailer {
         $response = curl_exec($session);
         curl_close($session);
 
-        Logger::log('Mail: ' . $content);
+        Logger::log('Mail: Email: ' . $email . ' Subject: ' . $subject . ' Message: ' . $content);
 
 		return true;
 	}
