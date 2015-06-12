@@ -212,36 +212,6 @@ if (isset($_POST['contact-seller']) && isset($_POST['email']) && isset($_POST['n
     }
 }
 
-foreach ($product->getCurrency() as $currency) {
-    switch ($currency) {
-        case ProductCurrency::PAYPAL:
-            if ($seller->getPaypal() == '') {
-                die('invalid payment setup 0');
-            }
-            break;
-        case ProductCurrency::PAYPALSUB:
-            if ($seller->getPaypal() == '') {
-                die('invalid payment setup 1');
-            }
-            break;
-        case ProductCurrency::BITCOIN:
-            if ($seller->getBitcoin() == '') {
-                die('invalid payment setup 2');
-            }
-            break;
-        case ProductCurrency::LITECOIN:
-            if ($seller->getLitecoin() == '') {
-                die('invalid payment setup 3');
-            }
-            break;
-        case ProductCurrency::OMNICOIN:
-            if ($seller->getOmnicoin() == '') {
-                die('invalid payment setup 4');
-            }
-            break;
-    }
-}
-
 $view = new View();
 
 $view->setProductId($product->getId());
@@ -389,19 +359,19 @@ if ($uas->hasMessage()) {
                         </div>
                         <div class='col-lg-9'>
                             <?php
-                            if ($product->acceptsCurrency(ProductCurrency::PAYPAL)) {
+                            if ($product->acceptsCurrency(ProductCurrency::PAYPAL) && $seller->getPaypal() != '') {
                                 echo '<button onclick=\'pay(' . ProductCurrency::PAYPAL . ');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'>PayPal</button>';
                             }
-                            if ($product->acceptsCurrency(ProductCurrency::PAYPALSUB)) {
+                            if ($product->acceptsCurrency(ProductCurrency::PAYPALSUB) && $seller->getPaypal() != '') {
                                 echo '<button onclick=\'pay(' . ProductCurrency::PAYPALSUB . ');\' class=\'btn btn-success\' style=\'width: 205px; font-size: 18px; margin: 0 5px 5px 0;\'>PayPal Subscription</button>';
                             }
-                            if ($product->acceptsCurrency(ProductCurrency::BITCOIN)) {
+                            if ($product->acceptsCurrency(ProductCurrency::BITCOIN) && $seller->getBitcoin() != '') {
                                 echo '<button onclick=\'pay(' .ProductCurrency::BITCOIN . ');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 20px; height: 18px; background-image: url("/images/crypto-icons.png"); background-position: -3px -20px; vertical-align: -2px;\'></span>Bitcoin</button>';
                             }
-                            if ($product->acceptsCurrency(ProductCurrency::LITECOIN)) {
+                            if ($product->acceptsCurrency(ProductCurrency::LITECOIN) && $seller->getLitecoin() != '') {
                                 echo '<button onclick=\'pay(' . ProductCurrency::LITECOIN . ');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 20px; height: 19px; background-image: url("/images/crypto-icons.png"); background-position: -3px -78px; vertical-align: -2px;\'></span>Litecoin</button>';
                             }
-                            if ($product->acceptsCurrency(ProductCurrency::OMNICOIN)) {
+                            if ($product->acceptsCurrency(ProductCurrency::OMNICOIN) && $seller->getOmnicoin() != '') {
                                 echo '<button onclick=\'pay(' . ProductCurrency::OMNICOIN . ');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 23px; height: 22px; background-image: url("/images/crypto-icons.png"); background-position: -3px -137px; vertical-align: -4px;\'></span>Omnicoin</button>';
                             }
                             ?>
