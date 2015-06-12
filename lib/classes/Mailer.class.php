@@ -187,14 +187,15 @@ class Mailer {
                     $message =
                     'Hey there,
 
-                    Thanks for your recent purchase on PayIvy.com.';
+                    Thanks for your recent purchase on PayIvy.com.
+
+                    Here\'s a custom message from the seller of the item: ' . $arg2;
                 } else {
                     $message =
                     'Hey there,
 
                     Thanks for your recent purchase on PayIvy.com.
-
-                    Here\'s a custom message from the seller of the item: ' . $arg2;
+                    ';
                 }
 
                 $message .= 'Here are the serials you purchased:
@@ -202,7 +203,6 @@ class Mailer {
                 <b>' . implode('</b><br>', $arg1) . '</b>
 
                 ';
-
 
                 break;
             case EmailTemplate::NETSEALS:
