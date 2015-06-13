@@ -124,7 +124,7 @@ if (count($url) == 3 && $url[2] == 'buy') {
                                 break;
                         }
 
-                        $tx = $cp->CreateTransaction(array('buyer_name' => '', 'buyer_email' => '', 'amount' => $order->calculateFiatWithCoupon() * $order->getQuantity(), 'currency1' => 'USD', 'currency2' => $currency, 'address' => $address, 'item_name' => $product->getTitle(), 'item_number' => $product->getId(), 'custom' => $order->getTxid(), 'ipn_url' => $config['url']['protocol'] . $config['url']['domain'] . '/ipn/coinpayments/', 'quantity' => 1, 'success_url' => $product->getSuccessUrl()));
+                        $tx = $cp->CreateTransaction(array('buyer_name' => '', 'buyer_email' => $order->getEmail(), 'amount' => $order->calculateFiatWithCoupon() * $order->getQuantity(), 'currency1' => 'USD', 'currency2' => $currency, 'address' => $address, 'item_name' => $product->getTitle(), 'item_number' => $product->getId(), 'custom' => $order->getTxid(), 'ipn_url' => $config['url']['protocol'] . $config['url']['domain'] . '/ipn/coinpayments/', 'quantity' => 1, 'success_url' => $product->getSuccessUrl()));
 
                         if ($tx['error'] != 'ok') {
                             $errorMessage = 'RELOAD';
