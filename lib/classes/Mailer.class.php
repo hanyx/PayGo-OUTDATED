@@ -7,10 +7,6 @@ class Mailer {
 
 		switch ($template) {
 			case EmailTemplate::ACTIVATE:
-				if ($arg1 == null) {
-					return false;
-				}
-
 				$subject = 'Activate your account on PayIvy';
 				
 				$message = 
@@ -28,10 +24,6 @@ class Mailer {
 				';
 				break;
 			case EmailTemplate::RESET:
-				if ($arg1 == null || $arg2 == null) {
-					return false;
-				}
-				
 				$subject = 'Password reset for your account on PayIvy';
 				
 				$message = 
@@ -51,10 +43,6 @@ class Mailer {
 				';
 				break;
 			case EmailTemplate::UPDATEPASSWORD:
-				if ($arg1 == null || $arg2 == null) {
-					return false;
-				}
-				
 				$subject = 'Password update for your account on PayIvy';
 				
 				$message = 
@@ -73,10 +61,6 @@ class Mailer {
 				This request was initiated by a user with the IP: ' . $arg2;
 				break;
 			case EmailTemplate::UPDATEPAYMENTDETAILS:
-				if ($arg1 == null || $arg2 == null) {
-					return false;
-				}
-
 				$subject = 'Payment detail change for your account on PayIvy';
 
 				$message =
@@ -90,10 +74,6 @@ class Mailer {
 				';
 				break;
 			case EmailTemplate::SELLERMESSAGE:
-				if ($arg1 == null) {
-					return false;
-				}
-				
 				$subject = 'New message from ' . $username . ' on PayIvy';
 				
 				$message = 
@@ -106,10 +86,6 @@ class Mailer {
 				
 				break;
 			case EmailTemplate::USERMESSAGE:
-				if ($arg1 == null || $arg2 == null) {
-					return false;
-				}
-				
 				$subject = 'New message from a user on PayIvy';
 				
 				$message = 
@@ -141,10 +117,6 @@ class Mailer {
 				
 				break;
             case EmailTemplate::DOWNLOAD:
-                if ($arg1 == null) {
-                    return false;
-                }
-
                 $subject = 'Your product download from PayIvy.com';
 
                 if ($arg2 != '') {
@@ -153,7 +125,9 @@ class Mailer {
 
                     Thanks for your recent purchase on PayIvy.com.
 
-                    Here\'s a custom message from the seller of the item: ' . $arg2;
+                    Here\'s a custom message from the seller of the item: ' . $arg2 . '
+
+                    ';
                 } else {
                     $message =
                     'Hey there,
@@ -163,7 +137,9 @@ class Mailer {
 
                 $message .= '
 
-                Here\'s a link to download your product: <b><a href="' . $config['url']['protocol'] . $config['url']['domain'] . '/download/' . $arg1 . '">' . $config['url']['protocol'] . $config['url']['domain'] . '/download/' . $arg1 . '</a></b>';
+                Here\'s a link to download your product: <b><a href="' . $config['url']['protocol'] . $config['url']['domain'] . '/download/' . $arg1 . '">' . $config['url']['protocol'] . $config['url']['domain'] . '/download/' . $arg1 . '</a></b>
+                
+                Transaction ID: ' . $arg4;
 
                 break;
             case EmailTemplate::OUTOFSTOCK:
@@ -177,10 +153,6 @@ class Mailer {
 
                 break;
             case EmailTemplate::SERIALS:
-                if ($arg1 == null) {
-                    return false;
-                }
-
                 $subject = 'Your purchase on PayIvy';
 
                 if ($arg2 != '') {
@@ -189,7 +161,9 @@ class Mailer {
 
                     Thanks for your recent purchase on PayIvy.com.
 
-                    Here\'s a custom message from the seller of the item: ' . $arg2;
+                    Here\'s a custom message from the seller of the item: ' . $arg2 . '
+
+                    ';
                 } else {
                     $message =
                     'Hey there,
@@ -200,16 +174,12 @@ class Mailer {
 
                 $message .= 'Here are the serials you purchased:
 
-                <b>' . implode('</b><br>', $arg1) . '</b>
-
-                ';
+                <b>' . implode('</b><br><b>', $arg1) . '</b>
+                
+                Transaction ID: ' . $arg4;
 
                 break;
             case EmailTemplate::NETSEALS:
-                if ($arg1 == null) {
-                    return false;
-                }
-
                 $subject = 'Your purchase on PayIvy';
 
                 if ($arg2 != '') {
@@ -243,16 +213,12 @@ class Mailer {
                     <b>Serial: ' . $key[1] . '</b><br><br>';
                 }
 
+                $message .= '
+                
+                Transaction ID: ' . $arg4;
+
                 break;
             case EmailTemplate::SELLERSALE:
-                if ($arg1 == null) {
-                    return false;
-                }
-
-                if ($arg2 == null) {
-                    return false;
-                }
-
                 $subject = 'New purchase of ' . $arg1;
 
                 $message =
@@ -266,7 +232,7 @@ class Mailer {
                 Quantity: <b>' . $arg3 . '</b>
                 Total Amount: <b>' . $arg4 . '</b>
                 Buyer Email: <b>' . $arg5 . '</b>
-                Transaction ID; <b>' . $arg6 . '</b>
+                Transaction ID: <b>' . $arg6 . '</b>
                 ';
 
                 foreach ($arg7 as $question) {
@@ -275,14 +241,6 @@ class Mailer {
 
                 break;
             case EmailTemplate::AFFILIATEREGISTER:
-                if ($arg1 == null) {
-                    return false;
-                }
-
-                if ($arg2 == null) {
-                    return false;
-                }
-
                 $subject = 'Affiliate Registration on PayIvy.com';
 
                 $message =
@@ -291,8 +249,7 @@ class Mailer {
                 Thanks for signing up as an affiliate. Here is your affiliate information:
 
                 Affiliate Url: <b>' . $arg1 . '</b>
-                Password: <b>' . $arg2 . '</b>
-                ';
+                Password: <b>' . $arg2 . '</b>';
 
                 break;
 		}

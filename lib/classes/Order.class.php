@@ -53,7 +53,7 @@ class Order {
 	
 	public function create() {
 		while (true) {
-			$this->txid = generateRandomString(64);
+			$this->txid = 'PI-' . generateRandomString(61);
 			
 			$order = new Order();
             
@@ -186,7 +186,7 @@ class Order {
 
                     $mailer = new Mailer();
 
-                    $mailer->sendTemplate(EmailTemplate::DOWNLOAD, $this->email, '', $download->getLink(), $product->getCustomDelivery(), $product->getSellerId());
+                    $mailer->sendTemplate(EmailTemplate::DOWNLOAD, $this->email, '', $download->getLink(), $product->getCustomDelivery(), $product->getSellerId(), $this->txid);
 
                     break;
                 case ProductType::NETSEAL:
@@ -200,7 +200,7 @@ class Order {
 
                     $mailer = new Mailer();
 
-                    $mailer->sendTemplate(EmailTemplate::NETSEALS, $this->email, '', $seals, $product->getCustomDelivery(), $product->getSellerId());
+                    $mailer->sendTemplate(EmailTemplate::NETSEALS, $this->email, '', $seals, $product->getCustomDelivery(), $product->getSellerId(), $this->txid);
 
                     break;
                 case ProductType::SERIAL:
@@ -218,7 +218,7 @@ class Order {
 
                         $mailer = new Mailer();
 
-                        $mailer->sendTemplate(EmailTemplate::SERIALS, $this->email, '', $keys, $product->getCustomDelivery(), $product->getSellerId());
+                        $mailer->sendTemplate(EmailTemplate::SERIALS, $this->email, '', $keys, $product->getCustomDelivery(), $product->getSellerId(), $this->txid);
 
                     }
 

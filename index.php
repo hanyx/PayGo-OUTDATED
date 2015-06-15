@@ -58,9 +58,10 @@ $messages->addPage(			new Page(						array(	array('seller', 'messages', 'compose
 																	array('seller', 'messages', 'reply', '*')), 					'views/seller/messages-compose.php', 			'Compose'			                    ));
 $affiliates->addPage(		new Page(						array(	array('seller', 'affiliates'),
 																	array('seller', 'affiliates', 'pay', '*')), 					'views/seller/affiliates.php', 					'Affiliates'		                    ));
-$products->addPage(			new Page(						array(	array('seller', 'products', 'view')),							'views/seller/products-list.php', 				'View / Edit'		                    ));
+$products->addPage(			new Page(						array(	array('seller', 'products', 'view'),
+                                                                    array('seller', "products", 'view', 'delete', '*')),	        'views/seller/products-list.php', 				'View / Edit'		                    ));
 $products->addPage(			new Page(						array(	array('seller', 'products', 'create'),
-																	array('seller', 'products', 'edit', '*')),                  	'views/seller/products-create-edit.php', 		'Create'		                        ));
+																	array('seller', 'products', 'edit', '*')),                      'views/seller/products-create-edit.php', 		'Create'		                        ));
 $products->addPage(		    new Page(						array(	array('seller', 'products', 'orders')), 						'views/seller/orders.php', 				    	'Orders'                                ));
 $products->addPage(			new Page(						array(	array('seller', 'products', 'files'),
                                                                     array('seller', 'products', 'files', 'upload')),				'views/seller/files.php', 			        	'Files'	        	                    ));

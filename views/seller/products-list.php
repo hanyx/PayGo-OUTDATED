@@ -22,7 +22,8 @@ if (isset($_GET['getdata'])) {
                 'notes' => $product->getNotes(),
                 'orders' => $numOrders,
                 'revenue' => $revenue,
-                'configure' => '<a href=\'/seller/products/edit/' . $product->getId() . '\'><i class=\'fa fa-cog\'></i></a> <a href=\'#\' onclick="deleteProduct(' . $product->getId() . ');"><i class=\'fa fa-trash-o\'></i></a>'
+                'configure' => '<a href=\'/seller/products/edit/' . $product->getId() . '\'><i class=\'fa fa-cog\'></i></a>',
+                'delete' => '<a href="#" onClick="doModal(' . $product->getId() . ', \'' . htmlspecialchars($product->getTitle(), ENT_QUOTES) . '\');"><i class=\'fa fa-trash-o\'></i></a>'
             );
         }
 	}
@@ -31,34 +32,22 @@ if (isset($_GET['getdata'])) {
 	die();
 }
 
-if(isset($_GET['delete']) && is_numeric($_GET['delete'])){
-    $products = $uas->getUser()->getProducts();
+if (count($url) == 5 && $url['3'] == 'delete') {
+    $product = new Product();
 
-    foreach($products as $p){
-        $product = new Product();
+    if ($product->read($url['4']) && $product->getSellerId() == $uas->getUser()->getId()) {
+        $product->setDeleted();
+        $product->update();
 
-        if($product->read($_GET['delete'])){
-            $product->setDeleted(1);
-            $product->update();
-            break;
-        }
+        $uas->addMessage(new ErrorSuccessMessage('Product Deleted', false));
     }
-    die();
 }
 
 __header('Products');
 ?>
-<script>
-    function deleteProduct(id){
-        $.get('/seller/products/view',  {delete : id});
-        loadData(false);
-    }
-</script>
-
     <div class="wrapper">
         <div class='clearfix'>
             <?php $uas->printMessages(); ?>
-            <div class='alert alert-success alert-dismissable hidden' id="delete-alert">Successfully removed your product!<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button>
         </div>
         <section class='panel'>
             <table class='table table-striped m-b-none' data-ride='products'>
@@ -70,6 +59,7 @@ __header('Products');
                         <th>Orders</th>
                         <th>Revenue</th>
                         <th>Configure</th>
+                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -78,29 +68,41 @@ __header('Products');
         </section>
     </div>
     <script>
+        var table = $('[data-ride=\'products\']').dataTable( {
+            'bProcessing': true,
+            'sAjaxSource': '/seller/products/view?getdata=true',
+            'sDom': '<\'row\'<\'col-sm-6\'l><\'col-sm-6\'f>r>t<\'row\'<\'col-sm-6\'i><\'col col-sm-6\'p>>',
+            'sPaginationType': 'full_numbers',
+            'aoColumns': [
+                { 'mData': 'title' },
+                { 'mData': 'affiliate' },
+                { 'mData': 'notes' },
+                { 'mData': 'orders' },
+                { 'mData': 'revenue' },
+                { 'mData': 'configure' },
+                { 'mData': 'delete' }
+            ]
+        } );
 
-        function loadData(n){
-            if(!n){
-                $('[data-ride=\'products\']').dataTable().fnDestroy();
-                $('#delete-alert').removeClass("hidden");
-            }
+        function doModal(id, name) {
+            $('#delete-modal .modal-title').html('Are you sure you want to delete ' + name + '?<br><br>');
+            $('#delete-modal a').attr('href', '/seller/products/view/delete/' + id);
 
-            var table = $('[data-ride=\'products\']').dataTable( {
-                'bProcessing': true,
-                'sAjaxSource': '/seller/products/view?getdata=true',
-                'sDom': '<\'row\'<\'col-sm-6\'l><\'col-sm-6\'f>r>t<\'row\'<\'col-sm-6\'i><\'col col-sm-6\'p>>',
-                'sPaginationType': 'full_numbers',
-                'aoColumns': [
-                    { 'mData': 'title' },
-                    { 'mData': 'affiliate' },
-                    { 'mData': 'notes' },
-                    { 'mData': 'orders' },
-                    { 'mData': 'revenue' },
-                    { 'mData': 'configure' }
-                ]
-            } );
+            $('#delete-modal').modal();
         }
-        loadData(true);
 	</script>
+    <div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-footer">
+                    <a href="" type="button" class="btn btn-primary">Yes</a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
 <?php
 __footer();

@@ -32,13 +32,13 @@ if (count($url) == 4 && $url[3] == 'upload') {
 
                 die();
             } else {
-                die($_SESSION['file_error'] = 'FILE_OVERSIZE');
+                http_response_code(413);
             }
         } else {
-            die($_SESSION['file_error'] = 'BAD_FILETYPE');
+            http_response_code(415);
         }
     }
-    die($_SESSION['file_error'] = 'UPLOAD_ERROR');
+    http_response_code(417);
 }
 
 __header('Files');

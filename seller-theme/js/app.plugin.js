@@ -92,7 +92,7 @@
 	        	$this.data("loop") && setTimeout(function(){ $this.data("loop") && updatePie($this) }, 2000);        	
 	        },
 	        onStep: function(value) {
-	          this.$el.find('span').text(parseInt(value));
+	          //this.$el.find('span').text(parseInt(value));
 	        }
 	    });
 	});

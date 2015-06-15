@@ -15,7 +15,7 @@ if (count($url) == 2 && $url[1] == 'chart') {
 
         $days = $period == 0 ? 7 : ($period == 1 ? 31 : 365);
 
-        for ($day = 1; $day <= $days; $day++) {
+        for ($day = 0; $day < $days; $day++) {
             $response['data'][] = array($day, 0);
         }
 
@@ -41,7 +41,7 @@ if (count($url) == 2 && $url[1] == 'chart') {
                     $response['revenue'] += $order->getFiat();
 
                     if ($tab == 0) {
-                        $response['data'][$days - ((strtotime(date('Y-m-d')) / (24 * 60 * 60)) - ($date / (24 * 60 * 60)) + 1)][1] += $order->getFiat();
+                        $response['data'][(int)((strtotime(date('Y-m-d')) / (24 * 60 * 60)) - ($date / (24 * 60 * 60)))][1] += $order->getFiat();
                     }
                 }
             }
@@ -57,7 +57,7 @@ if (count($url) == 2 && $url[1] == 'chart') {
                     $response['sales']++;
 
                     if ($tab == 1) {
-                        $response['data'][$days - ((strtotime(date('Y-m-d')) / (24 * 60 * 60)) - ($date / (24 * 60 * 60)) + 1)][1]++;
+                        $response['data'][(int)((strtotime(date('Y-m-d')) / (24 * 60 * 60)) - ($date / (24 * 60 * 60)))][1]++;
                     }
                 }
             }
@@ -73,7 +73,7 @@ if (count($url) == 2 && $url[1] == 'chart') {
                     $response['views']++;
 
                     if ($tab == 2) {
-                        $response['data'][$days - ((strtotime(date('Y-m-d')) / (24 * 60 * 60)) - ($date / (24 * 60 * 60)) + 1)][1]++;
+                        $response['data'][(int)((strtotime(date('Y-m-d')) / (24 * 60 * 60)) - ($date / (24 * 60 * 60)))][1]++;
                     }
                 }
             }
@@ -81,8 +81,10 @@ if (count($url) == 2 && $url[1] == 'chart') {
     }
 
     foreach ($response['data'] as &$point) {
-        $point[0] = ((strtotime(date('Y-m-d')) - ($days - ($point[0] * 24 * 60 * 60))) * 1000) - (5 * 60 * 60 * 1000);
+        $point[0] = ((strtotime(date('Y-m-d')) - ($days + ($point[0] * 24 * 60 * 60))) - (5 * 60 * 60)) * 1000;
     }
+
+    $response['data'] = array_reverse($response['data']);
 
     die(json_encode($response));
 }
@@ -205,12 +207,75 @@ __header('Dashboard');
                                     <span class="pull-right"><?php echo $referrer['data']; ?></span>
                                     <?php echo $referrer['label']; ?>
                                 </li>
-                               <?php
+                                <?php
                                 $x++;
                             }
                             ?>
                         </ul>
                     </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel">
+                        <header class="panel-heading font-bold">Revenue Today</header>
+                        <div class="panel-body">
+                            <div class="text-center m-b">
+                                <div class="inline">
+                                    <div class="easypiechart" data-percent="100" data-line-width="25" data-track-color="#eee" data-bar-color="#afcf6f" data-scale-color="#ddd" data-loop="false" data-size="180">
+                                        <span class="h2">
+                                            <?php
+                                            $x = 0;
+
+                                            $orders = Order::getOrdersByUser($uas->getUser()->getId());
+
+                                            foreach ($orders as $order) {
+                                                if (date('Y-m-d', strtotime($order->getDate())) == date('Y-m-d')) {
+                                                    $x++;
+                                                }
+                                            }
+
+                                            echo '$' . number_format($x);
+                                            ?>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <section class="panel">
+                        <header class="panel-heading">
+                            <span>Products</span>
+                        </header>
+                        <ul class="list-group">
+                            <?php
+                            $products = $uas->getUser()->getProducts();
+
+                            foreach ($products as $product) {
+                                $sales = 0;
+                                $revenue = 0;
+
+                                $orders = $product->getOrders();
+
+                                foreach ($orders as $order) {
+                                    $sales++;
+                                    $revenue += $order->getFiat();
+                                }
+                                ?>
+                                <li class="list-group-item">
+                                    <div class="media">
+                                        <div class="pull-left media-large">
+                                            <div class="h4 m-t-mini"><strong><?php echo $product->getTitle(); ?></strong></div>
+                                        </div>
+                                        <div class="pull-right hidden-sm text-right m-t-mini">
+                                            <b class="badge bg-success" data-toggle="tooltip" data-title="Sales"><?php echo numberFormatLabel($sales, 'Sale'); ?></b>
+                                            <b class="badge bg-info" data-toggle="tooltip" data-title="Revenue">$<?php echo number_format($revenue) . ' Revenue'; ?></b>
+                                        </div>
+                                    </div>
+                                </li>
+                              <?php
+                            }
+                            ?>
+                        </ul>
+                    </section>
                 </div>
             </div>
         </section>
@@ -220,16 +285,13 @@ __header('Dashboard');
             $.plot($("#referrers"), <?php echo json_encode($referrerPie); ?>, {
                 series: {
                     pie: {
-                        combine: {
-                            color: "#999",
-                            threshold: 0.05
-                        },
                         show: true
                     }
                 },
                 colors: ["#5c677c","#594f8d","#92cf5c","#fb6b5b","#5dcff3"],
                 legend: {
-                    show: false
+                    show: true,
+                    labelFormatter: function() { return ''; }
                 },
                 grid: {
                     hoverable: true,
@@ -237,7 +299,7 @@ __header('Dashboard');
                 },
                 tooltip: true,
                 tooltipOpts: {
-                    content: "%s: %p.0%"
+                    content: "%p.0%"
                 }
             });
 
@@ -274,7 +336,7 @@ __header('Dashboard');
                     colors: ["#5dcff3"],
                     xaxis: {
                         mode: "time",
-                        timeformat: "%m/%d/%y",
+                        timeformat: "%a, %b %e, %Y",
                         minTickSize: [1, "day"]
                     },
                     yaxis: {
@@ -283,8 +345,8 @@ __header('Dashboard');
                     },
                     tooltip: true,
                     tooltipOpts: {
-                        content: "%x.1 is %y.4",
-                        defaultTheme: false,
+                        content: "%y.4",
+                        defaultTheme: true,
                         shifts: {
                             x: 0,
                             y: 20

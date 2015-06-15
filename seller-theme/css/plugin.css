@@ -345,7 +345,7 @@
   padding: 3px 5px;
   background-color: #000;
   z-index: 100;
-  color: #fff;
+  color: #000;
   opacity: .7;
   filter: alpha(opacity=70);
   -webkit-border-radius: 4px;

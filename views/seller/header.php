@@ -48,10 +48,12 @@ function __header($title = 'Dashboard') {
             <script src="/seller-theme/js/charts/flot/jquery.flot.orderBars.js" cache="false"></script>
             <script src="/seller-theme/js/charts/flot/jquery.flot.pie.min.js" cache="false"></script>
             <script src="/seller-theme/js/charts/flot/jquery.flot.time.js" cache="false"></script>
+            <script src="/seller-theme/js/charts/flot/jquery.flot.tooltip.min.js" cache="false"></script>
             <script src="/seller-theme/js/wysiwyg/jquery.hotkeys.js" cache="false"></script>
             <script src="/seller-theme/js/wysihtml5/wysihtml5.js" cache="false"></script>
             <script src="/seller-theme/js/dropzone/dropzone.js" cache="false"></script>
             <script src="/seller-theme/js/bootstrap-tagsinput.min.js" cache="false"></script>
+            <script src="/seller-theme/js/charts/easypiechart/jquery.easy-pie-chart.js"></script>
 
             <script src="/seller-theme/js/app.js"></script>
             <script src="/seller-theme/js/app.plugin.js"></script>
