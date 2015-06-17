@@ -266,7 +266,7 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                                                 $files = $uas->getUser()->getFiles();
 
                                                 foreach ($files as $file) {
-                                                    echo '<option ' . (($product->getType() == ProductType::DOWNLOAD && $file->getId() == $product->getFileId()) ? 'selected=1' : '') . 'value=\'' . $file->getId() . '\'>' . $file->getName() . '</option>';
+                                                    echo '<option ' . (($product->getType() == ProductType::DOWNLOAD && $file->getId() == $product->getFileId()) ? 'selected=1' : '') . ' value=\'' . $file->getId() . '\'>' . $file->getName() . '</option>';
                                                 }
                                                 ?>
                                             </select>

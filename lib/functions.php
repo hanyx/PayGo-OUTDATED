@@ -166,5 +166,5 @@ function formatDate($time) {
 }
 
 function stripTags($string) {
-    return addslashes(preg_replace("/<(br|h1|h2|h3|h4|h5|h6|h7|h8|h9|h10|i|u|ul|li|ol|blockquote|a|img|b) [^>]*>/", "<$1>", strip_tags($string, '<br><h1><h2><h3><h4><h5><h6><h7><h8><h9><h10><i><u><ul><li><ol><blockquote><a><img><b>')));
+    return preg_replace("/<([a-z][a-z0-9]*)(?:[^>]*(\ssrc=['\"][^'\"]*['\"]))?[^>]*?(\/?)>/i", '<$1$2$3>', strip_tags($string, '<br><h1><h2><h3><h4><h5><h6><h7><h8><h9><h10><i><u><ul><li><ol><blockquote><a><img><b>'));
 }

@@ -254,6 +254,8 @@ class Mailer {
                 break;
 		}
 
+        $message = str_replace(array("\r\n","\r","\n"), '<br>', $message);
+
         if ($template == EmailTemplate::DOWNLOAD || $template == EmailTemplate::OUTOFSTOCK || $template == EmailTemplate::SERIALS || $template == EmailTemplate::NETSEALS) {
             $messaged = new Message();
 
@@ -263,6 +265,14 @@ class Mailer {
             $messaged->setFolder(MessageFolder::PRODUCTDELIVERY);
 
             $messaged->create();
+
+            $order = new Order();
+
+            $order->readByTxid($arg4, false);
+
+            $order->setProductDelivery($messaged->getId());
+
+            $order->update();
         }
 
 		$this->send($email, $message, $subject);
@@ -271,11 +281,7 @@ class Mailer {
 	
 	public function send($email, $content, $subject) {
 		global $config;
-        $this->content = $content;
-		
-		$content = str_replace(array("\r\n","\r","\n"), '<br>', $content);
-
-		$html = '<!DOCTYPE html PUBLIC \'-//W3C//DTD XHTML 1.0 Transitional//EN\' \'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\'>
+        $html = '<!DOCTYPE html PUBLIC \'-//W3C//DTD XHTML 1.0 Transitional//EN\' \'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\'>
 		<html>
 		<head>
 		  <meta http-equiv=\'Content-Type\' content=\'text/html; charset=UTF-8\' />

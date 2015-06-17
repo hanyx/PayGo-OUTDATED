@@ -27,6 +27,8 @@ class Message {
 		$q = DB::getInstance()->prepare('INSERT into messages (folder, recipient, sender, message, date) VALUES (?, ?, ?, ?, ?)');
 		
 		$q->execute(array($this->folder, $this->recipient, $this->sender, $this->message, $this->date));
+
+        $this->id = DB::getInstance()->lastInsertId();
 	}
 	
 	public function read($id, $showDeleted = false) {

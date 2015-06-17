@@ -54,7 +54,7 @@ if ($url['1'] == 'paypal') {
         Logger::logAndDie('IPN Fail: Invalid Currency');
     }
 
-    if (!strcasecmp($data['business'], $order->getMerchant())) {
+    if (strcasecmp($data['business'], $order->getMerchant()) !== 0) {
         Logger::logAndDie('IPN Fail: Invalid Merchant');
     }
 

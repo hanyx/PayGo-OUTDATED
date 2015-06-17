@@ -25,7 +25,9 @@ class Order {
 
     private $affiliate;
     private $affiliateUsed;
-	
+
+    private $productDelivery;
+
 	public function __construct() {
         $this->id = 0;
         $this->completed = false;
@@ -49,6 +51,8 @@ class Order {
 
         $this->affiliate = 0;
         $this->affiliateUsed = false;
+
+        $this->productDelivery = 0;
 	}
 	
 	public function create() {
@@ -64,9 +68,9 @@ class Order {
 		
 		$this->date = date('Y-m-d H:i:s');
 		
-		$q = DB::getInstance()->prepare('INSERT into orders (txid, date, product_id, quantity, currency, fiat, email, ip, after_success_url, merchant, coupon_used, coupon_name, coupon_reduction, affiliate, affiliate_used) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+		$q = DB::getInstance()->prepare('INSERT into orders (txid, date, product_id, quantity, currency, fiat, email, ip, after_success_url, merchant, coupon_used, coupon_name, coupon_reduction, affiliate, affiliate_used, product_delivery) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 		
-		$q->execute(array($this->txid, $this->date, $this->productId, $this->quantity, $this->currency, $this->fiat, $this->email, $this->ip, $this->successUrl, $this->merchant, $this->couponUsed, $this->couponName, $this->couponReduction, $this->affiliate, $this->affiliateUsed));
+		$q->execute(array($this->txid, $this->date, $this->productId, $this->quantity, $this->currency, $this->fiat, $this->email, $this->ip, $this->successUrl, $this->merchant, $this->couponUsed, $this->couponName, $this->couponReduction, $this->affiliate, $this->affiliateUsed, $this->productDelivery));
 
         foreach ($this->questions as $question) {
             $q = DB::getInstance()->prepare('INSERT into order_questions (order_id, question_index, question, response) VALUES (?, ?, ?, ?)');
@@ -78,7 +82,7 @@ class Order {
 	}
 	
 	public function read($id, $completedOnly = true) {
-		$q = DB::getInstance()->prepare('SELECT id, completed, txid, processor_txid, date, product_id, quantity, currency, fiat, native, email, ip, after_success_url, merchant, coupon_used, coupon_name, coupon_reduction, affiliate, affiliate_used FROM orders WHERE id = ? AND (completed = ? OR completed = ?)');
+		$q = DB::getInstance()->prepare('SELECT id, completed, txid, processor_txid, date, product_id, quantity, currency, fiat, native, email, ip, after_success_url, merchant, coupon_used, coupon_name, coupon_reduction, affiliate, affiliate_used, product_delivery FROM orders WHERE id = ? AND (completed = ? OR completed = ?)');
 		$q->execute(array($id, $completedOnly, true));
 		$q = $q->fetchAll();
 
@@ -108,6 +112,8 @@ class Order {
         $this->affiliate = $q[0]['affiliate'];
         $this->affiliateUsed = $q[0]['affiliate_used'];
 
+        $this->productDelivery = $q[0]['product_delivery'];
+
         $q = DB::getInstance()->prepare('SELECT question, response FROM order_questions WHERE order_id = ? AND (completed = ? OR completed = ?)');
         $q->execute(array($id, $completedOnly, true));
         $q = $q->fetchAll();
@@ -132,8 +138,8 @@ class Order {
 	}
 
     public function update() {
-        $q = DB::getInstance()->prepare('UPDATE orders SET completed = ?, processor_txid = ?, native = ? WHERE id = ?');
-        $q->execute(array($this->completed, $this->processorTxid, $this->native, $this->id));
+        $q = DB::getInstance()->prepare('UPDATE orders SET merchant = ?, completed = ?, processor_txid = ?, native = ?, product_delivery = ? WHERE id = ?');
+        $q->execute(array($this->merchant, $this->completed, $this->processorTxid, $this->native, $this->productDelivery, $this->id));
     }
 	
 	public static function getOrdersByProduct($pid, $completedOnly = true) {
@@ -207,7 +213,7 @@ class Order {
                     if (count($product->getSerials()) < $this->getQuantity()) {
                         $mailer = new Mailer();
 
-                        $mailer->sendTemplate(EmailTemplate::OUTOFSTOCK, $this->email, '', '', '', $product->getSellerId());
+                        $mailer->sendTemplate(EmailTemplate::OUTOFSTOCK, $this->email, '', '', '', $product->getSellerId(), $this->txid);
                     } else {
 
                         $keys = array_slice($product->getSerials(), 0, $this->quantity);
@@ -416,5 +422,13 @@ class Order {
 
     public function setAffiliate($affiliate) {
         $this->affiliate = $affiliate;
+    }
+
+    public function getProductDelivery() {
+        return $this->productDelivery;
+    }
+
+    public function setProductDelivery($productDelivery) {
+        $this->productDelivery = $productDelivery;
     }
 }

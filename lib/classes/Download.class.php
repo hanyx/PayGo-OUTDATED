@@ -15,7 +15,7 @@ class Download {
 
     public function create() {
         while (true) {
-            $this->link = generateRandomString(5);
+            $this->link = generateRandomString(32);
 
             $download = new Download();
 

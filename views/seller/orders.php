@@ -6,7 +6,13 @@ if (isset($_GET['getdata'])) {
 
     foreach ($orders as $order) {
         $product = new Product();
-        $product->read($order->getProductId());
+        $product->read($order->getProductId(), true);
+
+        $productDelivery = new Message();
+
+        if (!$productDelivery->read($order->getProductDelivery())) {
+            $productDelivery = false;
+        }
 
         $data[] = array(
             'date' => $order->getDate(),
@@ -15,7 +21,8 @@ if (isset($_GET['getdata'])) {
             'txid' => $order->getTxid(),
             'currency' => ($order->getCurrency() == ProductCurrency::PAYPAL ? 'PayPal' : ($order->getCurrency() == ProductCurrency::PAYPALSUB ? 'PayPal Subscription' : ($order->getCurrency() == ProductCurrency::BITCOIN ? 'Bitcoin' : ($order->getCurrency() == ProductCurrency::LITECOIN ? 'Litecoin' : ($order->getCurrency() == ProductCurrency::OMNICOIN ? 'Omnicoin' : ''))))),
             'fiat' => '$' . $order->getFiat(),
-            'product' => '<a href=\'' . $product->getUrl() . '\'>' . $product->getTitle() . '</a>'
+            'product' => '<a href=\'' . $product->getUrl() . '\'>' . $product->getTitle() . '</a>',
+            'product-delivery' => $productDelivery ? ('<a href="#" onClick="doModal(\'' . htmlspecialchars(str_replace("\r\n", '<br>', $productDelivery->getMessage()), ENT_QUOTES) . '\');">View</a>') : ''
         );
     }
 
@@ -40,6 +47,7 @@ __header('Orders');
                         <th>Currency</th>
                         <th>Amount</th>
                         <th>Product</th>
+                        <th>Product Delivery</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -60,9 +68,29 @@ __header('Orders');
                 { 'mData': 'txid' },
                 { 'mData': 'currency' },
                 { 'mData': 'fiat' },
-                { 'mData': 'product' }
+                { 'mData': 'product' },
+                { 'mData': 'product-delivery'}
             ]
         } );
+
+        function doModal(message) {
+            $('#product-delivery-modal .modal-body').html(message);
+
+            $('#product-delivery-modal').modal();
+        }
     </script>
+    <div class="modal fade" id="product-delivery-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Product Delivery</h4>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 <?php
 __footer();
