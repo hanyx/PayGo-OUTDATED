@@ -131,6 +131,8 @@ if (count($url) == 3 && $url[2] == 'buy') {
                             break;
                         }
 
+
+                        $order->setNative($tx['result']['amount']);
                         $order->setProcessorTxid($tx['result']['txn_id']);
 
                         $order->update();

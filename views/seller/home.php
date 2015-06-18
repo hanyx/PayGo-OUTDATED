@@ -229,11 +229,11 @@ __header('Dashboard');
 
                                             foreach ($orders as $order) {
                                                 if (date('Y-m-d', strtotime($order->getDate())) == date('Y-m-d')) {
-                                                    $x++;
+                                                    $x += $order->getFiat();
                                                 }
                                             }
 
-                                            echo '$' . number_format($x);
+                                            echo '$' . number_format($x, 2);
                                             ?>
                                         </span>
                                     </div>
@@ -267,7 +267,7 @@ __header('Dashboard');
                                         </div>
                                         <div class="pull-right hidden-sm text-right m-t-mini">
                                             <b class="badge bg-success" data-toggle="tooltip" data-title="Sales"><?php echo numberFormatLabel($sales, 'Sale'); ?></b>
-                                            <b class="badge bg-info" data-toggle="tooltip" data-title="Revenue">$<?php echo number_format($revenue) . ' Revenue'; ?></b>
+                                            <b class="badge bg-info" data-toggle="tooltip" data-title="Revenue">$<?php echo number_format($revenue, 2) . ' Revenue'; ?></b>
                                         </div>
                                     </div>
                                 </li>

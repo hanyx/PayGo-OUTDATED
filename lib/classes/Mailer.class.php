@@ -254,12 +254,10 @@ class Mailer {
                 break;
 		}
 
-        $message = str_replace(array("\r\n","\r","\n"), '<br>', $message);
-
         if ($template == EmailTemplate::DOWNLOAD || $template == EmailTemplate::OUTOFSTOCK || $template == EmailTemplate::SERIALS || $template == EmailTemplate::NETSEALS) {
             $messaged = new Message();
 
-            $messaged->setMessage($message);
+            $messaged->setMessage(str_replace(array("\r\n","\r","\n"), '<br>', $message));
             $messaged->setRecipient($email);
             $messaged->setSender($arg3);
             $messaged->setFolder(MessageFolder::PRODUCTDELIVERY);
@@ -281,6 +279,9 @@ class Mailer {
 	
 	public function send($email, $content, $subject) {
 		global $config;
+
+        $content = str_replace(array("\r\n","\r","\n"), '<br>', $content);
+
         $html = '<!DOCTYPE html PUBLIC \'-//W3C//DTD XHTML 1.0 Transitional//EN\' \'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\'>
 		<html>
 		<head>
@@ -344,15 +345,31 @@ class Mailer {
 
         $url = 'https://api.sendgrid.com/';
 
-        $params = array(
-            'api_user'  => $config['sendgrid']['username'],
-            'api_key'   => $config['sendgrid']['password'],
-            'to'        => $email,
-            'subject'   => $subject,
-            'html'      => $html,
-            'from'      => 'noreply@payivy.com',
-        );
+        if (is_array($email)) {
+            $json_string = array(
+                'to' => $email
+            );
 
+
+            $params = array(
+                'api_user' => $config['sendgrid']['username'],
+                'api_key' => $config['sendgrid']['password'],
+                'x-smtpapi' => json_encode($json_string),
+                'to' => 'newsletter@payivy.com',
+                'subject' => $subject,
+                'html' => $html,
+                'from' => 'noreply@payivy.com',
+            );
+        } else {
+            $params = array(
+                'api_user' => $config['sendgrid']['username'],
+                'api_key' => $config['sendgrid']['password'],
+                'to' => $email,
+                'subject' => $subject,
+                'html' => $html,
+                'from' => 'noreply@payivy.com',
+            );
+        }
 
         $request =  $url.'api/mail.send.json';
 

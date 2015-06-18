@@ -37,7 +37,7 @@ abstract class EmailTemplate {
 
 abstract class UserAccountType {
 	const PREMIUM = 0;
-	const ADMIN = 1;
+	const ADMIN = 100;
 }
 
 abstract class ProductType {
@@ -118,7 +118,7 @@ function generateRandomString($length = 128) {
 }
 
 function numberFormatLabel($value, $label) {
-	$value = number_format($value);
+	$value = number_format($value, 2);
 	
 	$label = formatS($value, $label);
 	
