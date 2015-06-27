@@ -38,8 +38,5 @@ $config = array(
         'public' => '',
         'merchant-id' => '',
         'ipn-secret' => ''
-    ),
-    'encryption' => array(
-        'aes' => ''
     )
 );
