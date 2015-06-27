@@ -65,6 +65,8 @@ $coupons->addPage(          new Page(                       array(  array('selle
                                                                     array('seller', 'coupons', 'edit', '*')),                       'views/seller/coupons-create-edit.php',         'Create'                                ));
 $admin->addPage(            new Page(                       array(  array('seller', 'admin', 'newsletter')),                        'views/seller/admin-newsletter.php',            'Newsletter'                            ));
 
+$uncategorized->addPage(	new Page(						array(	array('slack', 'stats')), 		        				    	'views/slack.php'                                                                       ));
+
 $pageManager->addCategory($uncategorized);
 $pageManager->addCategory($authPages);
 $pageManager->addCategory($dashboard);
