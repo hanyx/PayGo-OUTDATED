@@ -401,7 +401,7 @@ class Order {
     }
 
     public function calculateFiatWithCoupon() {
-        return $this->couponUsed ? ($this->fiat * ((100 - $this->couponReduction) / 100)) : $this->fiat;
+        return $this->couponUsed ? round($this->fiat * ((100 - $this->couponReduction) / 100), 2) : $this->fiat;
     }
 
     public function getId() {

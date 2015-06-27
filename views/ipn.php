@@ -46,7 +46,7 @@ if ($url['1'] == 'paypal') {
         die();
     }
 
-    if (($order->calculateFiatWithCoupon() * $order->getQuantity()) != $data['mc_gross']) {
+    if (($order->calculateFiatWithCoupon() * $order->getQuantity()) < $data['mc_gross']) {
         Logger::logAndDie('IPN Fail: Invalid Amount');
     }
 
@@ -108,7 +108,7 @@ if ($url['1'] == 'paypal') {
         Logger::logAndDie('IPN Fail: Invalid Processor TXID');
     }
 
-    if (!($_POST['status'] >= 100 || ($_POST['status'] >= 0 && $_POST['received_amount'] >= $_POST['amount2']))) {
+    if (!($_POST['status'] >= 100 || ($_POST['status'] >= 0 && $_POST['received_amount'] >= $_POST['amount2'] && $_POST['received_confirms'] >= 1))) {
         Logger::logAndDie('IPN Fail: Invalid Payment Status');
     }
 

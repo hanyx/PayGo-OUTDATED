@@ -7,8 +7,10 @@ function __header($title = 'Dashboard') {
         <head>
             <meta charset="utf-8"/>
             <title>PayIvy | <?php echo $title; ?></title>
-            <meta name="description"
-                  content="app, web app, responsive, admin dashboard, admin, flat, flat ui, ui kit, off screen nav"/>
+
+            <meta name="description" content="PayIvy is an online marketplace for all types of online products. If you want to sell your virtual items now, PayIvy is your one stop.">
+            <meta name="keywords" content="payivy, virtual marketplace, sell online, online shop, online selling">
+
             <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
             <link rel="stylesheet" href="/seller-theme/css/bootstrap.css" type="text/css"/>
             <link rel="stylesheet" href="/seller-theme/css/animate.css" type="text/css"/>

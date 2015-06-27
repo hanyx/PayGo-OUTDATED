@@ -83,8 +83,8 @@ if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['descriptio
         $uas->addMessage(new ErrorSuccessMessage('Product title must be between 3 and 100 characters in length'));
     } else if ($_POST['price'] == '') {
         $uas->addMessage(new ErrorSuccessMessage('Product price cannot be empty'));
-    } else if ($_POST['price'] <= 0) {
-        $uas->addMessage(new ErrorSuccessMessage('Product price must be greater than 0'));
+    } else if ($_POST['price'] < 0) {
+        $uas->addMessage(new ErrorSuccessMessage('Product price cannot be negative'));
     } else if (!is_numeric($_POST['price'])) {
         $uas->addMessage(new ErrorSuccessMessage('Invalid product price'));
     } else if ($_POST['type'] == '') {
@@ -375,7 +375,7 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                                     <div class="form-group">
                                         <label class="col-lg-2 control-label">Affiliate Secondary Link</label>
                                         <div class="col-lg-10">
-                                            <input name='secondary-aff-link' type='text' class='form-control' placeholder='Secondary Affiliate Link' value='<?php echo $product->getAffiliateSecondaryLink(); ?>'>
+                                            <input name='secondary-aff-link' type='text' class='form-control' placeholder='Optional' value='<?php echo $product->getAffiliateSecondaryLink(); ?>'>
                                         </div>
                                     </div>
                                 </div>

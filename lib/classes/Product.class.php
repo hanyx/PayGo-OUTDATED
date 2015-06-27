@@ -266,7 +266,7 @@ class Product {
 	public static function getProductsByUser($uid, $showDeleted = false) {
 		$products = array();
 		
-		$q = DB::getInstance()->prepare('SELECT id, type FROM products WHERE seller_id = ? AND (deleted = ? OR deleted = ?)');
+		$q = DB::getInstance()->prepare('SELECT id FROM products WHERE seller_id = ? AND (deleted = ? OR deleted = ?)');
 		$q->execute(array($uid, $showDeleted, false));
 		$q = $q->fetchAll();
 
@@ -280,7 +280,7 @@ class Product {
 		
 		return $products;
 	}
-	
+
 	public function getNotes() {
 		return '';
 	}

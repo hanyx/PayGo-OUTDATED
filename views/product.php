@@ -60,7 +60,7 @@ if (count($url) == 3 && $url[2] == 'buy') {
 
                     $order->setProductId($product->getId());
                     $order->setQuantity((int)$_POST['quantity']);
-                    $order->setCurrency($_POST['currency']);
+                    $order->setCurrency((int)$_POST['currency']);
                     $order->setFiat($product->getPrice());
                     $order->setEmail($_POST['email']);
                     $order->setIp(getRealIp());
@@ -96,49 +96,60 @@ if (count($url) == 3 && $url[2] == 'buy') {
 
                     $order->create();
 
-                    if ($order->getCurrency() == ProductCurrency::PAYPAL || $order->getCurrency() == ProductCurrency::PAYPALSUB) {
-                        $response['action'] = 'pp-checkout';
-                        $response['data'] = array('sub' => $order->getCurrency() == ProductCurrency::PAYPALSUB, 'business' => $seller->getPaypal(), 'itemname' => $product->getTitle(), 'itemnumber' => $product->getId(), 'amount' => $order->calculateFiatWithCoupon() * $order->getQuantity(), 'custom' => $order->getTxid(), 'shipping' => $product->getRequireShipping(), 'quantity' => 1, 'sub-length' => $product->getPaypalSubLength(), 'sub-unit' => $product->getPaypalSubUnit(), 'success_url' => $product->getSuccessUrl());
+                    if ($order->getFiat() != 0) {
+                        if ($order->getCurrency() == ProductCurrency::PAYPAL || $order->getCurrency() == ProductCurrency::PAYPALSUB) {
+                            $response['action'] = 'pp-checkout';
+                            $response['data'] = array('sub' => $order->getCurrency() == ProductCurrency::PAYPALSUB, 'business' => $seller->getPaypal(), 'itemname' => $product->getTitle(), 'itemnumber' => $product->getId(), 'amount' => $order->calculateFiatWithCoupon() * $order->getQuantity(), 'custom' => $order->getTxid(), 'shipping' => $product->getRequireShipping(), 'quantity' => 1, 'sub-length' => $product->getPaypalSubLength(), 'sub-unit' => $product->getPaypalSubUnit(), 'success_url' => $product->getSuccessUrl());
 
-                        $order->setMerchant($seller->getPaypal());
-                        $order->update();
-                    } else if ($order->getCurrency() == ProductCurrency::BITCOIN || $order->getCurrency() == ProductCurrency::LITECOIN|| $order->getCurrency() == ProductCurrency::OMNICOIN) {
-                        $cp = new CoinPaymentsAPI();
-                        $cp->Setup($config['coinpayments']['private'], $config['coinpayments']['public']);
+                            $order->setMerchant($seller->getPaypal());
+                            $order->update();
+                        } else if ($order->getCurrency() == ProductCurrency::BITCOIN || $order->getCurrency() == ProductCurrency::LITECOIN || $order->getCurrency() == ProductCurrency::OMNICOIN) {
+                            $cp = new CoinPaymentsAPI();
+                            $cp->Setup($config['coinpayments']['private'], $config['coinpayments']['public']);
 
-                        $currency = '';
-                        $address = '';
+                            $currency = '';
+                            $address = '';
 
-                        switch ($order->getCurrency()) {
-                            case ProductCurrency::BITCOIN:
-                                $currency = 'BTC';
-                                $address = $seller->getBitcoin();
+                            switch ($order->getCurrency()) {
+                                case ProductCurrency::BITCOIN:
+                                    $currency = 'BTC';
+                                    $address = $seller->getBitcoin();
+                                    break;
+                                case ProductCurrency::LITECOIN:
+                                    $currency = 'LTC';
+                                    $address = $seller->getLitecoin();
+                                    break;
+                                case ProductCurrency::OMNICOIN:
+                                    $currency = 'OMC';
+                                    $address = $seller->getOmnicoin();
+                                    break;
+                            }
+
+                            $tx = $cp->CreateTransaction(array('buyer_name' => '', 'buyer_email' => $order->getEmail(), 'amount' => $order->calculateFiatWithCoupon() * $order->getQuantity(), 'currency1' => 'USD', 'currency2' => $currency, 'address' => $address, 'item_name' => $product->getTitle(), 'item_number' => $product->getId(), 'custom' => $order->getTxid(), 'ipn_url' => $config['url']['protocol'] . $config['url']['domain'] . '/ipn/coinpayments/', 'quantity' => 1, 'success_url' => $product->getSuccessUrl()));
+
+                            if ($tx['error'] != 'ok') {
+                                $errorMessage = 'RELOAD';
                                 break;
-                            case ProductCurrency::LITECOIN:
-                                $currency = 'LTC';
-                                $address = $seller->getLitecoin();
-                                break;
-                            case ProductCurrency::OMNICOIN:
-                                $currency = 'OMC';
-                                $address = $seller->getOmnicoin();
-                                break;
+                            }
+
+
+                            $order->setNative($tx['result']['amount']);
+                            $order->setProcessorTxid($tx['result']['txn_id']);
+
+                            $order->update();
+
+                            $response['action'] = 'display-crypto';
+                            $response['data'] = array('txid' => $order->getTxid());
                         }
+                    } else {
+                        $order->setNative($order->getFiat());
+                        $order->setProcessorTxid('free-purchase');
 
-                        $tx = $cp->CreateTransaction(array('buyer_name' => '', 'buyer_email' => $order->getEmail(), 'amount' => $order->calculateFiatWithCoupon() * $order->getQuantity(), 'currency1' => 'USD', 'currency2' => $currency, 'address' => $address, 'item_name' => $product->getTitle(), 'item_number' => $product->getId(), 'custom' => $order->getTxid(), 'ipn_url' => $config['url']['protocol'] . $config['url']['domain'] . '/ipn/coinpayments/', 'quantity' => 1, 'success_url' => $product->getSuccessUrl()));
-
-                        if ($tx['error'] != 'ok') {
-                            $errorMessage = 'RELOAD';
-                            break;
-                        }
-
-
-                        $order->setNative($tx['result']['amount']);
-                        $order->setProcessorTxid($tx['result']['txn_id']);
+                        $order->process();
 
                         $order->update();
 
-                        $response['action'] = 'display-crypto';
-                        $response['data'] = array('txid' => $order->getTxid());
+                        $response['action'] = 'display-free';
                     }
 
                 } else {
@@ -337,7 +348,18 @@ if ($uas->hasMessage()) {
                             <td>
                                 <h5 class='semibold mt0 mb5'><?php echo $product->getTitle(); ?></h5>
                             </td>
-                            <td class='valign-top text-center'><input min='1' max='<?php echo $product->getType() == ProductType::SERIAL ? count($product->getSerials()) : '100'; ?>' style='width: 60px;' value='1' id='quantity' type='number'></td>
+                            <td class='valign-top text-center'>
+                                <?php
+                                if ($product->getType() == ProductType::SERIAL) { ?>
+                                    <input min='1' max='<?php echo count($product->getSerials()); ?>' style='width: 60px;' value='1' id='quantity' type='number'>
+                                <?php } else {
+                                    ?>
+                                    <input value='1' id='quantity' type='hidden'>
+                                    1
+                                    <?php
+                                }
+                                ?>
+                            </td>
                             <td class='valign-top text-center'><span class='bold'>$<?php echo $product->getPrice(); ?></span></td>
                             <td class='valign-top text-center btn-success' rowspan='2' style='font-weight: bold; font-size: 25px; vertical-align: middle;'><span class='bold total'>$<?php echo $product->getPrice(); ?></span></td>
                         </tr>
@@ -368,7 +390,7 @@ if ($uas->hasMessage()) {
                                 echo '<button onclick=\'pay(' . ProductCurrency::PAYPALSUB . ');\' class=\'btn btn-success\' style=\'width: 205px; font-size: 18px; margin: 0 5px 5px 0;\'>PayPal Subscription</button>';
                             }
                             if ($product->acceptsCurrency(ProductCurrency::BITCOIN) && $seller->getBitcoin() != '') {
-                                echo '<button onclick=\'pay(' .ProductCurrency::BITCOIN . ');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 20px; height: 18px; background-image: url("/images/crypto-icons.png"); background-position: -3px -20px; vertical-align: -2px;\'></span>Bitcoin</button>';
+                                echo '<button onclick=\'pay(' . ProductCurrency::BITCOIN . ');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 20px; height: 18px; background-image: url("/images/crypto-icons.png"); background-position: -3px -20px; vertical-align: -2px;\'></span>Bitcoin</button>';
                             }
                             if ($product->acceptsCurrency(ProductCurrency::LITECOIN) && $seller->getLitecoin() != '') {
                                 echo '<button onclick=\'pay(' . ProductCurrency::LITECOIN . ');\' class=\'btn btn-success\' style=\'width: 155px; font-size: 18px; margin: 0 5px 5px 0;\'><span style=\'display: inline-block; width: 20px; height: 19px; background-image: url("/images/crypto-icons.png"); background-position: -3px -78px; vertical-align: -2px;\'></span>Litecoin</button>';
@@ -602,7 +624,7 @@ if ($uas->hasMessage()) {
                                 } else if (((data.response.expires - ((new Date).getTime() / 1000)) / 60) <= 0) {
                                     $('.step-3 .panel-body').html("<p>Transaction has expired.</p><p style='text-align: center; font-size: 12px;'>Powered by <a href='https://coinpayments.net'>CoinPayments</a></p>");
                                 } else {
-                                    $('.step-3 .panel-body').html("<p>Please send <code>" + data.response.amount + " " + data.response.coin + "</code> to <code>" + data.response.address + "</code> in the next <b>" + Math.floor((data.response.expires - ((new Date).getTime() / 1000)) / 60) + "</b> minutes.</p><p><b>Transaction ID:</b> " + data.response.txid + "<br /><b>Product:</b> " + data.response.title + "<br /><b>Price:</b> " + data.response.price + " USD<br /><b>Total Received:</b> " + data.response.received + " " + data.response.coin + "<br /><b>Total Left:</b> " + (data.response.amount - data.response.received) + " " + data.response.coin + "</p><p style='text-align: center; font-size: 30px;'><i class='fa fa-spinner fa-spin'></i> Awaiting Payment</p><p><i>After payment is sent, please wait 2-15 minutes for your product to be delivered through email. If you have any issues, please contact us with your transaction ID at <a href='http://support.payivy.com/'>support.payivy.com</a></i></p><p style='text-align: center; font-size: 12px;'>Powered by <a href='https://coinpayments.net'>CoinPayments</a></p>");
+                                    $('.step-3 .panel-body').html("<p>Please send <code>" + data.response.amount + " " + data.response.coin + "</code> to <code>" + data.response.address + "</code> in the next <b>" + Math.floor((data.response.expires - ((new Date).getTime() / 1000)) / 60) + "</b> minutes.</p><p><b>Transaction ID:</b> " + data.response.txid + "<br /><b>Product:</b> " + data.response.title + "<br /><b>Price:</b> " + data.response.price + " USD<br /><b>Total Received:</b> " + data.response.received + " " + data.response.coin + "<br /><b>Total Left:</b> " + (data.response.amount - data.response.received) + " " + data.response.coin + "</p><p style='text-align: center; font-size: 30px;'><i class='fa fa-spinner fa-spin'></i> Awaiting Payment</p><p><i>After payment is sent and 1 confirmation is received, please wait 2-15 minutes for your product to be delivered through email. If you have any issues, please contact us with your transaction ID at <a href='http://support.payivy.com/'>support.payivy.com</a></i></p><p style='text-align: center; font-size: 12px;'>Powered by <a href='https://coinpayments.net'>CoinPayments</a></p>");
                                 }
                             });
                         }
@@ -610,6 +632,14 @@ if ($uas->hasMessage()) {
                         setInterval(update, 15000);
 
                         update();
+
+                        break;
+                    case 'display-free':
+                        $('.step-2').slideUp(1000, function() {
+                            setTimeout(function() { $('.step-3').slideDown(1000); }, 1000);
+                        });
+
+                        $('.step-3 .panel-body').html("Your product has been sent to the email you provided.");
 
                         break;
                 }

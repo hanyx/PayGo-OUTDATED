@@ -18,8 +18,6 @@ $coupons =          new PageCategory(           'Coupons',      'fa-ticket',    
 $admin = 			new PageCategory(			'Admin', 		'fa-wrench', 	    true, UserAccountType::ADMIN);
 
 $uncategorized->addPage(	new Page(						array(	array('')), 						    				    	'views/home.php',                              '',                   false, true        ));
-//$uncategorized->addPage(	new Page(						array(	array('pricing')), 						    					'views/pricing.php',                           '',                   false, true        ));
-//$uncategorized->addPage(	new Page(						array(	array('built')), 						    					'views/built.php',                             '',                   false, true        ));
 $uncategorized->addPage(	new Page(						array(	array('robots.txt')), 						    		    	'views/robots.php'                                                                      ));
 $uncategorized->addPage(	new Page(						array(	array('sitemap.xml')), 						    		    	'views/sitemap.php'                                                                     ));
 $pageManager->set404Page(	new Page(						array(	array('')), 													'views/404.php' 													                    ));
@@ -65,7 +63,7 @@ $products->addPage(			new Page(						array(	array('seller', 'products', 'files')
 $coupons->addPage(          new Page(                       array(  array('seller', 'coupons', 'view')),                            'views/seller/coupons-list.php',                'View / Edit'                           ));
 $coupons->addPage(          new Page(                       array(  array('seller', 'coupons', 'create'),
                                                                     array('seller', 'coupons', 'edit', '*')),                       'views/seller/coupons-create-edit.php',         'Create'                                ));
-$admin->addPage(            new Page(                       array(  array('seller', 'admin', 'mailer')),                            'views/seller/admin-mailer.php',                'Mailer'                                ));
+$admin->addPage(            new Page(                       array(  array('seller', 'admin', 'newsletter')),                        'views/seller/admin-newsletter.php',            'Newsletter'                            ));
 
 $pageManager->addCategory($uncategorized);
 $pageManager->addCategory($authPages);
