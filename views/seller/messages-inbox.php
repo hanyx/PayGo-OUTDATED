@@ -23,7 +23,7 @@ if (count($messages) == 0) {
 	$uas->addMessage(new ErrorSuccessMessage("No messages found"));
 }
 
-__header('Inbox');
+__header();
 ?>
 <section class="hbox stretch">
     <?php

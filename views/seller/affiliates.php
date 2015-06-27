@@ -43,29 +43,24 @@ if (count($url) == 4 && $url[2] == 'pay') {
 	}
 }
 
-__header('Affiliates');
+__header();
 ?>
-    <div class="wrapper">
-        <div class='clearfix'>
-            <?php $uas->printMessages(); ?>
-        </div>
-        <section class='panel'>
-            <table class='table table-striped m-b-none' data-ride='affiliates'>
-                <thead>
-                    <tr>
-                        <th>Email</th>
-                        <th>Product</th>
-                        <th>Total Orders</th>
-                        <th>Unpaid Orders</th>
-                        <th>Unpaid Amount</th>
-                        <th>Mark as Paid</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </section>
-    </div>
+    <?php $uas->printMessages(); ?>
+    <table class="table pi-table" data-ride='affiliates'>
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Product</th>
+                <th>Total Orders</th>
+                <th>Unpaid Orders</th>
+                <th>Unpaid Amount</th>
+                <th>Mark as Paid</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
 	<script>
 		$('[data-ride=\'affiliates\']').dataTable( {
 			'bProcessing': true,

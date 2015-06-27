@@ -3,7 +3,7 @@ if (isset($_POST['register']) && isset($_POST['username']) && isset($_POST['pass
 	$uas->register($_POST['username'], $_POST['email'], $_POST['password'], $_POST['password_repeat'], $_POST['g-recaptcha-response']);
 }
 
-__header('Register')
+__header()
 ?>
 	<div class="wrapper">
 			<div class='row'>

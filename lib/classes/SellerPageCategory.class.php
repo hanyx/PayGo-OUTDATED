@@ -5,12 +5,13 @@ class SellerPageCategory extends PageCategory {
 		parent::__construct($name, $icon, $display, $authLevel);
 	}
 	
-	public function checkAuth($url, UserAuthenticationSystem $uas) {
-		if (!$uas->isAuthenticated()) {
-			header('Location: /seller/login');
-			die();
+	public function checkAuth($url, UserAuthenticationSystem $uas, $soft = false) {
+		if (!$uas->isAuthenticated() && !$soft) {
+            header('Location: /seller/login');
+            die();
 		}
-		return true;
+
+		return parent::checkAuth($url, $uas, $soft);
 	}
 	
 }

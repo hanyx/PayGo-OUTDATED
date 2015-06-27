@@ -23,7 +23,7 @@ if (count($messages) == 0) {
     $uas->addMessage(new ErrorSuccessMessage("No messages found"));
 }
 
-__header('Sent');
+__header();
 ?>
     <section class="hbox stretch">
         <?php

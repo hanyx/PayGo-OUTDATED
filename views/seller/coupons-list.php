@@ -30,14 +30,14 @@ if (isset($_GET['getdata'])) {
 	die();
 }
 
-__header('Coupons')
+__header()
 ?>
     <div class="wrapper">
         <div class='clearfix'>
             <?php $uas->printMessages(); ?>
         </div>
         <section class='panel'>
-            <table class='table table-striped m-b-none' data-ride='products'>
+            <table class="table pi-table" data-ride='products'>
                 <thead>
                     <tr>
                         <th>Name</th>

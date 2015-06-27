@@ -30,14 +30,14 @@ if (isset($_GET['getdata'])) {
     die();
 }
 
-__header('Orders');
+__header();
 ?>
     <div class="wrapper">
         <div class='clearfix'>
             <?php $uas->printMessages(); ?>
         </div>
         <section class='panel'>
-            <table class='table table-striped m-b-none' data-ride='orders'>
+            <table class='table pi-table' data-ride='orders'>
                 <thead>
                     <tr>
                         <th>Date</th>

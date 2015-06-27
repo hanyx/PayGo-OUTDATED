@@ -41,7 +41,7 @@ if (count($url) == 4 && $url[3] == 'upload') {
     http_response_code(417);
 }
 
-__header('Files');
+__header();
 ?>
     <div class="wrapper">
         <div class='clearfix'>
@@ -50,7 +50,7 @@ __header('Files');
         <div class="row">
             <div class="col-md-12">
                 <section class='panel'>
-                    <table class='table table-striped m-b-none' data-ride='products'>
+                    <table class="table pi-table" data-ride='products'>
                         <thead>
                         <tr>
                             <th>File</th>

@@ -43,14 +43,14 @@ if (count($url) == 5 && $url['3'] == 'delete') {
     }
 }
 
-__header('Products');
+__header();
 ?>
     <div class="wrapper">
         <div class='clearfix'>
             <?php $uas->printMessages(); ?>
         </div>
         <section class='panel'>
-            <table class='table table-striped m-b-none' data-ride='products'>
+            <table class="table pi-table" data-ride='products'>
                 <thead>
                     <tr>
                         <th>Title</th>

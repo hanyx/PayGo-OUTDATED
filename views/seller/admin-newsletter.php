@@ -1,5 +1,4 @@
 <?php
-//TODO: Move to dedicated admin panel
 if (isset($_POST['custom-list-l']) && isset($_POST['subject']) && isset($_POST['message'])) {
     $emails = array();
 
@@ -38,7 +37,7 @@ if (isset($_POST['custom-list-l']) && isset($_POST['subject']) && isset($_POST['
     $uas->addMessage(new ErrorSuccessMessage('Sent!', false));
 }
 
-__header('Mailer');
+__header();
 ?>
     <section class='wrapper'>
         <div class='clearfix'>

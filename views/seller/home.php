@@ -125,7 +125,7 @@ foreach ($referrers as $referrer) {
     }
 }
 
-__header('Dashboard');
+__header();
 ?>
     <section class="wrapper">
         <div class='clearfix'>

@@ -35,7 +35,7 @@ if (isset($_GET['update'])) {
 	$uas->addMessage(new ErrorSuccessMessage('Password updated', false));
 }
 
-__header('Login');
+__header();
 ?>
     <div class="wrapper">
         <div class='row'>

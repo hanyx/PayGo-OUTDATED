@@ -29,7 +29,7 @@ if (isset($_POST['send']) && isset($_POST['recipient']) && isset($_POST['message
 	}
 }
 
-__header('Compose Message');
+__header();
 ?>
     <div class="wrapper">
         <?php

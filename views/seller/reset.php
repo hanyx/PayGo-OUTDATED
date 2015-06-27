@@ -18,7 +18,7 @@ if (count($url) == 3) {
 if (isset($_POST['reset']) && isset($_POST['password']) && isset($_POST['password_repeat']) && isset($_POST['token'])) {
 	$uas->reset($_POST['password'], $_POST['password_repeat'], $_POST['token']);
 }
-__header('Reset Password');
+__header();
 ?>
 	<div class="wrapper">
 			<div class='row'>

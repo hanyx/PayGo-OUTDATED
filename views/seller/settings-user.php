@@ -1,5 +1,5 @@
 <?php
-__header('User Settings');
+__header();
 
 if (isset($_POST['update-password']) && isset($_POST['password-old']) && isset($_POST['password']) && isset($_POST['password-confirm'])) {
 	$uas->processUpdatePassword($_POST['password-old'], $_POST['password'], $_POST['password-confirm']);
