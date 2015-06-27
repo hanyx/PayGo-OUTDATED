@@ -15,9 +15,6 @@ $config = array(
 		'site' => '',
 		'secret' => ''
 	),
-	'mandrill' => array(
-		'key' => ''
-	),
     'sendgrid' => array(
         'username' => '',
         'password' => ''
