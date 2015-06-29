@@ -403,6 +403,14 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                 addNetseal(1);
             }
 
+            $('.pp-options label').click(function() {
+                if ($(this).find('input').is(":checked")) {
+                    $('.pp-sub-options').show();
+                } else {
+                    $('.pp-sub-options').hide();
+                }
+            });
+
             $('#product-currencies').change(function() {
                 checkCurrency();
             });

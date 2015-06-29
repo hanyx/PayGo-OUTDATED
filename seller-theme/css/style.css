@@ -1,3 +1,10 @@
+.form-horizontal .form-group-lg .control-label {
+    padding-top: 0px;
+}
+.pp-sub-options{
+    display:none;
+    /*default = off*/
+}
 :focus, :active {
     outline:none !important;
 }
@@ -95,7 +102,7 @@ img.logo {
     color: #999;
     font-size: 11px;
     font-weight: 600;
-    text-transform: uppercase;
+    text-transform: capitalize;
 }
 .page-dropdown>li>a {
     margin-left:20px !important;
@@ -122,9 +129,8 @@ img.logo {
     background-color: white !important;
 }
 .primary-action:hover, .primary-action:focus {
-    background-color: transparent !important;
-    color: white !important;
-    box-shadow:inset 0px 0px 0px 2px white;
+    background-color: rgba(255,255,255,.9) !important;
+    box-shadow: none;
 }
 #wrap {
     display: -webkit-flex;
@@ -651,6 +657,25 @@ span.caption {
     display: block;
     opacity: 0.5;
 }
+
+.selectize-control.plugin-remove_button [data-value] .remove {
+    display: inline-block;
+    font-size: 12px;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    border: none;
+    background:#72b611;
+    border-radius:300px;
+    width:auto;
+    position: absolute;
+    padding: 3px 5px;
+    font-weight: bold;
+    color: inherit;
+    right: 3px;
+}
+
 .single .label{
     font-size: 12px;
     display: block;
