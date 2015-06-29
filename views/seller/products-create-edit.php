@@ -188,6 +188,7 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                         </div>
 
                         <div class="form-group form-group-lg col-md-12 pp-sub-options hide">
+                            <label class="control-label" style="margin-bottom: 10px;">PayPal Subscription Length</label>
                             <div class="">
                                 <div class="input-group">
                                     <input type="text" class="form-control" placeholder="Subscription Length" name="pp-sub-length" value="<?php echo $product->getPaypalSubLength(); ?>">
@@ -208,17 +209,6 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                                 <textarea class="form-control wysi" name="description" rows="6" placeholder="Description" name="description"><?php echo $product->getDescription(); ?></textarea>
                             </div>
                         </div>
-
-                        <div class="form-group form-group-lg col-md-12">
-                            <label class="pull-left control-label">Show on profile</label>
-                            <div class="">
-                                <label class="switch">
-                                    <input type="checkbox" name="display" value="1" <?php echo $product->getVisible() ? 'checked' : 'checked'; ?>>
-                                    <span></span>
-                                </label>
-                            </div>
-                        </div>
-
 
                         <div class="form-group form-group-lg col-md-12">
                             <div class="">
@@ -352,6 +342,17 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                                 </label>
                             </div>
                         </div>
+
+                        <div class="form-group form-group-lg col-md-12 advanced-sibling">
+                            <label class="pull-left control-label">Show on profile</label>
+                            <div class="">
+                                <label class="switch">
+                                    <input type="checkbox" name="display" value="1" <?php echo $product->getVisible() ? 'checked' : 'checked'; ?>>
+                                    <span></span>
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="form-group form-group-lg col-md-12 advanced-sibling">
                             <div class="">
                                 <label class="control-label" style=" text-align:left; margin-bottom:20px;">Custom Fields</label>
@@ -359,7 +360,8 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                                 <a style="margin-top:10px; margin-left:15px" class="btn btn-success pull-right" id="create-custom-question">Add Field</a>
                             </div>
                         </div>
-                        <div class="custom-question-container">
+
+                        <div class="custom-question-container advanced-sibling">
                             <div class='question-entries'>
                                 <?php
                                 $x = 0;
@@ -422,7 +424,6 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                     } else {
                         $('.pp-options').addClass('hide');
                     }
-
                     if ($('#product-currencies').val().indexOf('<?php echo ProductCurrency::PAYPALSUB; ?>') > -1) {
                         $('.pp-sub-options').removeClass('hide');
                     } else {
@@ -430,6 +431,7 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                     }
                 }
             }
+
 
             $('.netseal-add').click(function() {
                 addNetseal($('.netseal-packages-children').children().length + 1);
@@ -477,18 +479,18 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
             }
 
             $('#create-custom-question').click(function() {
-                addQuestion($('.custom-question-container').children().length + 1);
+                addQuestion($('.question-entries').children().length + 1);
             });
 
             $('#remove-custom-question').click(function() {
-                var x = $('.custom-question-container').children().length;
+                var x = $('.question-entries').children().length;
                 if (x > 0) {
                     $('.custom-question-' + x).remove();
                 }
             });
 
             function addQuestion(offset) {
-                $('.custom-question-container').append("<div class=\"form-group form-group-lg col-md-12 custom-question-" + offset + "\">" +
+                $('.question-entries').append("<div class=\"form-group form-group-lg col-md-12 custom-question-" + offset + "\">" +
                     "<input type=\"text\" class=\"form-control\" placeholder=\"Custom Field " + offset + "\" aria-label=\"optional\" name=\"question-q-" + offset + "\">" +
                 "</div>");
             }

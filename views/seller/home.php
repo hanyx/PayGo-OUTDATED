@@ -230,7 +230,8 @@ __header();
                         },
                         axisLabel: 'views',
                         returnaxisLabelFontSizePixels: 12,
-                        returnaxisLabelFontFamily: "Verdana, Arial, Helvetica, Tahoma, sans-serif"
+                        returnaxisLabelFontFamily: "Verdana, Arial, Helvetica, Tahoma, sans-serif",
+                        position: 'right'
                     }],
                     grid: {
                         color: '#646464',

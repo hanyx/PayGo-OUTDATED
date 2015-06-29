@@ -1,10 +1,6 @@
 .form-horizontal .form-group-lg .control-label {
     padding-top: 0px;
 }
-.pp-sub-options{
-    display:none;
-    /*default = off*/
-}
 :focus, :active {
     outline:none !important;
 }
@@ -798,12 +794,12 @@ span.caption {
     background-color: #fff;
     border:2px solid white;
 }
-.messages-block .nav>li>a:focus, ..messages-block .nav>li>a:hover {
+.messages-block .nav>li>a:focus, .messages-block .nav>li>a:hover {
     text-decoration: none;
     background-color: transparent;
     box-shadow:inset 0px 0px 0px 2px #eee;
 }
-.messages-block .nav>li.active>a:focus, ..messages-block .nav>li.active>a:hover {
+.messages-block .nav>li.active>a:focus, .messages-block .nav>li.active>a:hover {
     text-decoration: none;
     box-shadow:none;
     background:#2C97DE;
