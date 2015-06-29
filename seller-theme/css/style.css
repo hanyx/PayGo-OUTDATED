@@ -1,9 +1,10 @@
 :focus, :active {
     outline:none !important;
 }
-a{
+a, a:visited{
     color:#2C97DE;
 }
+
 th{font-weight:600;}
 body {
     width:100%;
@@ -20,7 +21,7 @@ section.sidebar {
     bottom:0;
     left:0;
     width:250px;
-        background-color: #72b611;
+    background-color: #72b611;
     color:white;
 }
 img.logo {
@@ -320,7 +321,7 @@ a.stat-link{
     box-shadow:none;
 }
 .form-control:focus{
-    box-shadow:none;    
+    box-shadow:none;
 }
 label.not{
     font-weight:normal !important;
@@ -651,16 +652,16 @@ span.caption {
     opacity: 0.5;
 }
 .single .label{
-font-size: 12px;
+    font-size: 12px;
     display: block;
     opacity: 1;
-        display: inline;
-padding: 0;
+    display: inline;
+    padding: 0;
     font-size: 100%;
     font-weight: normal;
     line-height: 1;
     color: #333;
-text-align: left;
+    text-align: left;
     white-space: nowrap;
     border-radius: .25em;
 }
@@ -686,11 +687,11 @@ text-align: left;
 }
 .netseal-package button.close{
     color:white;
-   margin-right:10px;
-   margin-top:-10px;
-   padding:4px 10px;
-   border-radius:4px;
-   background:#eb3941;
+    margin-right:10px;
+    margin-top:-10px;
+    padding:4px 10px;
+    border-radius:4px;
+    background:#eb3941;
 }
 .affiliate-hidden{
     display:none;
@@ -754,11 +755,11 @@ text-align: left;
     width:100%;
     margin-bottom:20px;
 }
-.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
+.messages-block .nav-pills>li.active>a, .messages-block .nav-pills>li.active>a:focus,.messages-block .nav-pills>li.active>a:hover {
     color: #fff;
     background-color: #2C97DE;
 }
-.nav-pills>li>a {
+.messages-block .nav-pills>li>a {
     color:#2C97DE;
 }
 .nav-pills>li>a>.badge {
@@ -767,17 +768,17 @@ text-align: left;
     background:none;
     border:2px solid #ccc;
 }
-.list-group-item.active>.badge, .nav-pills>.active>a>.badge {
+.messages-block .list-group-item.active>.badge, .messages-block .nav-pills>.active>a>.badge {
     color: #2C97DE;
     background-color: #fff;
     border:2px solid white;
 }
-.page .nav>li>a:focus, .page .nav>li>a:hover {
+.messages-block .nav>li>a:focus, ..messages-block .nav>li>a:hover {
     text-decoration: none;
     background-color: transparent;
     box-shadow:inset 0px 0px 0px 2px #eee;
 }
-.page .nav>li.active>a:focus, .page .nav>li.active>a:hover {
+.messages-block .nav>li.active>a:focus, ..messages-block .nav>li.active>a:hover {
     text-decoration: none;
     box-shadow:none;
     background:#2C97DE;
@@ -861,9 +862,8 @@ textarea.compose-input{
     }
     #add-payment-method + .selectize{
         width:50%;
-        text-align: center;
-            padding-right: 15px;
-    padding-left: 15px;
+        padding-right: 15px;
+        padding-left: 15px;
     }
     .tssts{
         margin-top:0px;

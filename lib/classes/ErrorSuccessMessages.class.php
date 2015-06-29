@@ -19,19 +19,19 @@ abstract class ErrorSuccessMessages {
 		}
 		
 		if (count($error) != 0) {
-			echo '<div class=\'alert alert-danger alert-dismissable\'><button type=\'button\' class=\'close\' data-dismiss=\'alert\' aria-hidden=\'true\'>×</button>';
+            echo '<div class="panel panel-danger notification"><div class="panel-body"><button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
 			foreach ($error as $message) {
 				echo $message . '<br>';
 			}
-			echo '</div>';
+            echo '</div></div>';
 		}
 		
 		if (count($success) != 0) {
-			echo '<div class=\'alert alert-success alert-dismissable\'><button type=\'button\' class=\'close\' data-dismiss=\'alert\' aria-hidden=\'true\'>×</button>';
+            echo '<div class="panel panel-success notification"><div class="panel-body"><button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
 			foreach ($success as $message) {
 				echo $message . '<br>';
 			}
-			echo '</div>';
+			echo '</div></div>';
 		}
 	}
 

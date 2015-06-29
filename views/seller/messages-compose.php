@@ -31,13 +31,10 @@ if (isset($_POST['send']) && isset($_POST['recipient']) && isset($_POST['message
 
 __header();
 ?>
-    <div class="wrapper">
         <?php
         if ($uas->hasMessage()) {
         ?>
-            <div class='text-small padder padder-v'>
-                <?php $uas->printMessages(); ?>
-            </div>
+            <?php $uas->printMessages(); ?>
         <?php
         } else {
         ?>

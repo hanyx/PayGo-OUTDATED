@@ -23,6 +23,7 @@ function __header($title = false) {
         <link rel="stylesheet" type="text/css" href="/seller-theme/css/selectize.default.css">
         <link rel="stylesheet" type="text/css" href="/seller-theme/css/style.css">
         <link rel="stylesheet" type="text/css" href="/css/datatables.css">
+        <link rel="stylesheet" type="text/css" href="/css/dropzone.css">
         <link href='//fonts.googleapis.com/css?family=Open+Sans:600italic,400,300,600,700' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
@@ -30,12 +31,12 @@ function __header($title = false) {
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="//brianreavis.github.io/selectize.js/js/selectize.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js"></script>
-
         <script type="text/javascript" src="/seller-theme/js/Chart.min.js"></script>
         <script type="text/javascript" src="/seller-theme/js/Chart-patched.min.js"></script>
         <script type="text/javascript" src="/seller-theme/js/excanvas.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/formValidation.bootstrap.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/formValidation.min.js"></script>
+
+        <script src='//www.google.com/recaptcha/api.js'></script>
+        <script type="text/javascript" src="/seller-theme/js/jquery.flot.min.js"></script>
         <script type="text/javascript" src="/seller-theme/js/jquery.colorhelpers.min.js"></script>
         <script type="text/javascript" src="/seller-theme/js/jquery.flot.canvas.min.js"></script>
         <script type="text/javascript" src="/seller-theme/js/jquery.flot.categories.min.js"></script>
@@ -43,7 +44,6 @@ function __header($title = false) {
         <script type="text/javascript" src="/seller-theme/js/jquery.flot.errorbars.min.js"></script>
         <script type="text/javascript" src="/seller-theme/js/jquery.flot.fillbetween.min.js"></script>
         <script type="text/javascript" src="/seller-theme/js/jquery.flot.image.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.min.js"></script>
         <script type="text/javascript" src="/seller-theme/js/jquery.flot.navigate.min.js"></script>
         <script type="text/javascript" src="/seller-theme/js/jquery.flot.pie.min.js"></script>
         <script type="text/javascript" src="/seller-theme/js/jquery.flot.resize.min.js"></script>
@@ -54,6 +54,7 @@ function __header($title = false) {
         <script type="text/javascript" src="/seller-theme/js/jquery.flot.time.min.js"></script>
         <script type="text/javascript" src="/seller-theme/js/morris.min.js"></script>
         <script type="text/javascript" src="/js/jquery.datatables.min.js"></script>
+        <script type="text/javascript" src="/js/dropzone.js"></script>
 
         <style>
             .tooltip-inner {
@@ -64,6 +65,16 @@ function __header($title = false) {
                 border: 0;
             }
         </style>
+
+        <script>
+            $(function() {
+                $('.selectize').selectize();
+
+                $('.selectize-multiple').selectize({
+                    maxItems: 100
+                });
+            });
+        </script>
     </head>
 
     <body>
@@ -123,11 +134,20 @@ function __header($title = false) {
                     <?php
                     if ($navCategory != false) {
                         foreach ($navCategory->getPages() as $page) {
-                            echo '<li><a ' . ($page->isCurrentPage() ? 'class=\'active\'' : '') . ' href="' . $page->getLink() . '">' . $page->getName() . '</a></li>';
+                            $classes = array();
+
+                            if ($page->isCurrentPage()) {
+                                $classes[] = 'active';
+                            }
+
+                            if ($page->getPrimaryAction()) {
+                                $classes[] = 'primary-action';
+                            }
+
+                            echo '<li><a ' . (count($classes) != 0 ? ('class=\'' . implode(' ', $classes) . '\'') : '') . ' href="' . $page->getLink() . '">' . $page->getName() . '</a></li>';
                         }
                     }
                     ?>
-                    <li><a class="primary-action" href="/seller/products/create">Create Product</a></li>
                 </nav>
             </div>
         </section>

@@ -45,27 +45,27 @@ if (count($url) == 5 && $url['3'] == 'delete') {
 
 __header();
 ?>
-    <div class="wrapper">
-        <div class='clearfix'>
+    <div class="row">
+        <div class="container-fluid">
             <?php $uas->printMessages(); ?>
+            <section class='panel'>
+                <table class="table pi-table" data-ride='products'>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Affiliate Link</th>
+                            <th>Notes</th>
+                            <th>Orders</th>
+                            <th>Revenue</th>
+                            <th>Configure</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </section>
         </div>
-        <section class='panel'>
-            <table class="table pi-table" data-ride='products'>
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Affiliate Link</th>
-                        <th>Notes</th>
-                        <th>Orders</th>
-                        <th>Revenue</th>
-                        <th>Configure</th>
-                        <th>Delete</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </section>
     </div>
     <script>
         var table = $('[data-ride=\'products\']').dataTable( {

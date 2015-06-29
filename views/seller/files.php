@@ -43,11 +43,9 @@ if (count($url) == 4 && $url[3] == 'upload') {
 
 __header();
 ?>
-    <div class="wrapper">
-        <div class='clearfix'>
+    <div class="row">
+        <div class="container-fluid">
             <?php $uas->printMessages(); ?>
-        </div>
-        <div class="row">
             <div class="col-md-12">
                 <section class='panel'>
                     <table class="table pi-table" data-ride='products'>

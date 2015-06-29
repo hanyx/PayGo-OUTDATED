@@ -32,25 +32,25 @@ if (isset($_GET['getdata'])) {
 
 __header()
 ?>
-    <div class="wrapper">
-        <div class='clearfix'>
+    <div class="row">
+        <div class="container-fluid">
             <?php $uas->printMessages(); ?>
+            <section class='panel'>
+                <table class="table pi-table" data-ride='products'>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Reduction</th>
+                            <th>Times Used</th>
+                            <th>Usage Limit</th>
+                            <th>Configure</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </section>
         </div>
-        <section class='panel'>
-            <table class="table pi-table" data-ride='products'>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Reduction</th>
-                        <th>Times Used</th>
-                        <th>Usage Limit</th>
-                        <th>Configure</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </section>
     </div>
     <script>
 		$('[data-ride=\'products\']').dataTable( {

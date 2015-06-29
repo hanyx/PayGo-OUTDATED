@@ -18,7 +18,6 @@ class User {
 	private $litecoin;
 	private $omnicoin;
 
-    private $bigSizeBar;
     private $uniqueId;
     private $urlUsername;
 	
@@ -38,7 +37,6 @@ class User {
         $this->bitcoin = '';
         $this->litecoin = '';
         $this->omnicoin = '';
-        $this->bigSizeBar = 1;
         $this->uniqueId = '';
         $this->urlUsername = '';
 	}
@@ -63,7 +61,7 @@ class User {
 	}
 	
 	public function read($id) {
-		$q = DB::getInstance()->prepare('SELECT id, session, username, password, email, active, account_type, last_login_timestamp, last_login_ip, paypal, bitcoin, litecoin, omnicoin, big_sidebar, unique_id, url_username FROM users WHERE id = ?');
+		$q = DB::getInstance()->prepare('SELECT id, session, username, password, email, active, account_type, last_login_timestamp, last_login_ip, paypal, bitcoin, litecoin, omnicoin, unique_id, url_username FROM users WHERE id = ?');
 		$q->execute(array($id));
 		$q = $q->fetchAll();
 
@@ -88,7 +86,6 @@ class User {
 		$this->litecoin = $q[0]['litecoin'];
 		$this->omnicoin = $q[0]['omnicoin'];
 
-        $this->bigSizeBar = $q[0]['big_sidebar'];
         $this->uniqueId = $q[0]['unique_id'];
 
         $this->urlUsername = $q[0]['url_username'];
@@ -145,8 +142,8 @@ class User {
     }
 	
 	public function update() {
-		$q = DB::getInstance()->prepare('UPDATE users SET session = ?, username = ?, password = ?, email = ?, active = ?, account_type = ?, last_login_timestamp = ?, last_login_ip = ?, paypal = ?, bitcoin = ?, litecoin = ?, omnicoin = ?, big_sidebar = ? WHERE id = ?');
-		$q->execute(array($this->session, $this->username, $this->password, $this->email, $this->active, $this->accountType, $this->lastLoginTimestamp, $this->lastLoginIp, $this->paypal, $this->bitcoin, $this->litecoin, $this->omnicoin, $this->bigSizeBar, $this->id));
+		$q = DB::getInstance()->prepare('UPDATE users SET session = ?, username = ?, password = ?, email = ?, active = ?, account_type = ?, last_login_timestamp = ?, last_login_ip = ?, paypal = ?, bitcoin = ?, litecoin = ?, omnicoin = ? WHERE id = ?');
+		$q->execute(array($this->session, $this->username, $this->password, $this->email, $this->active, $this->accountType, $this->lastLoginTimestamp, $this->lastLoginIp, $this->paypal, $this->bitcoin, $this->litecoin, $this->omnicoin, $this->id));
 	}
 
     public function getViews() {
@@ -262,14 +259,6 @@ class User {
 
     public function getFiles($showDeleted = false) {
         return File::getFilesByUser($this->id, $showDeleted);
-    }
-
-    public function getBigSizeBar(){
-        return $this->bigSizeBar;
-    }
-
-    public function setBigSizeBar($bigSizeBar){
-        $this->bigSizeBar = $bigSizeBar;
     }
 
     public function getUniqueId(){

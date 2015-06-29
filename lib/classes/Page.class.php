@@ -8,14 +8,16 @@ class Page {
 	private $current;
     private $noAuth;
     private $sitemap;
+    private $primaryAction;
 	
-	public function __construct($url, $file, $name, $subtext = "", $noAuth = false, $sitemap = false) {
+	public function __construct($url, $file, $name, $subtext = "", $primaryAction = false, $noAuth = false, $sitemap = false) {
 		$this->url = $url;
 		$this->file = $file;
 		$this->name = $name;
         $this->subtext = $subtext;
         $this->noAuth = $noAuth;
         $this->sitemap = $sitemap;
+        $this->primaryAction = $primaryAction;
 	}
 	
 	public function urlMatch($url) {
@@ -80,6 +82,10 @@ class Page {
 
     public function getSubtext() {
         return $this->subtext;
+    }
+
+    public function getPrimaryAction() {
+        return $this->primaryAction;
     }
 
 }

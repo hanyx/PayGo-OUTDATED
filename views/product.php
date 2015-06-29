@@ -217,7 +217,7 @@ if (isset($_POST['contact-seller']) && isset($_POST['email']) && isset($_POST['n
 
         $message->setSender($_POST['email']);
         $message->setRecipient($seller->getId());
-        $message->setMessage(htmlspecialchars($_POST['message'], ENT_QUOTES));
+        $message->setMessage(stripTags($_POST['message']));
 
         $message->send();
 
