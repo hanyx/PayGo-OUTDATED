@@ -382,7 +382,7 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                         </div>
                         <div class="form-group form-group-lg col-md-12 advanced-sibling">
                             <div class="">
-                                <input type="text" class="form-control" placeholder="Custom Success URL" aria-label="optional" name="success-url" value="<?php echo $product->getSuccessUrl(); ?>">
+                                <input type="text" class="form-control" placeholder="Success Redirect URL" aria-label="optional" name="success-url" value="<?php echo $product->getSuccessUrl(); ?>">
                             </div>
                         </div>
                         <div class="form-group form-group-lg col-md-12 ">

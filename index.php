@@ -3,7 +3,11 @@ date_default_timezone_set('America/Chicago');
 
 require_once('lib/functions.php');
 
+require_once('views/seller/header.php');
+require_once('views/seller/footer.php');
 
+require_once('views/home/header.php');
+require_once('views/home/footer.php');
 
 $uas = new UserAuthenticationSystem();
 $pageManager = new PageManager($uas);
@@ -17,7 +21,7 @@ $products =			new SellerPageCategory(		'Products', 	'fa-list-alt',  	    true, U
 $coupons =          new SellerPageCategory(     'Coupons',      'fa-ticket',            true, UserAccountType::PREMIUM);
 $admin = 			new SellerPageCategory(		'Admin', 		'fa-wrench', 	        true, UserAccountType::ADMIN);
 
-$uncategorized->addPage(	new Page(						array(	array('')), 						    				    	'views/home.php',                               '',                                             false, false, true  ));
+$uncategorized->addPage(	new Page(						array(	array('')), 						    				    	'views/home/home.php',                               '',                                             false, false, true  ));
 $uncategorized->addPage(	new Page(						array(	array('robots.txt')), 						    		    	'views/robots.php',                             ''                                                                  ));
 $uncategorized->addPage(	new Page(						array(	array('sitemap.xml')), 						    		    	'views/sitemap.php',                            ''                                                                  ));
 $pageManager->set404Page(	new Page(						array(	array('')), 													'views/404.php', 								'404'					                                            ));
@@ -33,10 +37,10 @@ $uncategorized->addPage(	new Page(						array(	array('u', '*')), 												'vi
 $authPages->addPage(		new Page(						array(	array('seller', 'login'),
 																	array('seller', 'login', 'activate', '*'),
 																	array('seller', 'login', 'update', '*'),
-																	array('seller', 'logout')),										'views/seller/login.php',                       'Login',                                        false, false, true  ));
-$authPages->addPage(		new Page(						array(	array('seller', 'register')),									'views/seller/register.php',                    'Register',                                     false, false, true  ));
+																	array('seller', 'logout')),										'views/home/login.php',                       'Login',                                        false, false, true  ));
+$authPages->addPage(		new Page(						array(	array('seller', 'register')),									'views/home/register.php',                    'Register',                                     false, false, true  ));
 $authPages->addPage(		new Page(						array(	array('seller', 'reset'), 
-																	array('seller', 'reset', '*')),									'views/seller/reset.php',                       'Reset Password',                               false, false, true  ));
+																	array('seller', 'reset', '*')),									'views/home/reset.php',                       'Reset Password',                               false, false, true  ));
 $dashboard->addPage(		new Page(						array(	array('seller'),
                                                                     array('seller', 'chart')), 										'views/seller/home.php', 						'Dashboard',                'Subtext',          false, false, true  ));
 $dashboard->addPage(		new Page(						array(	array('seller', 'settings')),				                	'views/seller/settings-user.php', 				'User Settings',            'Subtext'                               ));

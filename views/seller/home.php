@@ -152,11 +152,6 @@ __header();
             </div>
             <div class="clearfix"></div>
         </section>
-        <section>
-            <div class="panel col-md-6">
-                <canvas id="donut"></canvas>
-            </div>
-        </section>
     </div>
 
     <script>

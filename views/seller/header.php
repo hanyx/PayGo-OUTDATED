@@ -19,9 +19,9 @@ function __header($title = false) {
         <title>PayIvy | <?php echo $title; ?></title>
 
         <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="/seller-theme/css/selectize.css">
-        <link rel="stylesheet" type="text/css" href="/seller-theme/css/selectize.default.css">
-        <link rel="stylesheet" type="text/css" href="/seller-theme/css/style.css">
+        <link rel="stylesheet" type="text/css" href="/themes/seller/css/selectize.css">
+        <link rel="stylesheet" type="text/css" href="/themes/seller/css/selectize.default.css">
+        <link rel="stylesheet" type="text/css" href="/themes/seller/css/style.css">
         <link rel="stylesheet" type="text/css" href="/css/datatables.css">
         <link rel="stylesheet" type="text/css" href="/css/dropzone.css">
         <link href='//fonts.googleapis.com/css?family=Open+Sans:600italic,400,300,600,700' rel='stylesheet' type='text/css'>
@@ -31,28 +31,27 @@ function __header($title = false) {
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="//brianreavis.github.io/selectize.js/js/selectize.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/Chart.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/Chart-patched.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/excanvas.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/Chart.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/Chart-patched.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/excanvas.min.js"></script>
 
-        <script src='//www.google.com/recaptcha/api.js'></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.colorhelpers.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.canvas.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.categories.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.crosshair.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.errorbars.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.fillbetween.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.image.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.navigate.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.pie.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.resize.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.selection.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.stack.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.symbol.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.threshold.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/jquery.flot.time.min.js"></script>
-        <script type="text/javascript" src="/seller-theme/js/morris.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.flot.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.colorhelpers.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.flot.canvas.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.flot.categories.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.flot.crosshair.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.flot.errorbars.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.flot.fillbetween.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.flot.image.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.flot.navigate.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.flot.pie.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.flot.resize.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.flot.selection.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.flot.stack.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.flot.symbol.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.flot.threshold.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/jquery.flot.time.min.js"></script>
+        <script type="text/javascript" src="/themes/seller/js/morris.min.js"></script>
         <script type="text/javascript" src="/js/jquery.datatables.min.js"></script>
         <script type="text/javascript" src="/js/dropzone.js"></script>
 
@@ -71,7 +70,9 @@ function __header($title = false) {
                 $('.selectize').selectize();
 
                 $('.selectize-multiple').selectize({
-                    maxItems: 100
+                    maxItems: 100,
+                    plugins: ['remove_button'],
+                    delimiter: ','
                 });
             });
         </script>
@@ -110,7 +111,7 @@ function __header($title = false) {
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle page-toggle" data-toggle="dropdown" role="button"
                            aria-haspopup="true" aria-expanded="false">
-                            <img class="logo" src="/seller-theme/img/payivy-white.png"></img>
+                            <img class="logo" src="/themes/seller/img/payivy-white.png">
                             <?php echo $navCategory !== false ? $navCategory->getName() : ''; ?> <i class="tssts fa fa-angle-down"></i>
                         </a>
                         <ul class="dropdown-menu page-dropdown">
