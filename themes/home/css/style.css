@@ -6,10 +6,9 @@ body {
     width:100%;
     font-family:'Open Sans', sans-serif;
     background:#f7f7f7;
-        margin: 0px;
+    margin: 0 0 100px 0;
     padding: 0px;
-    overflow-x: hidden; 
-
+    overflow-x: hidden;
 }
 html{
     position: relative; 

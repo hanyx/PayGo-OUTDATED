@@ -74,6 +74,14 @@ function __header($title = false) {
                     plugins: ['remove_button'],
                     delimiter: ','
                 });
+
+                $('.notification').click(function () {
+                    $(this).remove();
+                });
+
+                setTimeout(function () {
+                    $('.notification').fadeOut('slow');
+                }, 10000);
             });
         </script>
     </head>

@@ -25,6 +25,22 @@ function ___header() {
 
         <!-- fontawesome, should be downloaded and stored locally in production -->
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script src='//www.google.com/recaptcha/api.js'></script>
+
+        <script>
+            $(function() {
+                $('.notification').click(function () {
+                    $(this).remove();
+                });
+
+                setTimeout(function () {
+                    $('.notification').fadeOut('slow');
+                }, 10000);
+            });
+        </script>
     </head>
     <body>
 
