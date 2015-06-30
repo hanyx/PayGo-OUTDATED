@@ -36,13 +36,14 @@ if (isset($_GET['update'])) {
 }
 
 ___header();
-
-$uas->printMessages();
-if (isset($tfr)) {
-    $tfr->printMessages();
-}
 ?>
     <section class="login last-section">
+        <?php
+        $uas->printMessages();
+        if (isset($tfr)) {
+            $tfr->printMessages();
+        }
+        ?>
         <h1 class="login-h1">Sign In</h1>
         <form id="login-form" action="/seller/login" method="post" role="form" style="display: block;">
             <div class="form-group text-left">

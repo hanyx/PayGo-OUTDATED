@@ -4,10 +4,11 @@ if (isset($_POST['register']) && isset($_POST['username']) && isset($_POST['pass
 }
 
 ___header();
-
-$uas->printMessages();
 ?>
     <section class="login last-section">
+        <?php
+        $uas->printMessages();
+        ?>
         <h1 class="login-h1">Sign Up</h1>
         <form id="login-form" action="/seller/register" method="post" role="form" style="display: block;">
             <div class="form-group text-left">

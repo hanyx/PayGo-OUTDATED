@@ -482,3 +482,40 @@ section.checkout img {
         display:block;
     }
 }
+
+.panel-success {
+    border-radius: 3px;
+    color: white;
+    margin-top: 15px;
+    border: none;
+    font-size:13px;
+    background-color: #7acf04;
+}
+.panel-primary{
+    border-radius: 3px;
+    color: white;
+    margin-top: 15px;
+    border: none;
+    font-size:13px;
+    background:#2C97DE;
+}
+.panel-danger{
+    border-radius: 3px;
+    color: white;
+    margin-top: 15px;
+    border: none;
+    font-size:13px;
+    background:#eb3941;
+}
+.close {
+    float: right;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-shadow:none;
+    opacity: 1;
+}
+.notification{
+    cursor: pointer;
+}

@@ -20,10 +20,11 @@ if (isset($_POST['reset']) && isset($_POST['password']) && isset($_POST['passwor
 }
 
 ___header();
-
-$uas->printMessages();
 ?>
     <section class="login last-section">
+        <?php
+        $uas->printMessages();
+        ?>
         <h1 class="login-h1">Forgot Password</h1>
         <form id="login-form" action="/seller/reset" method="post" role="form" style="display: block;">
             <?php
