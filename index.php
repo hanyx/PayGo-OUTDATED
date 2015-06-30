@@ -46,8 +46,7 @@ $dashboard->addPage(		new Page(						array(	array('seller'),
 $dashboard->addPage(		new Page(						array(	array('seller', 'settings')),				                	'views/seller/settings-user.php', 				'User Settings',            'Subtext'                               ));
 $dashboard->addPage(		new Page(						array(	array('seller', 'settings', 'payments')),		               	'views/seller/settings-payment.php', 			'Payment Settings',         'Subtext'                               ));
 $messages->addPage(			new SellerMessagesInboxPage(	array(	array('seller', 'messages', 'inbox'),
-																	array('seller', 'messages', 'inbox', 'view', '*'),
-																	array('seller', 'messages')),									'views/seller/messages-inbox.php', 				'Inbox',			    	'Subtext'                               ));
+																	array('seller', 'messages', 'inbox', 'view', '*')),				'views/seller/messages-inbox.php', 				'Inbox',			    	'Subtext'                               ));
 $messages->addPage(			new Page(						array(	array('seller', 'messages', 'sent'),
 																	array('seller', 'messages', 'sent', 'view', '*')),				'views/seller/messages-sent.php', 				'Sent',				        'Subtext'                               ));
 $messages->addPage(			new Page(						array(	array('seller', 'messages', 'product-delivery'),

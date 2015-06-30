@@ -180,7 +180,7 @@ function __header($title = false) {
     <section class="page">
 
         <h5 class="page-title"><?php echo $title ?></h5>
-        <h5 class="page-subtitle"><?php echo $pageManager->getCurrentPage()->getSubtext(); ?></h5>
+        <h5 class="page-subtitle"><?php //echo $pageManager->getCurrentPage()->getSubtext(); ?></h5>
 
 <?php
 }

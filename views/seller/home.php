@@ -122,17 +122,14 @@ __header();
             <div class="col-md-3 stat-block">
                 <span class="big" id="revenue"></span>
                 <span class="small">Revenue</span>
-                <a class="stat-link" href="#">View Reports</a>
             </div>
             <div class="col-md-3 stat-block">
                 <span class="big" id="sales"></span>
                 <span class="small">Sales</span>
-                <a class="stat-link" href="#">View Reports</a>
             </div>
             <div class="col-md-3 stat-block">
                 <span class="big" id="views"></span>
                 <span class="small">Views</span>
-                <a class="stat-link" href="#">View Reports</a>
             </div>
             <div class="col-md-3 stat-block">
                 <span class="big">
@@ -148,7 +145,6 @@ __header();
                     ?>
                 </span>
                 <span class="small">Revenue Today</span>
-                <a class="stat-link" href="#">View Reports</a>
             </div>
             <div class="clearfix"></div>
         </section>
