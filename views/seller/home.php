@@ -45,7 +45,7 @@ if (count($url) == 2 && $url[1] == 'chart') {
                 if ($date > strtotime('-1 year')) {
                     $response['revenue'] += $order->getFiat();
 
-                    $response['data'][0][0][12 - (date('m') - (date('m', strtotime($order->getDate())) - 1))][1] += $order->getFiat();
+                    $response['data'][0][0][11 - monthsAgo(date('m', strtotime($order->getDate())))][1] += $order->getFiat();
                 }
             }
         }
@@ -59,7 +59,7 @@ if (count($url) == 2 && $url[1] == 'chart') {
                 if ($date > strtotime('-1 year')) {
                     $response['sales']++;
 
-                    $response['data'][0][1][12 - (date('m') - (date('m', strtotime($order->getDate())) - 1))][1]++;
+                    $response['data'][0][1][11 - monthsAgo(date('m', strtotime($order->getDate())))][1]++;
                 }
             }
         }
@@ -68,12 +68,12 @@ if (count($url) == 2 && $url[1] == 'chart') {
             $views = $product->getViews();
 
             foreach ($views as $view) {
-                $date = strtotime(date('Y-m', strtotime($order->getDate())));
+                $date = strtotime(date('Y-m', strtotime($view->getDate())));
 
                 if ($date > strtotime('-1 year')) {
                     $response['views']++;
 
-                    $response['data'][1][0][12 - (date('m') - (date('m', strtotime($order->getDate())) - 1))][1]++;
+                    $response['data'][1][0][11 - monthsAgo(date('m', strtotime($view->getDate())))][1]++;
                 }
             }
         }
@@ -192,8 +192,7 @@ __header();
                         hoverable: true
                     },
                     legend: {
-                        labelBoxBorderColor: "none",
-                        position: "right"
+                        show: true
                     }
                 }
             );
@@ -231,8 +230,7 @@ __header();
                         hoverable: true
                     },
                     legend: {
-                        labelBoxBorderColor: "none",
-                        position: "right"
+                        show: true
                     }
                 }
             );
@@ -269,7 +267,7 @@ __header();
                             var year = date.getFullYear();
 
 
-                            showTooltip(item.pageX, item.pageY, y + ' at ' + day + ' ' + monthNames[monthIndex] + ' ' + year);
+                            showTooltip(item.pageX, item.pageY, y + ' on ' + day + ' ' + monthNames[monthIndex] + ' ' + year);
                         }
                     } else {
                         $('#tooltip').remove();
@@ -305,7 +303,7 @@ __header();
                         show: true,
                         align: "center",
                         barWidth: 12*24*60*60*1000,
-                        fill: true,
+                        fill: 1,
                         lineWidth: 2
 
                     },
@@ -338,7 +336,7 @@ __header();
                         show: true,
                         align: "center",
                         barWidth: 12*24*60*60*1000,
-                        fill: true,
+                        fill: 1,
                         lineWidth: 2
 
                     },
