@@ -46,7 +46,7 @@ if ($url['1'] == 'paypal') {
         die();
     }
 
-    if (($order->calculateFiatWithCoupon() * $order->getQuantity()) < $data['mc_gross']) {
+    if (($order->calculateFiatWithCoupon() * $order->getQuantity()) > $data['mc_gross']) {
         Logger::logAndDie('IPN Fail: Invalid Amount');
     }
 
