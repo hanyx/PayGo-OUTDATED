@@ -17,6 +17,7 @@ if (isset($_GET['getdata'])) {
         $data[] = array(
             'date' => $order->getDate(),
             'email' => $order->getEmail(),
+            'ip' => $order->getIp(),
             'txid' => $order->getTxid(),
             'currency' => ($order->getCurrency() == ProductCurrency::PAYPAL ? 'PayPal' : ($order->getCurrency() == ProductCurrency::PAYPALSUB ? 'PayPal Subscription' : ($order->getCurrency() == ProductCurrency::BITCOIN ? 'Bitcoin' : ($order->getCurrency() == ProductCurrency::LITECOIN ? 'Litecoin' : ($order->getCurrency() == ProductCurrency::OMNICOIN ? 'Omnicoin' : ''))))),
             'fiat' => '$' . $order->getFiat(),
@@ -29,16 +30,19 @@ if (isset($_GET['getdata'])) {
     die();
 }
 
-__header();
+__header('Orders');
 ?>
-    <div class="row">
-        <div class="container-fluid">
+    <div class="wrapper">
+        <div class='clearfix'>
             <?php $uas->printMessages(); ?>
-            <table class='table pi-table' data-ride='orders'>
+        </div>
+        <section class='panel'>
+            <table class='table table-striped m-b-none' data-ride='orders'>
                 <thead>
                     <tr>
                         <th>Date</th>
                         <th>Buyer Email</th>
+                        <th>Buyer IP</th>
                         <th>Transaction ID</th>
                         <th>Currency</th>
                         <th>Amount</th>
@@ -49,7 +53,7 @@ __header();
                 <tbody>
                 </tbody>
             </table>
-        </div>
+        </section>
     </div>
     <script>
         $('[data-ride=\'orders\']').dataTable( {
@@ -60,6 +64,7 @@ __header();
             'aoColumns': [
                 { 'mData': 'date' },
                 { 'mData': 'email' },
+                { 'mData': 'ip' },
                 { 'mData': 'txid' },
                 { 'mData': 'currency' },
                 { 'mData': 'fiat' },

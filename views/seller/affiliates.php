@@ -43,26 +43,28 @@ if (count($url) == 4 && $url[2] == 'pay') {
 	}
 }
 
-__header();
+__header('Affiliates');
 ?>
-    <div class='row'>
-        <div class='container-fluid'>
+    <div class="wrapper">
+        <div class='clearfix'>
             <?php $uas->printMessages(); ?>
-            <table class="table pi-table" data-ride='affiliates'>
+        </div>
+        <section class='panel'>
+            <table class='table table-striped m-b-none' data-ride='affiliates'>
                 <thead>
-                <tr>
-                    <th>Email</th>
-                    <th>Product</th>
-                    <th>Total Orders</th>
-                    <th>Unpaid Orders</th>
-                    <th>Unpaid Amount</th>
-                    <th>Mark as Paid</th>
-                </tr>
+                    <tr>
+                        <th>Email</th>
+                        <th>Product</th>
+                        <th>Total Orders</th>
+                        <th>Unpaid Orders</th>
+                        <th>Unpaid Amount</th>
+                        <th>Mark as Paid</th>
+                    </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
-        </div>
+        </section>
     </div>
 	<script>
 		$('[data-ride=\'affiliates\']').dataTable( {

@@ -24,7 +24,7 @@ class PageCategory {
 		$this->pages[] = $page;
 	}
 	
-	public function checkAuth($url, UserAuthenticationSystem $uas, $soft = false) {
+	public function checkAuth($url, UserAuthenticationSystem $uas) {
 		if ($this->authLevel != -1) {
 			if (!$uas->isAuthenticated()) {
 				return false;

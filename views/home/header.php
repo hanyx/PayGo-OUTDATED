@@ -1,5 +1,5 @@
 <?php
-function ___header() {
+function ___header($title = '', $fixedfooter = false, $productOrUserPage = false) {
     ?>
     <!DOCTYPE html>
     <html>
@@ -13,7 +13,7 @@ function ___header() {
         <meta name='keywords' content='payivy, virtual marketplace, sell online, online shop, online selling'>
         <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>
 
-        <title>PayIvy</title>
+        <title>PayIvy <?php if($title != '') { echo ' | ' . $title; } ?></title>
         <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/themes/home/css/style.css">
         <link rel="stylesheet" type="text/css" href="/themes/home/css/selectize.bootstrap3.css">
@@ -42,7 +42,7 @@ function ___header() {
             });
         </script>
     </head>
-    <body>
+    <body <?php if($fixedfooter == true) { echo "class='fixed-footer'"; } if($productOrUserPage || $fixedfooter) { echo 'style="background-color:#fafafa;"'; } ?>>
 
     <nav class="navbar navbar-default navbar-static-top pi-navbar home-nav">
         <div class="container">
@@ -62,11 +62,12 @@ function ___header() {
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="/">Home</a></li>
-                    <li><a href="#">Security</a></li>
-                    <li><a href="#">Pricing</a></li>
-                    <li><a href="#">Features</a></li>
+                    <?php if(!$productOrUserPage) {?>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/features">Features</a></li>
+        <?php }?>
                     <li><a href="/seller/login">Sign In</a></li>
-                    <li><a href="/seller/register" class="pi-signupbtn">Sign Up</a></li>
+                    <li><a href="/seller/register" id="pi-signupbtn">Sign Up</a></li>
                 </ul>
 
             </div>

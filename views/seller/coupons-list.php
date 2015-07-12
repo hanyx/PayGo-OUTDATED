@@ -19,7 +19,7 @@ if (isset($_GET['getdata'])) {
             $data[] = array(
                 'name' => $coupon->getName(),
                 'reduction' => $coupon->getReduction() . ' %',
-                'used' => $coupon->getUsedAmount(),
+                'used' => count(Order::getOrdersByCoupon($coupon->getId())),
                 'maximum' => $coupon->getMaxUsedAmount(),
                 'configure' => '<a href=\'/seller/coupons/edit/' . $coupon->getId() . '\'><i class=\'fa fa-cog\'></i></a>'
             );
@@ -30,27 +30,27 @@ if (isset($_GET['getdata'])) {
 	die();
 }
 
-__header()
+__header('Coupons')
 ?>
-    <div class="row">
-        <div class="container-fluid">
+    <div class="wrapper">
+        <div class='clearfix'>
             <?php $uas->printMessages(); ?>
-            <section class='panel'>
-                <table class="table pi-table" data-ride='products'>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Reduction</th>
-                            <th>Times Used</th>
-                            <th>Usage Limit</th>
-                            <th>Configure</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </section>
         </div>
+        <section class='panel'>
+            <table class='table table-striped m-b-none' data-ride='products'>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Reduction</th>
+                        <th>Times Used</th>
+                        <th>Usage Limit</th>
+                        <th>Configure</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </section>
     </div>
     <script>
 		$('[data-ride=\'products\']').dataTable( {

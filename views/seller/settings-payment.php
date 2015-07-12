@@ -1,44 +1,62 @@
 <?php
-__header();
-
-if (isset($_POST['update-password']) && isset($_POST['password-old']) && isset($_POST['password']) && isset($_POST['password-confirm'])) {
-    $uas->processUpdatePassword($_POST['password-old'], $_POST['password'], $_POST['password-confirm']);
-}
+__header('Payment Settings');
 
 if (isset($_POST['update-payment-details'])) {
-    $uas->processUpdatePaymentDetails(isset($_POST['paypal']) ? $_POST['paypal'] : '', isset($_POST['bitcoin']) ? $_POST['bitcoin'] : '', isset($_POST['litecoin']) ? $_POST['litecoin'] : '', isset($_POST['omnicoin']) ? $_POST['omnicoin'] : '');
+    try {
+        NoCSRF::check('payments_token', $_POST, true, 60 * 10, false);
+        $uas->processUpdatePaymentDetails(isset($_POST['paypal']) ? $_POST['paypal'] : '', isset($_POST['bitcoin']) ? $_POST['bitcoin'] : '', isset($_POST['litecoin']) ? $_POST['litecoin'] : '', isset($_POST['omnicoin']) ? $_POST['omnicoin'] : '');
+    } catch (Exception $e) {}
 }
 ?>
-    <?php
-    $uas->printMessages();
-    if (isset($tfr)) {
-        $tfr->printMessages();
-    }
-    ?>
+    <section class="wrapper">
+        <div class='clearfix'>
+            <?php
+            $uas->printMessages();
+            if (isset($tfr)) {
+                $tfr->printMessages();
+            }
+            ?>
+        </div>
+        <div class='row'>
+            <div class='col-sm-6'>
+                <section class='panel'>
+                    <header class="panel-heading font-bold">Add Payment Method</header>
+                    <div class="panel-body">
+                        <form class='form-horizontal'>
+                            <div class='form-group'>
+                                <div class='col-lg-9 col-lg-offset-3'>
+                                    <select id='add-payment-method' class='select2' style='width:260px;'>
+                                        <option></option>
+                                        <option value='0'>PayPal</option>
+                                        <option value='1'>Bitcoin</option>
+                                        <option value='2'>Litecoin</option>
+                                        <option value='3'>Omnicoin</option>
 
-    <form method="post">
-        <div class="row">
-            <div class="col-md-12 ">
-                <div class="add-dropdown">
-                    <select class="selectize" id='add-payment-method'>
-                        <option></option>
-                        <option value='0'>PayPal</option>
-                        <option value='1'>Bitcoin</option>
-                        <option value='2'>Litecoin</option>
-                        <option value='3'>Omnicoin</option>
-                    </select>
-                </div>
-                <table class="table pi-table bigger-table">
-                    <tbody id="inputs">
-                    </tbody>
-                </table>
-                <div class="form-save">
-                    <button type="submit" name='update-payment-details' class="btn btn-success btn-save">Save settings</button>
-                </div>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        <div class='row'>
+        </div>
+            <div class='col-sm-6'>
+                <section class='panel'>
+                    <div class='panel-body'>
+                        <form class='form-horizontal' method='post' data-validate='parsley' id="form">
+                            <input type="hidden" name="payments_token" value="<?php echo NoCSRF::generate('payments_token'); ?>"/>
+                            <div class='form-group'>
+                                <div class='col-lg-9 col-lg-offset-3'>
+                                    <button type='submit' name='update-payment-details' class='btn btn-primary'>Update Payment Settings</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </section>
             </div>
         </div>
-    </form>
-
+    </section>
     <script>
         $(function() {
             <?php echo $uas->getUser()->getPayPal() != '' ? "printInput(0, '" . $uas->getUser()->getPayPal() . "');" : ""; ?>
@@ -47,9 +65,7 @@ if (isset($_POST['update-payment-details'])) {
             <?php echo $uas->getUser()->getOmnicoin() != '' ? "printInput(3, '" . $uas->getUser()->getOmnicoin() . "');" : ""; ?>
 
             $("#add-payment-method").change(function() {
-                if ($(this).val() != '') {
-                    printInput(parseInt($(this).val()), '');
-                }
+                printInput(parseInt($(this).val()), '');
             });
         });
 
@@ -82,12 +98,15 @@ if (isset($_POST['update-payment-details'])) {
                     break;
             }
 
-            $('#inputs').prepend('<tr><td class="payment-processor-enable">\
-            <input type="text" name="' + name + '" class="form-control payment-processor-input payment-processor-visible" placeholder="' + placeholder + '" value="' + value + '">\
-            <span class="payment-processor-lbl">' + name + '</span>\
-            </td></tr>');
+            $("#form").prepend("<div class='form-group'>\
+                <label class='col-lg-3 control-label'>" + label + "</label>\
+                <div class='col-lg-8'>\
+                    <input type='text' name='" + name + "' class='form-control' placeholder='" + placeholder + "' value='" + value + "'>\
+                    <div class='line line-dashed m-t-large'></div>\
+                </div>\
+            </div>");
 
-            $('#add-payment-method')[0].selectize.removeOption(type);
+            $('#add-payment-method option[value="' + type + '"]').remove();
         }
     </script>
 <?php

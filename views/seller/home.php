@@ -1,6 +1,4 @@
 <?php
-$cstOffset = (5 * 60 * 60);
-
 if (count($url) == 2 && $url[1] == 'chart') {
     $response = array();
 
@@ -8,26 +6,23 @@ if (count($url) == 2 && $url[1] == 'chart') {
     $response['sales'] = 0;
     $response['views'] = 0;
 
-    $response['data'] = array(array(array(), array()), array(array()));
+    $response['data'] = array();
+    
+    if (isset($_POST['tab']) && isset($_POST['period']) && isset($_POST['product'])) {
+        $tab = (int) $_POST['tab'];
+        $period = (int) $_POST['period'];
+        $product = (int) $_POST['product'];
 
-    if (isset($_POST['product'])) {
-        $product = (int)$_POST['product'];
+        $days = $period == 0 ? 7 : ($period == 1 ? 31 : 365);
 
-        for ($x = 0; $x < 12; $x++) {
-            $response['data'][0][0][] = array(((strtotime(date('Y-m', strtotime('first day of ' . -(11 - $x) . ' month')))) - $cstOffset) * 1000, 0);
-            $response['data'][0][1][] = array(((strtotime(date('Y-m', strtotime('first day of ' . -(11 - $x) . ' month')))) - $cstOffset) * 1000, 0);
-            $response['data'][1][0][] = array(((strtotime(date('Y-m', strtotime('first day of ' . -(11 - $x) . ' month')))) - $cstOffset) * 1000, 0);
+        for ($day = 0; $day < $days; $day++) {
+            $response['data'][] = array($day, 0);
         }
 
         if ($product != 0) {
             $products = Product::getProduct($product, true);
 
             if ($products !== false) {
-                foreach ($products as $p) {
-                    if ($product->getSellerId() == $uas->getUser()->getId()) {
-                        $products[] = $p;
-                    }
-                }
                 $products = array($products);
             } else {
                 $products = $uas->getUser()->getProducts(true);
@@ -40,12 +35,14 @@ if (count($url) == 2 && $url[1] == 'chart') {
             $orders = $product->getOrders();
 
             foreach ($orders as $order) {
-                $date = strtotime(date('Y-m', strtotime($order->getDate())));
+                $date = strtotime(date('Y-m-d', strtotime($order->getDate())));
 
-                if ($date > strtotime('-1 year')) {
+                if ($date > strtotime(date('Y-m-d')) - ($days * 24 * 60 * 60)) {
                     $response['revenue'] += $order->getFiat();
 
-                    $response['data'][0][0][11 - monthsAgo(date('m', strtotime($order->getDate())))][1] += $order->getFiat();
+                    if ($tab == 0) {
+                        $response['data'][(int)((strtotime(date('Y-m-d')) / (24 * 60 * 60)) - ($date / (24 * 60 * 60)))][1] += $order->getFiat();
+                    }
                 }
             }
         }
@@ -54,12 +51,14 @@ if (count($url) == 2 && $url[1] == 'chart') {
             $orders = $product->getOrders();
 
             foreach ($orders as $order) {
-                $date = strtotime(date('Y-m', strtotime($order->getDate())));
+                $date = strtotime(date('Y-m-d', strtotime($order->getDate())));
 
-                if ($date > strtotime('-1 year')) {
+                if ($date > strtotime(date('Y-m-d')) - ($days * 24 * 60 * 60)) {
                     $response['sales']++;
 
-                    $response['data'][0][1][11 - monthsAgo(date('m', strtotime($order->getDate())))][1]++;
+                    if ($tab == 1) {
+                        $response['data'][(int)((strtotime(date('Y-m-d')) / (24 * 60 * 60)) - ($date / (24 * 60 * 60)))][1]++;
+                    }
                 }
             }
         }
@@ -68,215 +67,319 @@ if (count($url) == 2 && $url[1] == 'chart') {
             $views = $product->getViews();
 
             foreach ($views as $view) {
-                $date = strtotime(date('Y-m', strtotime($view->getDate())));
+                $date = strtotime(date('Y-m-d', strtotime($view->getDate())));
 
-                if ($date > strtotime('-1 year')) {
+                if ($date > strtotime(date('Y-m-d')) - ($days * 24 * 60 * 60)) {
                     $response['views']++;
 
-                    $response['data'][1][0][11 - monthsAgo(date('m', strtotime($view->getDate())))][1]++;
+                    if ($tab == 2) {
+                        $response['data'][(int)((strtotime(date('Y-m-d')) / (24 * 60 * 60)) - ($date / (24 * 60 * 60)))][1]++;
+                    }
                 }
             }
         }
+    }
 
-        die(json_encode($response));
+    foreach ($response['data'] as &$point) {
+        $point[0] = ((strtotime(date('Y-m-d')) - ($days + ($point[0] * 24 * 60 * 60))) - (5 * 60 * 60)) * 1000;
+    }
 
+    $response['data'] = array_reverse($response['data']);
+
+    die(json_encode($response));
+}
+
+$views = $uas->getUser()->getViews();
+
+$referrers = array();
+
+foreach ($views as $view) {
+    if (!isset($referrers[$view->getReferrer()])) {
+        $referrers[$view->getReferrer()] = 0;
+    }
+
+    $referrers[$view->getReferrer()]++;
+}
+
+arsort($referrers);
+
+$x = 0;
+
+$referrerPie = array();
+
+$referrerList = array();
+
+foreach ($referrers as $referrer) {
+    $label = array_search($referrer, $referrers);
+
+    if ($label == '') {
+        $label = 'Direct';
+    }
+
+    $referrerList[] = array('label' => $label, 'data' => $referrer);
+    $referrerPie[] = array('label' => '', 'data' => $referrer);
+
+    $x++;
+    if ($x >= 5) {
+        break;
     }
 }
 
-__header();
+__header('Dashboard');
 ?>
-    <div class="graphs">
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active">
-                <a href="#tab-0" data-toggle="tab" tab-id="0" class="tab">Earnings</a>
-            </li>
-            <li role="presentation">
-                <a href="#tab-1" data-toggle="tab" tab-id="1" class="tab">Views</a>
-            </li>
-        </ul>
-
-        <!-- Tab panes -->
-        <div class="tab-content">
-            <div class="graph-selects">
-                <select class="selectize col-sm-12 col-md-2 graph-select" id="product-select" name="field" >
-                    <option value="0">All Products</option>
-                    <optgroup label="Products">
-                        <?php
-                        $products = $uas->getUser()->getProducts(true);
-                        foreach ($products as $product) {
-                            echo '<option value="' . $product->getId() . '">' . $product->getTitle() . '</option>';
-                        }
-                        ?>
-                    </optgroup>
-                </select>
-            </div>
-            <div role="tabpanel" class="tab-pane active" id="tab-0">
-                <div class='graph' id="graph-0" style="width: 100%; height: 400px;"></div>
-            </div>
-            <div role="tabpanel" class="tab-pane active" id="tab-1" style="visibility: hidden;">
-                <div class='graph' id="graph-1" style="width: 100%; height: 400px;"></div>
-            </div>
+    <section class="wrapper">
+        <div class='clearfix'>
+            <?php $uas->printMessages(); ?>
         </div>
-        <section class="earnings-block">
-            <div class="col-md-3 stat-block">
-                <span class="big" id="revenue"></span>
-                <span class="small">Revenue</span>
-            </div>
-            <div class="col-md-3 stat-block">
-                <span class="big" id="sales"></span>
-                <span class="small">Sales</span>
-            </div>
-            <div class="col-md-3 stat-block">
-                <span class="big" id="views"></span>
-                <span class="small">Views</span>
-            </div>
-            <div class="col-md-3 stat-block">
-                <span class="big">
-                    <?php
-                    $x = 0;
-                    $orders = Order::getOrdersByUser($uas->getUser()->getId());
-                    foreach ($orders as $order) {
-                        if (date('Y-m-d', strtotime($order->getDate())) == date('Y-m-d')) {
-                            $x += $order->getFiat();
-                        }
-                    }
-                    echo '$' . number_format($x, 2);
-                    ?>
-                </span>
-                <span class="small">Revenue Today</span>
-            </div>
-            <div class="clearfix"></div>
-        </section>
-    </div>
+        <section class="hbox">
+            <div class='row'>
+                <div class="col-lg-12">
+                    <aside class="bg-white-only">
+                        <header class="bg-light">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a href="" data-toggle="tab" class="tab" tab-id="0">Revenue</a></li>
+                                <li><a href="" data-toggle="tab" class="tab" tab-id="1">Sales</a></li>
+                                <li><a href="" data-toggle="tab" class="tab" tab-id="2">Views</a></li>
+                            </ul>
+                        </header>
+                        <section class='panel'>
+                            <div class='panel-body'>
+                                <div data-toggle="buttons" class="btn-group">
+                                    <label class="btn btn-sm btn-white active">
+                                        <input type="radio" class="period" period-id="0" name="options"> Week
+                                    </label>
+                                    <label class="btn btn-sm btn-white">
+                                        <input type="radio" class="period" period-id="1" name="options"> Month
+                                    </label>
+                                    <label class="btn btn-sm btn-white">
+                                        <input type="radio" class="period" period-id="2" name="options"> Year
+                                    </label>
+                                </div>
+                                <select id="product-select" style="width:260px">
+                                    <option value="0">All Products</option>
+                                    <optgroup label="Products">
+                                        <?php
+                                        $products = $uas->getUser()->getProducts(true);
 
+                                        foreach ($products as $product) {
+                                            echo '<option value="' . $product->getId() . '">' . $product->getTitle() . '</option>';
+                                        }
+                                        ?>
+                                    </optgroup>
+                                </select>
+                                <div id="chart" style="height:250px"></div>
+                            </div>
+                            <footer class='panel-footer'>
+                                <div class='row text-center'>
+                                    <div class='col-xs-4 b-r'>
+                                        <p class='h3 font-bold m-t' id="revenue"></p>
+                                        <p class='text-muted'>Revenue</p>
+                                    </div>
+                                    <div class='col-xs-4 b-r'>
+                                        <p class='h3 font-bold m-t' id="sales"></p>
+                                        <p class='text-muted'>Sales</p>
+                                    </div>
+                                    <div class='col-xs-4 b-r'>
+                                        <p class='h3 font-bold m-t' id="views"></p>
+                                        <p class='text-muted'>Views</p>
+                                    </div>
+                                </div>
+                            </footer>
+                        </section>
+                    </aside>
+                </div>
+            </div>
+            <div class='row'>
+                <div class="col-md-6">
+                    <div class="panel">
+                        <header class="panel-heading font-bold">Referrers</header>
+                        <div class="panel-body">
+                            <div id="referrers" style="height:250px"></div>
+                        </div>
+                        <ul class="list-group no-radius">
+                            <?php
+                            $colors = array("#5c677c", "#594f8d", "#92cf5c", "#fb6b5b", "#5dcff3");
+                            $x = 0;
+                            foreach ($referrerList as $referrer) {
+                                ?>
+                                <li class="list-group-item">
+                                    <span class="fa fa-circle" style="color: <?php echo $colors[$x]; ?>"></span>
+                                    <span class="pull-right"><?php echo $referrer['data']; ?></span>
+                                    <?php echo $referrer['label']; ?>
+                                </li>
+                                <?php
+                                $x++;
+                            }
+                            ?>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel">
+                        <header class="panel-heading font-bold">Revenue Today</header>
+                        <div class="panel-body">
+                            <div class="text-center m-b">
+                                <div class="inline">
+                                    <div class="easypiechart" data-percent="100" data-line-width="25" data-track-color="#eee" data-bar-color="#afcf6f" data-scale-color="#ddd" data-loop="false" data-size="180">
+                                        <span class="h2">
+                                            <?php
+                                            $x = 0;
+
+                                            $orders = Order::getOrdersByUser($uas->getUser()->getId());
+
+                                            foreach ($orders as $order) {
+                                                if (date('Y-m-d', strtotime($order->getDate())) == date('Y-m-d')) {
+                                                    $x += $order->getFiat();
+                                                }
+                                            }
+
+                                            echo '$' . number_format($x, 2);
+                                            ?>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <section class="panel">
+                        <header class="panel-heading">
+                            <span>Products</span>
+                        </header>
+                        <ul class="list-group">
+                            <?php
+                            $products = $uas->getUser()->getProducts();
+
+                            foreach ($products as $product) {
+                                $sales = 0;
+                                $revenue = 0;
+
+                                $orders = $product->getOrders();
+
+                                foreach ($orders as $order) {
+                                    $sales++;
+                                    $revenue += $order->getFiat();
+                                }
+                                ?>
+                                <li class="list-group-item">
+                                    <div class="media">
+                                        <div class="pull-left media-large">
+                                            <div class="h4 m-t-mini"><strong><?php echo $product->getTitle(); ?></strong></div>
+                                        </div>
+                                        <div class="pull-right hidden-sm text-right m-t-mini">
+                                            <b class="badge bg-success" data-toggle="tooltip" data-title="Sales"><?php echo numberFormatLabel($sales, 'Sale'); ?></b>
+                                            <b class="badge bg-info" data-toggle="tooltip" data-title="Revenue">$<?php echo number_format($revenue, 2) . ' Revenue'; ?></b>
+                                        </div>
+                                    </div>
+                                </li>
+                              <?php
+                            }
+                            ?>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </section>
     <script>
         $(function() {
-            var chart0 = $.plot($("#graph-0"), [{
-                    data: null
-                }, {
-                    data: null
-                }],
-                {
-                    xaxis: {
-                        min: <?php echo (strtotime(date('Y-m', strtotime('12 months ago'))) + (15 * 24 * 60 * 60) - $cstOffset) * 1000; ?>,
-                        max: <?php echo (strtotime(date('Y-m')) + (15 * 24 * 60 * 60) - $cstOffset) * 1000; ?>,
-                        mode: "time",
-                        timeformat: "%b",
-                        tickSize: [1, "month"],
-                        tickLength: 0,
-                        axisLabel: "Months",
-                        axisLabelUseCanvas: true,
-                        axisLabelFontSizePixels: 12,
-                        axisLabelFontFamily: "Verdana, Arial, Helvetica, Tahoma, sans-serif",
-                        axisLabelPadding: 5
-                    },
-                    yaxes: [{
-                        returntickFormatter: function (val, axis) {
-                            return val + "mm";
-                        },
-                        returnaxisLabelFontSizePixels: 12,
-                        returnaxisLabelFontFamily: "Verdana, Arial, Helvetica, Tahoma, sans-serif"
-                    }, {
-                        returntickFormatter: function (val, axis) {
-                            return val + "mm";
-                        },
-                        returnaxisLabelFontSizePixels: 12,
-                        returnaxisLabelFontFamily: "Verdana, Arial, Helvetica, Tahoma, sans-serif",
-                        position: 'right'
-                    }],
-                    grid: {
-                        color: '#646464',
-                        borderColor: 'transparent',
-                        borderWidth: 20,
-                        hoverable: true
-                    },
-                    legend: {
+            $.plot($("#referrers"), <?php echo json_encode($referrerPie); ?>, {
+                series: {
+                    pie: {
                         show: true
                     }
+                },
+                colors: ["#5c677c","#594f8d","#92cf5c","#fb6b5b","#5dcff3"],
+                legend: {
+                    show: true,
+                    labelFormatter: function() { return ''; }
+                },
+                grid: {
+                    hoverable: true,
+                    clickable: false
+                },
+                tooltip: true,
+                tooltipOpts: {
+                    content: "%p.0%"
                 }
-            );
-
-            var chart1 = $.plot($("#graph-1"), [{
-                    data: null
-                }],
-                {
-                    xaxis: {
-                        min: <?php echo (strtotime(date('Y-m', strtotime('12 months ago'))) + (15 * 24 * 60 * 60) - $cstOffset) * 1000; ?>,
-                        max: <?php echo (strtotime(date('Y-m')) + (15 * 24 * 60 * 60) - $cstOffset) * 1000; ?>,
-                        mode: "time",
-                        timeformat: "%b",
-                        tickSize: [1, "month"],
-                        tickLength: 0,
-                        axisLabel: "Months",
-                        axisLabelUseCanvas: true,
-                        axisLabelFontSizePixels: 12,
-                        axisLabelFontFamily: "Verdana, Arial, Helvetica, Tahoma, sans-serif",
-                        axisLabelPadding: 5
-                    },
-                    yaxes: [{
-                        returntickFormatter: function (val, axis) {
-                            return val + "mm";
-                        },
-                        axisLabel: 'views',
-                        returnaxisLabelFontSizePixels: 12,
-                        returnaxisLabelFontFamily: "Verdana, Arial, Helvetica, Tahoma, sans-serif",
-                        position: 'right'
-                    }],
-                    grid: {
-                        color: '#646464',
-                        borderColor: 'transparent',
-                        borderWidth: 20,
-                        hoverable: true
-                    },
-                    legend: {
-                        show: true
-                    }
-                }
-            );
-
-            $('#tab-1').removeClass('active').attr('style', '');
-
-            function showTooltip(x, y, contents) {
-                $('<div id="tooltip">' + contents + '</div>').css({
-                    top: y - 16,
-                    left: x + 20
-                }).appendTo('body').fadeIn();
-            }
-
-            var previousPoint = null;
-
-            $('.graph').each(function() {
-                $(this).bind('plothover', function (event, pos, item) {
-                    if (item) {
-                        if (previousPoint != item.dataIndex) {
-                            previousPoint = item.dataIndex;
-                            $('#tooltip').remove();
-                            var x = item.datapoint[0],
-                                y = item.datapoint[1];
-                            var monthNames = [
-                                "January", "February", "March",
-                                "April", "May", "June", "July",
-                                "August", "September", "October",
-                                "November", "December"
-                            ];
-
-                            var date = new Date(x);
-                            var day = date.getDate();
-                            var monthIndex = date.getMonth();
-                            var year = date.getFullYear();
-
-
-                            showTooltip(item.pageX, item.pageY, y + ' on ' + day + ' ' + monthNames[monthIndex] + ' ' + year);
-                        }
-                    } else {
-                        $('#tooltip').remove();
-                        previousPoint = null;
-                    }
-                });
             });
 
+            var chart = $.plot($("#chart"), [{
+                    data: null
+                }],
+                {
+                    series: {
+                        lines: {
+                            show: true,
+                            lineWidth: 2,
+                            fill: true,
+                            fillColor: {
+                                colors: [{
+                                    opacity: 0.0
+                                }, {
+                                    opacity: 0.2
+                                }]
+                            }
+                        },
+                        points: {
+                            radius: 5,
+                            show: true
+                        },
+                        shadowSize: 2
+                    },
+                    grid: {
+                        color: "#fff",
+                        hoverable: true,
+                        clickable: true,
+                        tickColor: "#f0f0f0",
+                        borderWidth: 0
+                    },
+                    colors: ["#5dcff3"],
+                    xaxis: {
+                        mode: "time",
+                        timeformat: "%a, %b %e, %Y",
+                        minTickSize: [1, "day"]
+                    },
+                    yaxis: {
+                        ticks: 5,
+                        tickDecimals: 0,
+                    },
+                    tooltip: true,
+                    tooltipOpts: {
+                        content: "%y.4",
+                        defaultTheme: true,
+                        shifts: {
+                            x: 0,
+                            y: 20
+                        }
+                    }
+                }
+            );
+
+            var tab = 0;
+            var period = 0;
             var product = 0;
+
+            updateChart(chart, tab, period, product);
+
+            $('.tab').click(function() {
+                var id = $(this).attr('tab-id');
+
+                if (tab != id) {
+                    tab = id;
+
+                    updateChart(chart, tab, period, product);
+                }
+            });
+
+            $('.period').change(function() {
+                var id = $(this).attr('period-id');
+
+                if (period != id) {
+                    period = id;
+
+                    updateChart(chart, tab, period, product);
+                }
+            });
 
             $('#product-select').change(function() {
                 var id = $(this).val();
@@ -284,67 +387,19 @@ __header();
                 if (product != id) {
                     product = id;
 
-                    updateChart(chart0, chart1, product);
+                    updateChart(chart, tab, period, product);
                 }
             });
 
-            updateChart(chart0, chart1, product);
-
         });
 
-        function updateChart(chart0, chart1, product) {
-            $.post('/seller/chart', {'product': product}, function(data) {
+        function updateChart(chart, tab, period, product) {
+            $.post('/seller/chart', {'tab': tab, 'period': period, 'product': product}, function(data) {
                 var data = $.parseJSON(data);
 
-                chart0.setData([{
-                    label: 'Sales',
-                    data: data.data[0][1],
-                    bars: {
-                        show: true,
-                        align: "center",
-                        barWidth: 12*24*60*60*1000,
-                        fill: 1,
-                        lineWidth: 2
-
-                    },
-                    color: "#71c73e",
-                    shadowSize: 0
-                }, {
-                    label: 'Revenue',
-                    data: data.data[0][0],
-                    lines: {
-                        show: true,
-                        fill: false
-                    },
-                    points: {
-                        show: true,
-                        fillColor: 'white',
-                        radius: 5
-
-                    },
-                    color: '#77b7c5',
-                    shadowSize: 0,
-                    yaxis: 2
-                }]);
-                chart0.setupGrid();
-                chart0.draw();
-
-                chart1.setData([{
-                    label: 'Views',
-                    data: data.data[1][0],
-                    bars: {
-                        show: true,
-                        align: "center",
-                        barWidth: 12*24*60*60*1000,
-                        fill: 1,
-                        lineWidth: 2
-
-                    },
-                    color: "#71c73e",
-                    shadowSize: 0
-                }]);
-                chart1.setupGrid();
-                chart1.draw();
+                chart.setData([data.data]);
+                chart.setupGrid();
+                chart.draw();
 
                 $('#revenue').html('$' + data.revenue);
                 $('#sales').html(data.sales);

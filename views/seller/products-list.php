@@ -32,40 +32,43 @@ if (isset($_GET['getdata'])) {
 	die();
 }
 
-if (count($url) == 5 && $url['3'] == 'delete') {
-    $product = new Product();
+if (count($url) == 4 && $url['3'] == 'delete' && isset($_POST['deleteId'])) {
+    try {
+        NoCSRF::check('products_del_token', $_POST, true, 60 * 10, false);
+        $product = new Product();
 
-    if ($product->read($url['4']) && $product->getSellerId() == $uas->getUser()->getId()) {
-        $product->setDeleted();
-        $product->update();
+        if ($product->read($_POST['deleteId']) && $product->getSellerId() == $uas->getUser()->getId()) {
+            $product->setDeleted();
+            $product->update();
 
-        $uas->addMessage(new ErrorSuccessMessage('Product Deleted', false));
-    }
+            $uas->addMessage(new ErrorSuccessMessage('Product Deleted', false));
+        }
+    } catch(Exception $e) {}
 }
 
-__header();
+__header('Products');
 ?>
-    <div class="row">
-        <div class="container-fluid">
+    <div class="wrapper">
+        <div class='clearfix'>
             <?php $uas->printMessages(); ?>
-            <section class='panel'>
-                <table class="table pi-table" data-ride='products'>
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Affiliate Link</th>
-                            <th>Notes</th>
-                            <th>Orders</th>
-                            <th>Revenue</th>
-                            <th>Configure</th>
-                            <th>Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </section>
         </div>
+        <section class='panel'>
+            <table class='table table-striped m-b-none' data-ride='products'>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Affiliate Link</th>
+                        <th>Notes</th>
+                        <th>Orders</th>
+                        <th>Revenue</th>
+                        <th>Configure</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </section>
     </div>
     <script>
         var table = $('[data-ride=\'products\']').dataTable( {
@@ -86,7 +89,7 @@ __header();
 
         function doModal(id, name) {
             $('#delete-modal .modal-title').html('Are you sure you want to delete ' + name + '?<br><br>');
-            $('#delete-modal a').attr('href', '/seller/products/view/delete/' + id);
+            $('#delete-modal #deleteId').val(id);
 
             $('#delete-modal').modal();
         }
@@ -94,13 +97,17 @@ __header();
     <div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title"></h4>
-                </div>
-                <div class="modal-footer">
-                    <a href="" type="button" class="btn btn-primary">Yes</a>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-                </div>
+                <form method="post" action="/seller/products/view/delete">
+                    <input type="hidden" name="products_del_token" value="<?php echo NoCSRF::generate('products_del_token'); ?>"/>
+                    <input type="hidden" name="deleteId" id="deleteId" />
+                    <div class="modal-header">
+                        <h4 class="modal-title"></h4>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="" type="button" class="btn btn-primary">Yes</a>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

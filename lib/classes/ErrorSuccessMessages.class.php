@@ -7,7 +7,7 @@ abstract class ErrorSuccessMessages {
 		$this->messages = array();
 	}
 
-	public function printMessages() {
+	public function printMessages($home = false) {
 		$error = array();
 		$success = array();
 		foreach ($this->messages as $message) {
@@ -16,22 +16,26 @@ abstract class ErrorSuccessMessages {
 			} else {
 				$success[] = $message->getMessage();
 			}
-		}
+        }
+
+        if($home){
+            echo '<br/>';
+        }
 		
 		if (count($error) != 0) {
-            echo '<div class="panel panel-danger notification"><div class="panel-body"><button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+			echo '<div class=\'alert alert-danger alert-dismissable\'><button type=\'button\' class=\'close\' data-dismiss=\'alert\' aria-hidden=\'true\'>×</button>';
 			foreach ($error as $message) {
 				echo $message . '<br>';
 			}
-            echo '</div></div>';
+			echo '</div>';
 		}
 		
 		if (count($success) != 0) {
-            echo '<div class="panel panel-success notification"><div class="panel-body"><button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+			echo '<div class=\'alert alert-success alert-dismissable\'><button type=\'button\' class=\'close\' data-dismiss=\'alert\' aria-hidden=\'true\'>×</button>';
 			foreach ($success as $message) {
 				echo $message . '<br>';
 			}
-			echo '</div></div>';
+			echo '</div>';
 		}
 	}
 

@@ -9,9 +9,14 @@ if ($url[1] == 'logout') {
 }
 
 if (isset($_POST['login']) && isset($_POST['username']) && isset($_POST['password'])) {
-	if ($uas->login($_POST['username'], $_POST['password'], isset($_POST['g-recaptcha-response']) ? $_POST['g-recaptcha-response'] : '')) {
-		header('Location: /seller/');
-		die();
+    try {
+        NoCSRF::check('login_token', $_POST, true, 60 * 10, false);
+        if ($uas->login($_POST['username'], $_POST['password'], isset($_POST['g-recaptcha-response']) ? $_POST['g-recaptcha-response'] : '')) {
+            header('Location: /seller/');
+            die();
+        }
+    } catch (Exception $e){
+
     }
 }
 
@@ -35,17 +40,18 @@ if (isset($_GET['update'])) {
 	$uas->addMessage(new ErrorSuccessMessage('Password updated', false));
 }
 
-___header();
+___header('Login', true);
 ?>
     <section class="login last-section">
         <?php
-        $uas->printMessages();
+        $uas->printMessages(true);
         if (isset($tfr)) {
             $tfr->printMessages();
         }
         ?>
         <h1 class="login-h1">Sign In</h1>
         <form id="login-form" action="/seller/login" method="post" role="form" style="display: block;">
+            <input type="hidden" name="login_token" value="<?php echo NoCSRF::generate('login_token'); ?>"/>
             <div class="form-group text-left">
                 <label for="email">Email</label>
                 <input type="text" name="username" id="email" tabindex="1" class="form-control" placeholder="Email" value="">
@@ -83,4 +89,4 @@ ___header();
         </form>
     </section>
 <?php
-___footer();
+___footer(true);

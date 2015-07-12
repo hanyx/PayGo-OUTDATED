@@ -2,6 +2,9 @@
 
 require_once('lib/password.php');
 require_once('../private/config.php');
+require_once('views/seller/header.php');
+require_once('views/seller/footer.php');
+
 
 abstract class PaypalSubscriptionUnit {
     const DAY = 0;
@@ -30,6 +33,7 @@ abstract class EmailTemplate {
     const OUTOFSTOCK = 10;
     const SELLERSALE = 11;
     const AFFILIATEREGISTER = 12;
+    const INVOICE = 13;
 }
 
 abstract class UserAccountType {
