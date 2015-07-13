@@ -13,6 +13,8 @@ function ___header($title = '', $fixedfooter = false, $productOrUserPage = false
         <meta name='keywords' content='payivy, virtual marketplace, sell online, online shop, online selling'>
         <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>
 
+        <meta name="google-site-verification" content="NZDqac_qv_UnuCL-BDk9UH4Nz9spOTRg4-8xQ2llTgk" />
+
         <title>PayIvy <?php if($title != '') { echo ' | ' . $title; } ?></title>
         <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/themes/home/css/style.css">
