@@ -336,14 +336,16 @@ if ($uas->hasMessage(true)) {
 
         <div class="step-1" id="step1">
             <div class="product-card-body">
-                <div class="product-details">
-                    <span class="product-name"><?php echo htmlspecialchars($product->getTitle()); ?></span>
-                    <span class="product-type muted"><?php echo $product->getTypeString(); ?></span>
-                    <span class="muted">by </span><a href="/u/<?php echo $seller->getUniqueId(); ?>" class="product-creator"><?php echo htmlspecialchars($seller->getUsername()); ?></a>
-                </div>
-                <div class="product-pricing pull-right">
-                    <span class="price">$<?php echo htmlspecialchars($product->getPrice()); ?></span>
-                    <span class="quantity-left muted"><?php  if( $product->getType() == ProductType::SERIAL) { echo $product->makeSerialString(); } ?></span>
+                <div class="row">
+                    <div class="col-xs-7 product-details">
+                        <span class="product-name"><?php echo htmlspecialchars($product->getTitle()); ?></span>
+                        <span class="product-type muted"><?php echo $product->getTypeString(); ?></span>
+                        <span class="muted">by </span><a href="/u/<?php echo $seller->getUniqueId(); ?>" class="product-creator"><?php echo htmlspecialchars($seller->getUsername()); ?></a>
+                    </div>
+                    <div class="col-xs-5 product-pricing">
+                        <span class="price">$<?php echo htmlspecialchars($product->getPrice()); ?></span>
+                        <span class="quantity-left muted"><?php  if( $product->getType() == ProductType::SERIAL) { echo $product->makeSerialString(); } ?></span>
+                    </div>
                 </div>
             </div>
             <!-- product-card-body -->
