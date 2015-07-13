@@ -718,11 +718,9 @@ button#registration-btn {
 }
 
 .product-details{
-    display: inline-block;
     min-height:50px;
     background:white;
     border-bottom:#e7e7e7;
-    width: 250px;
 }
 .product-details span.product-name{
     display:block;
@@ -744,6 +742,7 @@ button#registration-btn {
     min-width:100%;
     display: block
 }
+
 .product-pricing {
     text-align: right;
 }
@@ -752,6 +751,7 @@ button#registration-btn {
     font-weight: 600;
     display: block;
     color:#333;
+    text-align: right;
 }
 .product-card-quantity{
     padding:15px;
@@ -1165,7 +1165,6 @@ div.status-danger i{
 }
 .seller-info{
     margin-top:50px;
-    text-align: ;
     /*128 + 20*/
 }
 .seller-info .bottomrow{
