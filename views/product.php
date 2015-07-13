@@ -109,6 +109,11 @@ if (count($url) == 3 && $url[2] == 'buy') {
                             $errorMessage = 'RELOAD6';
                             break;
                         } else {
+                            if (!in_array($product->getId(), $coupon->getProducts())) {
+                                $errorMessage = 'RELOAD61';
+                                break;
+                            }
+
                             $order->setCouponId($coupon->getId());
                             $order->setCouponUsed(true);
                             $order->setCouponName($coupon->getName());
@@ -240,7 +245,7 @@ if (count($url) == 3 && $url[2] == 'buy') {
 if(isset($_GET['redeemcoupon']) && $_GET['redeemcoupon'] == "true" && isset($_GET['couponcode']) && ctype_alnum($_GET['couponcode'])) {
     $coupon = new Coupon();
 
-    if ($coupon->readByNameAndSellerId($_GET['couponcode'], $seller->getId())) {
+    if ($coupon->readByNameAndSellerId($_GET['couponcode'], $seller->getId()) && in_array($product->getId(), $coupon->getProducts())) {
         if (count(Order::getOrdersByCoupon($coupon->getId())) >= $coupon->getMaxUsedAmount()) {
             die('used');
         } else {
@@ -389,13 +394,15 @@ if ($uas->hasMessage(true)) {
 
         <div class="step-2" id="step2" style="display:none;">
             <div class="product-card-body">
-                <div class="product-details">
-                    <span class="product-name"><?php echo $product->getTitle(); ?></span>
-                    <span class="product-type muted"><?php echo $product->getTypeString(); ?></span>
-                    <span class="muted">by </span><a href="/u/<?php echo $seller->getUniqueId(); ?>" class="product-creator"><?php echo htmlspecialchars($seller->getUsername()); ?></a>
-                </div>
-                <div class="product-pricing pull-right">
-                    <span class="price">$<?php echo $product->getPrice(); ?></span>
+                <div class="row">
+                    <div class="col-xs-7 product-details">
+                        <span class="product-name"><?php echo htmlspecialchars($product->getTitle()); ?></span>
+                        <span class="product-type muted"><?php echo $product->getTypeString(); ?></span>
+                        <span class="muted">by </span><a href="/u/<?php echo $seller->getUniqueId(); ?>" class="product-creator"><?php echo htmlspecialchars($seller->getUsername()); ?></a>
+                    </div>
+                    <div class="col-xs-5 product-pricing">
+                        <span class="price">$<?php echo htmlspecialchars($product->getPrice()); ?></span>
+                    </div>
                 </div>
             </div>
             <!-- product-card-body -->
@@ -490,12 +497,15 @@ if ($uas->hasMessage(true)) {
         <div class="customquestions" id="customquestions" style="display:none">
 
             <div class="product-card-body">
-                <div class="product-details">
-                    <span class="product-name"><?php echo htmlspecialchars($product->getTitle()); ?></span>
-                    <span class="product-type muted"><?php echo $product->getTypeString(); ?></span>
-                </div>
-                <div class="product-pricing pull-right">
-                    <span class="price">$<?php echo $product->getPrice(); ?></span>
+                <div class="row">
+                    <div class="col-xs-7 product-details">
+                        <span class="product-name"><?php echo htmlspecialchars($product->getTitle()); ?></span>
+                        <span class="product-type muted"><?php echo $product->getTypeString(); ?></span>
+                        <span class="muted">by </span><a href="/u/<?php echo $seller->getUniqueId(); ?>" class="product-creator"><?php echo htmlspecialchars($seller->getUsername()); ?></a>
+                    </div>
+                    <div class="col-xs-5 product-pricing">
+                        <span class="price">$<?php echo htmlspecialchars($product->getPrice()); ?></span>
+                    </div>
                 </div>
             </div>
             <?php
@@ -517,12 +527,15 @@ if ($uas->hasMessage(true)) {
 
         <div class="preparing" id="preparing" style="display:none">
             <div class="product-card-body">
-                <div class="product-details">
-                    <span class="product-name"><?php echo htmlspecialchars($product->getTitle()); ?></span>
-                    <span class="product-type muted"><?php echo $product->getTypeString(); ?></span>
-                </div>
-                <div class="product-pricing pull-right">
-                    <span class="price price-total">$<?php echo $product->getPrice(); ?></span>
+                <div class="row">
+                    <div class="col-xs-7 product-details">
+                        <span class="product-name"><?php echo htmlspecialchars($product->getTitle()); ?></span>
+                        <span class="product-type muted"><?php echo $product->getTypeString(); ?></span>
+                        <span class="muted">by </span><a href="/u/<?php echo $seller->getUniqueId(); ?>" class="product-creator"><?php echo htmlspecialchars($seller->getUsername()); ?></a>
+                    </div>
+                    <div class="col-xs-5 product-pricing">
+                        <span class="price">$<?php echo htmlspecialchars($product->getPrice()); ?></span>
+                    </div>
                 </div>
             </div>
             <div class="status-block"><i class="fa fa-spinner fa-spin"></i> We are preparing your transaction, please hold on.</div>
@@ -530,13 +543,15 @@ if ($uas->hasMessage(true)) {
 
         <div class="step-3" id="step3" style="display:none">
             <div class="product-card-body">
-                <div class="product-details">
-                    <span class="product-name"><?php echo htmlspecialchars($product->getTitle()); ?></span>
-                    <span class="product-type muted"><?php echo $product->getTypeString(); ?></span>
-                    <span class="muted invoice-link"><?php echo $config['url']['protocol'] . $config['url']['domain'] . $product->getUrl() . '/i/'; ?></span>
-                </div>
-                <div class="product-pricing pull-right">
-                    <span class="price price-total">$<?php echo $product->getPrice(); ?></span>
+                <div class="row">
+                    <div class="col-xs-7 product-details">
+                        <span class="product-name"><?php echo htmlspecialchars($product->getTitle()); ?></span>
+                        <span class="product-type muted"><?php echo $product->getTypeString(); ?></span>
+                        <span class="muted">by </span><a href="/u/<?php echo $seller->getUniqueId(); ?>" class="product-creator"><?php echo htmlspecialchars($seller->getUsername()); ?></a>
+                    </div>
+                    <div class="col-xs-5 product-pricing">
+                        <span class="price">$<?php echo htmlspecialchars($product->getPrice()); ?></span>
+                    </div>
                 </div>
             </div>
             <!-- product-card-body -->
@@ -586,13 +601,15 @@ if ($uas->hasMessage(true)) {
 
         <div class="paypal-invoice" id="paypal-invoice" style="display:none">
             <div class="product-card-body">
-                <div class="product-details">
-                    <span class="product-name"><?php echo $product->getTitle(); ?></span>
-                    <span class="product-type muted"><?php echo $product->getTypeString(); ?></span>
-                    <span class="muted invoice-link"><?php echo $config['url']['protocol'] . $config['url']['domain'] . $product->getUrl() . '/i/' . $order->getId(); ?></span>
-                </div>
-                <div class="product-pricing pull-right">
-                    <span class="price price-total">$ <?php echo $product->getPrice(); ?></span>
+                <div class="row">
+                    <div class="col-xs-7 product-details">
+                        <span class="product-name"><?php echo htmlspecialchars($product->getTitle()); ?></span>
+                        <span class="product-type muted"><?php echo $product->getTypeString(); ?></span>
+                        <span class="muted">by </span><a href="/u/<?php echo $seller->getUniqueId(); ?>" class="product-creator"><?php echo htmlspecialchars($seller->getUsername()); ?></a>
+                    </div>
+                    <div class="col-xs-5 product-pricing">
+                        <span class="price">$<?php echo htmlspecialchars($product->getPrice()); ?></span>
+                    </div>
                 </div>
             </div>
             <?php if(!$order->isCompleted()) { ?>
@@ -614,10 +631,10 @@ if ($uas->hasMessage(true)) {
                 <tbody>
                 <tr>
                     <td><?php echo $product->getTitle(); ?></td>
-                    <td>$ <?php echo $product->getPrice(); ?></td>
+                    <td>$<?php echo $product->getPrice(); ?></td>
                     <td><?php echo $order->getQuantity(); ?></td>
                     <?php if($order->isCouponUsed()) {?> <td>- <?php echo (($order->getFiat() * $order->getQuantity()) - ($order->calculateFiatWithCoupon() * $order->getQuantity())); ?></td><?php }?>
-                    <td>$ <?php if($order->isCouponUsed()) {echo number_format($order->calculateFiatWithCoupon() * $order->getQuantity(), 2); } else { echo number_format($order->getFiat() * $order->getQuantity(),2);}?> </td>
+                    <td>$<?php if($order->isCouponUsed()) {echo number_format($order->calculateFiatWithCoupon() * $order->getQuantity(), 2); } else { echo number_format($order->getFiat() * $order->getQuantity(),2);}?> </td>
                 </tr>
                 </tbody>
             </table>
@@ -1043,7 +1060,7 @@ if ($uas->hasMessage(true)) {
     $('.qr').prop('src', '<?php echo $order->getQrUrl(); ?>');
     $('.invoice-link').html($('.invoice-link').html() + '<?php echo $order->getId(); ?>');
     $('.finaldate').html('<?php echo date_format(new DateTime($order->getDate()), 'Y/m/d'); ?>');
-    $('.price-total').text('$ <?php echo number_format($order->calculateFiatWithCoupon() * $order->getQuantity(), 2); ?>');
+    $('.price-total').text('$<?php echo number_format($order->calculateFiatWithCoupon() * $order->getQuantity(), 2); ?>');
     $('.finalamount').html('<?php echo $order->getNative(); ?>');
     $('.finaladdress').val('<?php echo $order->getCryptoTo(); ?>');
     $('#finalcoinColor').attr('data-color', '<?php echo $color; ?>');
