@@ -13,132 +13,152 @@ if (count($url) == 4 && $url[2] == 'edit') {
 }
 
 if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['description']) && isset($_POST['type']) && isset($_POST['details']) && isset($_POST['aff_percent']) && isset($_POST['secondary-aff-link'])) {
-    if (!(count($url) == 4 && $url[2] == 'edit')) {
-        switch ($_POST['type']) {
-            case 0:
-                $product = new ProductDownload();
-                break;
-            case 1:
-                $product = new ProductSerial();
-                break;
-            case 2:
-                $product = new ProductNetseal();
-                break;
-        }
-    }
-
-    $currencies = array();
-
-    if (isset($_POST['paypal']) && $_POST['paypal'] == '1') {
-        $currencies[] = ProductCurrency::PAYPAL;
-    }
-
-    if (isset($_POST['paypal-sub']) && $_POST['paypal-sub'] == '1') {
-        $currencies[] = ProductCurrency::PAYPALSUB;
-    }
-
-    if (isset($_POST['bitcoin']) && $_POST['bitcoin'] == '1') {
-        $currencies[] = ProductCurrency::BITCOIN;
-    }
-
-    if (isset($_POST['litecoin']) && $_POST['litecoin'] == '1') {
-        $currencies[] = ProductCurrency::LITECOIN;
-    }
-
-    if (isset($_POST['omnicoin']) && $_POST['omnicoin'] == '1') {
-        $currencies[] = ProductCurrency::OMNICOIN;
-    }
-
-    $product->setSellerId($uas->getUser()->getId());
-    $product->setTitle(htmlspecialchars($_POST['title'], ENT_QUOTES));
-    $product->setPrice((double)$_POST['price']);
-    $product->setPaypalSubLength((int)$_POST['pp-sub-length']);
-    $product->setPaypalSubUnit((int)$_POST['pp-sub-unit']);
-    $product->setCurrency($currencies);
-    $product->setDescription(stripTags($_POST['description']));
-    if (is_numeric($_POST['type'])) {
-        $product->setType($_POST['type']);
-    }
-    $product->setAffiliateEnabled(isset($_POST['affiliate-enabled']) && $_POST['affiliate-enabled'] == '1');
-    $product->setAffiliatePercent((double)$_POST['aff_percent']);
-    $product->setAffiliateSecondaryLink(htmlspecialchars($_POST['secondary-aff-link'], ENT_QUOTES));
-    $product->setCustomDelivery(htmlspecialchars($_POST['custom-delivery'], ENT_QUOTES));
-    $product->setRequireShipping(isset($_POST['require-shipping']) && $_POST['require-shipping'] == '1');
-    $product->setVisible(isset($_POST['display']) && $_POST['display'] == '1');
-    $product->setSuccessUrl(htmlspecialchars($_POST["success-url"], ENT_QUOTES));
-
-    $questions = array();
-
-    for ($x = 1; $x < 10; $x++) {
-        if (isset($_POST['question-q-' . $x])) {
-            $questions[] = htmlspecialchars($_POST['question-q-' . $x], ENT_QUOTES);
-        }
-    }
-
-    $product->setQuestions($questions);
-
-    if ($_POST['title'] == '') {
-        $uas->addMessage(new ErrorSuccessMessage('Product title cannot be empty'));
-    } else if (strlen($_POST['title']) < 3 || strlen($_POST['title']) > 100) {
-        $uas->addMessage(new ErrorSuccessMessage('Product title must be between 3 and 100 characters in length'));
-    } else if ($_POST['price'] == '') {
-        $uas->addMessage(new ErrorSuccessMessage('Product price cannot be empty'));
-    } else if ($_POST['price'] < 0) {
-        $uas->addMessage(new ErrorSuccessMessage('Product price cannot be negative'));
-    } else if (!is_numeric($_POST['price'])) {
-        $uas->addMessage(new ErrorSuccessMessage('Invalid product price'));
-    } else if ($_POST['type'] == '') {
-        $uas->addMessage(new ErrorSuccessMessage('You must supply a product type'));
-    } else if (isset($_POST['affiliate-enabled']) && $_POST['affiliate-enabled'] == '1' && $_POST['aff_percent'] == '') {
-        $uas->addMessage(new ErrorSuccessMessage('Affiliate percent cannot be empty'));
-    } else if (isset($_POST['affiliate-enabled']) && $_POST['affiliate-enabled'] == '1' && !is_numeric($_POST['aff_percent'])) {
-        $uas->addMessage(new ErrorSuccessMessage('Invalid affiliate percent'));
-    } else {
-        switch ($_POST['type']) {
-            case 0:
-                $file = new File();
-
-                if (!$file->read($_POST['file'])) {
-                    $uas->addMessage(new ErrorSuccessMessage('Invalid file'));
+    try {
+        NoCSRF::check('products_token', $_POST, true, 60 * 10, false);
+        if (!(count($url) == 4 && $url[2] == 'edit')) {
+            switch ($_POST['type']) {
+                case 0:
+                    $product = new ProductDownload();
                     break;
-                } else {
-                    $product->setFileId($_POST['file']);
-                }
-
-                break;
-            case 1:
-                $product->setSerials(explode(',', $_POST['details']));
-                break;
-            case 2:
-                $seals = array();
-
-                for ($x = 1; $x < 10; $x++) {
-                    if (isset($_POST['netseal-link-' . $x])) {
-                        $seals[] = array(htmlspecialchars($_POST['netseal-link-' . $x], ENT_QUOTES), (int)$_POST['netseal-time-' . $x], (int)$_POST['netseal-points-' . $x], (int)$_POST['netseal-type-' . $x], htmlspecialchars($_POST['netseal-track-' . $x], ENT_QUOTES), htmlspecialchars($_POST['netseal-nkey-' . $x], ENT_QUOTES));
-                    }
-                }
-
-                $product->setSerials($seals);
-
-                if (count($seals) < 1) {
-                    $uas->addMessage(new ErrorSuccessMessage('You must supply at least 1 netseal'));
-                }
-
-                break;
-        }
-
-        if (!$uas->hasMessage()) {
-            if (count($url) == 4 && $url[2] == 'edit') {
-                $product->update();
-
-                $uas->addMessage(new ErrorSuccessMessage('Product successfully updated', false));
-            } else {
-                $product->create();
-
-                $uas->addMessage(new ErrorSuccessMessage('Product successfully created', false));
+                case 1:
+                    $product = new ProductSerial();
+                    break;
+                case 2:
+                    $product = new ProductNetseal();
+                    break;
             }
         }
-    };
+
+        $currencies = array();
+
+        if (isset($_POST['paypal']) && $_POST['paypal'] == '1') {
+            $currencies[] = ProductCurrency::PAYPAL;
+        }
+
+        if (isset($_POST['paypal-sub']) && $_POST['paypal-sub'] == '1') {
+            $currencies[] = ProductCurrency::PAYPALSUB;
+        }
+
+        if (isset($_POST['bitcoin']) && $_POST['bitcoin'] == '1') {
+            $currencies[] = ProductCurrency::BITCOIN;
+        }
+
+        if (isset($_POST['litecoin']) && $_POST['litecoin'] == '1') {
+            $currencies[] = ProductCurrency::LITECOIN;
+        }
+
+        if (isset($_POST['omnicoin']) && $_POST['omnicoin'] == '1') {
+            $currencies[] = ProductCurrency::OMNICOIN;
+        }
+
+        $product->setSellerId($uas->getUser()->getId());
+        $product->setTitle(htmlspecialchars($_POST['title'], ENT_QUOTES));
+        $product->setPrice((double)$_POST['price']);
+        $product->setPaypalSubLength((int)$_POST['pp-sub-length']);
+        $product->setPaypalSubUnit((int)$_POST['pp-sub-unit']);
+        $product->setCurrency($currencies);
+        $product->setDescription(stripTags($_POST['description']));
+        if (is_numeric($_POST['type'])) {
+            $product->setType($_POST['type']);
+        }
+        $product->setAffiliateEnabled(isset($_POST['affiliate-enabled']) && $_POST['affiliate-enabled'] == '1');
+        $product->setAffiliatePercent((double)$_POST['aff_percent']);
+        $product->setAffiliateSecondaryLink(htmlspecialchars($_POST['secondary-aff-link'], ENT_QUOTES));
+        $product->setCustomDelivery(htmlspecialchars($_POST['custom-delivery'], ENT_QUOTES));
+        $product->setRequireShipping(isset($_POST['require-shipping']) && $_POST['require-shipping'] == '1');
+        $product->setVisible(isset($_POST['display']) && $_POST['display'] == '1');
+        $product->setSuccessUrl(htmlspecialchars($_POST["success-url"], ENT_QUOTES));
+
+        $questions = array();
+
+        for ($x = 1; $x < 10; $x++) {
+            if (isset($_POST['question-q-' . $x])) {
+                $questions[] = htmlspecialchars($_POST['question-q-' . $x], ENT_QUOTES);
+            }
+        }
+
+        $product->setQuestions($questions);
+
+        if ($_POST['title'] == '') {
+            $uas->addMessage(new ErrorSuccessMessage('Product title cannot be empty'));
+        } else if (strlen($_POST['title']) < 3 || strlen($_POST['title']) > 100) {
+            $uas->addMessage(new ErrorSuccessMessage('Product title must be between 3 and 100 characters in length'));
+        } else if ($_POST['price'] == '') {
+            $uas->addMessage(new ErrorSuccessMessage('Product price cannot be empty'));
+        } else if ($_POST['price'] < 0) {
+            $uas->addMessage(new ErrorSuccessMessage('Product price cannot be negative'));
+        } else if (!is_numeric($_POST['price'])) {
+            $uas->addMessage(new ErrorSuccessMessage('Invalid product price'));
+        } else if ($_POST['type'] == '') {
+            $uas->addMessage(new ErrorSuccessMessage('You must supply a product type'));
+        } else if (isset($_POST['affiliate-enabled']) && $_POST['affiliate-enabled'] == '1' && $_POST['aff_percent'] == '') {
+            $uas->addMessage(new ErrorSuccessMessage('Affiliate percent cannot be empty'));
+        } else if (isset($_POST['affiliate-enabled']) && $_POST['affiliate-enabled'] == '1' && !is_numeric($_POST['aff_percent'])) {
+            $uas->addMessage(new ErrorSuccessMessage('Invalid affiliate percent'));
+        } else {
+            switch ($_POST['type']) {
+                case 0:
+                    $file = new File();
+
+                    if (!$file->read($_POST['file'])) {
+                        $uas->addMessage(new ErrorSuccessMessage('Invalid file'));
+                        break;
+                    } else {
+                        $product->setFileId($_POST['file']);
+                    }
+
+                    break;
+                case 1:
+                    $product->setSerials(explode(',', $_POST['details']));
+                    break;
+                case 2:
+                    $seals = array();
+
+                    for ($x = 1; $x < 10; $x++) {
+                        if (isset($_POST['netseal-link-' . $x])) {
+                            $seals[] = array(htmlspecialchars($_POST['netseal-link-' . $x], ENT_QUOTES), (int)$_POST['netseal-time-' . $x], (int)$_POST['netseal-points-' . $x], (int)$_POST['netseal-type-' . $x], htmlspecialchars($_POST['netseal-track-' . $x], ENT_QUOTES), htmlspecialchars($_POST['netseal-nkey-' . $x], ENT_QUOTES));
+                        }
+                    }
+
+                    $product->setSerials($seals);
+
+                    if (count($seals) < 1) {
+                        $uas->addMessage(new ErrorSuccessMessage('You must supply at least 1 netseal'));
+                    }
+
+                    break;
+            }
+
+            if (!$uas->hasMessage()) {
+                if (count($url) == 4 && $url[2] == 'edit') {
+                    $product->update();
+
+                    $uas->addMessage(new ErrorSuccessMessage('Product successfully updated', false));
+                } else {
+                    $product->create();
+
+                    $uas->addMessage(new ErrorSuccessMessage('Product successfully created', false));
+                }
+            }
+        };
+    } catch (Exception $e){}
+}
+if(isset($_FILES['file']) && is_uploaded_file($_FILES['file']['tmp_name'])){
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    if (preg_grep('/' . pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION) . '/i' , $config['upload']['profilepics'])) {
+        if ($_FILES['file']['size'] < 50000000) {
+
+            $_FILES['file']['name'] = generateRandomString(5) . $_FILES['file']['name'];
+            while(file_exists($config['upload']['directory'] . $_FILES['file']['name'])) {
+                $_FILES['file']['name'] = generateRandomString(2) . $_FILES['file']['name'];
+            }
+
+            $product->setProductImg($_FILES['file']['name']);
+            $product->update();
+            move_uploaded_file($_FILES['file']['tmp_name'], $config['upload']['directory'] . $_FILES['file']['name']);
+            $uas->addMessage(new ErrorSuccessMessage('Successfully updated your product picture.', false));
+        }
+    }
 }
 
 __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Product');
@@ -152,7 +172,8 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                 <div class="col-sm-12">
                     <section class="panel">
                         <div class="panel-body">
-                            <form class="bs-example form-horizontal" method="post">
+                            <form class="bs-example form-horizontal" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="products_token" value="<?php echo NoCSRF::generate('products_token'); ?>"/>
                                 <div class="form-group">
                                     <label class="col-lg-2 control-label">Title</label>
                                     <div class="col-lg-10">
@@ -166,6 +187,12 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                                             <span class='input-group-addon'>$</span>
                                             <input name='price' type='number' step="any" min="0" class='form-control' value='<?php echo $product->getPrice(); ?>'>
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">Picture (Optional)</label>
+                                    <div class="col-lg-4">
+                                        <input name='file' type='file' class='form-control' value=''>
                                     </div>
                                 </div>
                                 <div class="line line-dashed m-t-large"></div>

@@ -102,10 +102,6 @@ class Coupon {
         return $this->reduction;
     }
 
-    public function getUsedAmount(){
-        return $this->used_amount;
-    }
-
     public function getMaxUsedAmount(){
         return $this->max_used_amount;
     }
@@ -120,10 +116,6 @@ class Coupon {
 
     public function setReduction($reduction){
         $this->reduction = $reduction;
-    }
-
-    public function setUsedAmount($usedAmount){
-        $this->used_amount = $usedAmount;
     }
 
     public function setMaxUsedAmount($maxUsedAmount){

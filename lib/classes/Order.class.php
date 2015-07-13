@@ -19,6 +19,7 @@ class Order {
     private $successUrl;
     private $merchant;
 
+    private $couponId;
     private $couponUsed;
     private $couponName;
     private $couponReduction;
@@ -27,6 +28,9 @@ class Order {
     private $affiliateUsed;
 
     private $productDelivery;
+
+    private $qr_url;
+    private $crypto_to;
 
 	public function __construct() {
         $this->id = 0;
@@ -53,6 +57,9 @@ class Order {
         $this->affiliateUsed = false;
 
         $this->productDelivery = 0;
+        $this->couponId = 0;
+        $this->qr_url = '';
+        $this->crypto_to = '';
 	}
 	
 	public function create() {
@@ -68,9 +75,9 @@ class Order {
 		
 		$this->date = date('Y-m-d H:i:s');
 		
-		$q = DB::getInstance()->prepare('INSERT into orders (txid, date, product_id, quantity, currency, fiat, email, ip, after_success_url, merchant, coupon_used, coupon_name, coupon_reduction, affiliate, affiliate_used, product_delivery) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+		$q = DB::getInstance()->prepare('INSERT into orders (txid, date, product_id, quantity, currency, fiat, email, ip, after_success_url, merchant, coupon_used, coupon_name, coupon_reduction, affiliate, affiliate_used, product_delivery, coupon_id, qr_url, crypto_to) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 		
-		$q->execute(array($this->txid, $this->date, $this->productId, $this->quantity, $this->currency, $this->fiat, $this->email, $this->ip, $this->successUrl, $this->merchant, $this->couponUsed, $this->couponName, $this->couponReduction, $this->affiliate, $this->affiliateUsed, $this->productDelivery));
+		$q->execute(array($this->txid, $this->date, $this->productId, $this->quantity, $this->currency, $this->fiat, $this->email, $this->ip, $this->successUrl, $this->merchant, $this->couponUsed, $this->couponName, $this->couponReduction, $this->affiliate, $this->affiliateUsed, $this->productDelivery, $this->couponId, $this->qr_url, $this->crypto_to));
 
         foreach ($this->questions as $question) {
             $q = DB::getInstance()->prepare('INSERT into order_questions (order_id, question_index, question, response) VALUES (?, ?, ?, ?)');
@@ -82,7 +89,7 @@ class Order {
 	}
 	
 	public function read($id, $completedOnly = true) {
-		$q = DB::getInstance()->prepare('SELECT id, completed, txid, processor_txid, date, product_id, quantity, currency, fiat, native, email, ip, after_success_url, merchant, coupon_used, coupon_name, coupon_reduction, affiliate, affiliate_used, product_delivery FROM orders WHERE id = ? AND (completed = ? OR completed = ?)');
+		$q = DB::getInstance()->prepare('SELECT * FROM orders WHERE id = ? AND (completed = ? OR completed = ?)');
 		$q->execute(array($id, $completedOnly, true));
 		$q = $q->fetchAll();
 
@@ -105,6 +112,7 @@ class Order {
         $this->successUrl = $q[0]['after_success_url'];
         $this->merchant = $q[0]['merchant'];
 
+        $this->couponId = $q[0]['coupon_id'];
         $this->couponUsed = $q[0]['coupon_used'];
         $this->couponName = $q[0]['coupon_name'];
         $this->couponReduction = $q[0]['coupon_reduction'];
@@ -113,6 +121,8 @@ class Order {
         $this->affiliateUsed = $q[0]['affiliate_used'];
 
         $this->productDelivery = $q[0]['product_delivery'];
+        $this->qr_url = $q[0]['qr_url'];
+        $this->crypto_to = $q[0]['crypto_to'];
 
         $q = DB::getInstance()->prepare('SELECT question, response FROM order_questions WHERE order_id = ? AND (completed = ? OR completed = ?)');
         $q->execute(array($id, $completedOnly, true));
@@ -138,8 +148,8 @@ class Order {
 	}
 
     public function update() {
-        $q = DB::getInstance()->prepare('UPDATE orders SET merchant = ?, completed = ?, processor_txid = ?, native = ?, product_delivery = ? WHERE id = ?');
-        $q->execute(array($this->merchant, $this->completed, $this->processorTxid, $this->native, $this->productDelivery, $this->id));
+        $q = DB::getInstance()->prepare('UPDATE orders SET merchant = ?, completed = ?, processor_txid = ?, native = ?, product_delivery = ?, qr_url = ?, crypto_to = ? WHERE id = ?');
+        $q->execute(array($this->merchant, $this->completed, $this->processorTxid, $this->native, $this->productDelivery, $this->qr_url, $this->crypto_to, $this->id));
     }
 	
 	public static function getOrdersByProduct($pid, $completedOnly = true) {
@@ -430,5 +440,35 @@ class Order {
 
     public function setProductDelivery($productDelivery) {
         $this->productDelivery = $productDelivery;
+    }
+
+    public function getCouponId()
+    {
+        return $this->couponId;
+    }
+
+    public function setCouponId($couponId)
+    {
+        $this->couponId = $couponId;
+    }
+
+    public function getQrUrl()
+    {
+        return $this->qr_url;
+    }
+
+    public function setQrUrl($qr_url)
+    {
+        $this->qr_url = $qr_url;
+    }
+
+    public function getCryptoTo()
+    {
+        return $this->crypto_to;
+    }
+
+    public function setCryptoTo($crypto_to)
+    {
+        $this->crypto_to = $crypto_to;
     }
 }

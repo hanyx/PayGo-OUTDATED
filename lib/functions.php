@@ -33,6 +33,7 @@ abstract class EmailTemplate {
     const OUTOFSTOCK = 10;
     const SELLERSALE = 11;
     const AFFILIATEREGISTER = 12;
+    const INVOICE = 13;
 }
 
 abstract class UserAccountType {

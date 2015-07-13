@@ -11,64 +11,67 @@ if(count($url) == 4 && $url[2] == 'edit'){
     }
 }
 
-if(isset($_POST['name']) && isset($_POST['reduction']) && isset($_POST['maximum'])){
-    $products = $uas->getUser()->getProducts();
-    $chosen_products = array();
+if(isset($_POST['name']) && isset($_POST['reduction']) && isset($_POST['maximum'])) {
+    try {
+        NoCSRF::check('coupons_token', $_POST, true, 60 * 10, false);
+        $products = $uas->getUser()->getProducts();
+        $chosen_products = array();
 
-    foreach($products as $p){
-        if(isset($_POST['coupon-p-' . $p->getId()])){
-            $chosen_products[] = $p->getId();
+        foreach ($products as $p) {
+            if (isset($_POST['coupon-p-' . $p->getId()])) {
+                $chosen_products[] = $p->getId();
+            }
         }
-    }
 
-    if($_POST['name'] == ''){
-        $uas->addMessage(new ErrorSuccessMessage('Coupon name cannot be empty'));
-    } else if(!ctype_alnum($_POST['name'])){
-        $uas->addMessage(new ErrorSuccessMessage('Coupon name can only contain alphanumerical characters'));
-    } else if(strlen($_POST['name']) < 3 || strlen($_POST['name']) > 10) {
-        $uas->addMessage(new ErrorSuccessMessage('Coupon name must be between 3 and 10 characters in length'));
-    } else if($_POST['reduction'] == ''){
-        $uas->addMessage(new ErrorSuccessMessage('Coupon reduction percent cannot be empty'));
-    } else if($_POST['reduction'] <= 0 || $_POST['reduction'] >= 100) {
-        $uas->addMessage(new ErrorSuccessMessage('Coupon reduction percent must be between 1 % and 99 %'));
-    } else if(!is_numeric($_POST['reduction'])){
-        $uas->addMessage(new ErrorSuccessMessage('Invalid coupon reduction percent'));
-    } else if($_POST['maximum'] == ''){
-        $uas->addMessage(new ErrorSuccessMessage('Maximum used amount can not be empty'));
-    } else if($_POST['maximum'] <= 0 ||$_POST['maximum'] > 2147483647){
-        $uas->addMessage(new ErrorSuccessMessage('Maximum used amount must be greater then 0 and smaller than 2147483647'));
-    } else if(!is_numeric($_POST['maximum'])){
-        $uas->addMessage(new ErrorSuccessMessage('Invalid maximum used amount'));
-    } else if(count($chosen_products) <= 0){
-        $uas->addMessage(new ErrorSuccessMessage('Please select one or more products'));
-    }
-
-    if (count($url) != 4 || $url[2] != 'edit') {
-        $check = new Coupon();
-
-        if ($check->readByNameAndSellerId($_POST['name'], $uas->getUser()->getId())) {
-            $uas->addMessage(new ErrorSuccessMessage('Coupon name is already in use'));
+        if ($_POST['name'] == '') {
+            $uas->addMessage(new ErrorSuccessMessage('Coupon name cannot be empty'));
+        } else if (!ctype_alnum($_POST['name'])) {
+            $uas->addMessage(new ErrorSuccessMessage('Coupon name can only contain alphanumerical characters'));
+        } else if (strlen($_POST['name']) < 3 || strlen($_POST['name']) > 10) {
+            $uas->addMessage(new ErrorSuccessMessage('Coupon name must be between 3 and 10 characters in length'));
+        } else if ($_POST['reduction'] == '') {
+            $uas->addMessage(new ErrorSuccessMessage('Coupon reduction percent cannot be empty'));
+        } else if ($_POST['reduction'] <= 0 || $_POST['reduction'] >= 100) {
+            $uas->addMessage(new ErrorSuccessMessage('Coupon reduction percent must be between 1 % and 99 %'));
+        } else if (!is_numeric($_POST['reduction'])) {
+            $uas->addMessage(new ErrorSuccessMessage('Invalid coupon reduction percent'));
+        } else if ($_POST['maximum'] == '') {
+            $uas->addMessage(new ErrorSuccessMessage('Maximum used amount can not be empty'));
+        } else if ($_POST['maximum'] <= 0 || $_POST['maximum'] > 2147483647) {
+            $uas->addMessage(new ErrorSuccessMessage('Maximum used amount must be greater then 0 and smaller than 2147483647'));
+        } else if (!is_numeric($_POST['maximum'])) {
+            $uas->addMessage(new ErrorSuccessMessage('Invalid maximum used amount'));
+        } else if (count($chosen_products) <= 0) {
+            $uas->addMessage(new ErrorSuccessMessage('Please select one or more products'));
         }
-    }
 
-    $coupon->setName($_POST['name']);
-    $coupon->setReduction((int)$_POST['reduction']);
-    $coupon->setMaxUsedAmount((int)$_POST['maximum']);
-    $coupon->setSellerId($uas->getUser()->getId());
+        if (count($url) != 4 || $url[2] != 'edit') {
+            $check = new Coupon();
 
-    $coupon->setProducts($chosen_products);
-
-    if(!$uas->hasMessage()){
-        if (count($url) == 4 && $url[2] == 'edit') {
-            $coupon->update();
-
-            $uas->addMessage(new ErrorSuccessMessage('Coupon successfully updated', false));
-        } else {
-            $coupon->create();
-
-            $uas->addMessage(new ErrorSuccessMessage('Coupon successfully created', false));
+            if ($check->readByNameAndSellerId($_POST['name'], $uas->getUser()->getId())) {
+                $uas->addMessage(new ErrorSuccessMessage('Coupon name is already in use'));
+            }
         }
-    }
+
+        $coupon->setName($_POST['name']);
+        $coupon->setReduction((int)$_POST['reduction']);
+        $coupon->setMaxUsedAmount((int)$_POST['maximum']);
+        $coupon->setSellerId($uas->getUser()->getId());
+
+        $coupon->setProducts($chosen_products);
+
+        if (!$uas->hasMessage()) {
+            if (count($url) == 4 && $url[2] == 'edit') {
+                $coupon->update();
+
+                $uas->addMessage(new ErrorSuccessMessage('Coupon successfully updated', false));
+            } else {
+                $coupon->create();
+
+                $uas->addMessage(new ErrorSuccessMessage('Coupon successfully created', false));
+            }
+        }
+    } catch (Exception $e) {}
 }
 
 __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Coupon');
@@ -83,6 +86,7 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Coupo
             <section class="panel">
                 <div class="panel-body">
                     <form class="bs-example form-horizontal" method="post">
+                        <input type="hidden" name="coupons_token" value="<?php echo NoCSRF::generate('coupons_token'); ?>"/>
                         <div class="form-group">
                             <label class="col-lg-2 control-label">Name</label>
                             <div class="col-lg-10">
@@ -102,7 +106,7 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Coupo
                         <div class="form-group">
                             <label class="col-lg-2 control-label">Times Used</label>
                             <div class="col-lg-10">
-                                <input name='used' type='number' class='form-control' readonly value='<?php echo $coupon->getUsedAmount(); ?>'/>
+                                <input name='used' type='number' class='form-control' readonly value='<?php echo count(Order::getOrdersByCoupon($coupon->getId())); ?>'/>
                             </div>
                         </div>
                          <?php }?>

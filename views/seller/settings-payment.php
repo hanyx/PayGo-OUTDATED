@@ -1,12 +1,11 @@
 <?php
 __header('Payment Settings');
 
-if (isset($_POST['update-password']) && isset($_POST['password-old']) && isset($_POST['password']) && isset($_POST['password-confirm'])) {
-    $uas->processUpdatePassword($_POST['password-old'], $_POST['password'], $_POST['password-confirm']);
-}
-
 if (isset($_POST['update-payment-details'])) {
-    $uas->processUpdatePaymentDetails(isset($_POST['paypal']) ? $_POST['paypal'] : '', isset($_POST['bitcoin']) ? $_POST['bitcoin'] : '', isset($_POST['litecoin']) ? $_POST['litecoin'] : '', isset($_POST['omnicoin']) ? $_POST['omnicoin'] : '');
+    try {
+        NoCSRF::check('payments_token', $_POST, true, 60 * 10, false);
+        $uas->processUpdatePaymentDetails(isset($_POST['paypal']) ? $_POST['paypal'] : '', isset($_POST['bitcoin']) ? $_POST['bitcoin'] : '', isset($_POST['litecoin']) ? $_POST['litecoin'] : '', isset($_POST['omnicoin']) ? $_POST['omnicoin'] : '');
+    } catch (Exception $e) {}
 }
 ?>
     <section class="wrapper">
@@ -46,6 +45,7 @@ if (isset($_POST['update-payment-details'])) {
                 <section class='panel'>
                     <div class='panel-body'>
                         <form class='form-horizontal' method='post' data-validate='parsley' id="form">
+                            <input type="hidden" name="payments_token" value="<?php echo NoCSRF::generate('payments_token'); ?>"/>
                             <div class='form-group'>
                                 <div class='col-lg-9 col-lg-offset-3'>
                                     <button type='submit' name='update-payment-details' class='btn btn-primary'>Update Payment Settings</button>

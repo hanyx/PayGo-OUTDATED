@@ -25,6 +25,8 @@ class Product {
     private $successUrl;
 
     private $urlTitle;
+
+    private $productImg;
 	
 	public function __construct() {
         $this->id = 0;
@@ -50,6 +52,7 @@ class Product {
         $this->successUrl = '';
 
         $this->urlTitle = '';
+        $this->productImg = '';
 	}
 	
 	public function create() {
@@ -73,9 +76,9 @@ class Product {
             }
         }
 		
-		$q = DB::getInstance()->prepare('INSERT into products (url, seller_id, title, description, price, type, currency, visible, custom_delivery, pp_sub_length, pp_sub_unit, require_shipping, affiliate_enabled, affiliate_percent, affiliate_secondary_link, affiliate_id, after_success_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+		$q = DB::getInstance()->prepare('INSERT into products (url, seller_id, title, description, price, type, currency, visible, custom_delivery, pp_sub_length, pp_sub_unit, require_shipping, affiliate_enabled, affiliate_percent, affiliate_secondary_link, affiliate_id, after_success_url, product_img) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 		
-		$q->execute(array($this->url, $this->sellerId, $this->title, $this->description, $this->price, $this->type, implode(',', $this->currency), $this->visible, $this->customDelivery, $this->paypalSubLength, $this->paypalSubUnit, $this->requireShipping, $this->affiliateEnabled, $this->affiliatePercent, $this->affiliateSecondaryLink, $this->affiliateId, $this->successUrl));
+		$q->execute(array($this->url, $this->sellerId, $this->title, $this->description, $this->price, $this->type, implode(',', $this->currency), $this->visible, $this->customDelivery, $this->paypalSubLength, $this->paypalSubUnit, $this->requireShipping, $this->affiliateEnabled, $this->affiliatePercent, $this->affiliateSecondaryLink, $this->affiliateId, $this->successUrl, $this->productImg));
 
         $this->readByUrl($this->url);
 
@@ -87,7 +90,7 @@ class Product {
     }
 	
 	public function read($id, $showDeleted = false) {
-		$q = DB::getInstance()->prepare('SELECT id, url, deleted, seller_id, title, description, price, type, currency, visible, custom_delivery, pp_sub_length, pp_sub_unit, require_shipping, affiliate_enabled, affiliate_percent, affiliate_secondary_link, affiliate_id, after_success_url, url_title FROM products WHERE id = ? AND (deleted = ? OR deleted = ?)');
+		$q = DB::getInstance()->prepare('SELECT id, url, deleted, seller_id, title, description, price, type, currency, visible, custom_delivery, pp_sub_length, pp_sub_unit, require_shipping, affiliate_enabled, affiliate_percent, affiliate_secondary_link, affiliate_id, after_success_url, url_title, product_img FROM products WHERE id = ? AND (deleted = ? OR deleted = ?)');
 		$q->execute(array($id, $showDeleted, false));
 		$q = $q->fetchAll();
 
@@ -103,7 +106,8 @@ class Product {
 		$this->description = $q[0]['description'];
 		$this->price = $q[0]['price'];
 		$this->type = $q[0]['type'];
-		$this->currency = explode(',', $q[0]['currency']);
+        $vals = explode(',', $q[0]['currency']);
+        $this->currency = $vals[0] === '' ? array() : array_map('intval', $vals);
 		$this->visible = $q[0]['visible'];
         $this->customDelivery = $q[0]['custom_delivery'];
         $this->paypalSubLength = $q[0]['pp_sub_length'];
@@ -117,6 +121,7 @@ class Product {
         $this->successUrl = $q[0]['after_success_url'];
 
         $this->urlTitle = $q[0]['url_title'];
+        $this->productImg = $q[0]['product_img'];
 
         $q = DB::getInstance()->prepare('SELECT question FROM product_questions WHERE product_id = ?');
         $q->execute(array($this->id));
@@ -178,8 +183,8 @@ class Product {
     }
 	
 	public function update() {
-		$q = DB::getInstance()->prepare('UPDATE products SET deleted = ?, title = ?, description = ?, price = ?, currency = ?, visible = ?, custom_delivery = ?, pp_sub_length = ?, pp_sub_unit = ?, require_shipping = ?, affiliate_enabled = ?, affiliate_percent = ?, affiliate_secondary_link = ?, after_success_url = ? WHERE id = ?');
-        $q->execute(array($this->deleted, $this->title, $this->description, $this->price, implode(',', $this->currency), $this->visible, $this->customDelivery, $this->paypalSubLength, $this->paypalSubUnit, $this->requireShipping, $this->affiliateEnabled, $this->affiliatePercent, $this->affiliateSecondaryLink, $this->successUrl, $this->id));
+		$q = DB::getInstance()->prepare('UPDATE products SET deleted = ?, title = ?, description = ?, price = ?, currency = ?, visible = ?, custom_delivery = ?, pp_sub_length = ?, pp_sub_unit = ?, require_shipping = ?, affiliate_enabled = ?, affiliate_percent = ?, affiliate_secondary_link = ?, after_success_url = ?, product_img = ? WHERE id = ?');
+        $q->execute(array($this->deleted, $this->title, $this->description, $this->price, implode(',', $this->currency), $this->visible, $this->customDelivery, $this->paypalSubLength, $this->paypalSubUnit, $this->requireShipping, $this->affiliateEnabled, $this->affiliatePercent, $this->affiliateSecondaryLink, $this->successUrl, $this->productImg, $this->id));
 
         $q = DB::getInstance()->prepare('SELECT count(id) as `num` FROM product_questions WHERE product_id = ?');
         $q->execute(array($this->id));
@@ -243,7 +248,7 @@ class Product {
         if (count($q) != 1) {
 			return false;
 		}
-		
+
 		switch ($q[0]['type']) {
 			case ProductType::DOWNLOAD:
 				$product = new ProductDownload();
@@ -349,6 +354,16 @@ class Product {
         return $this->type;
     }
 
+    public function getTypeString(){
+        $type = 'Digital Download';
+        if($this->getType() == ProductType::SERIAL) {
+            $type = 'Serial Keys';
+        } elseif($this->getType() == ProductType::NETSEAL){
+            $type = 'Netseal Program';
+        }
+        return $type;
+    }
+
     public function getPrice() {
         return $this->price;
     }
@@ -431,4 +446,21 @@ class Product {
         return $this->affiliateId;
     }
 
+    public function getProductImg()
+    {
+        return $this->productImg;
+    }
+
+    public function setProductImg($productImg)
+    {
+        $this->productImg = $productImg;
+    }
+
+    public function getProductImgSrc($dir){
+        if($this->productImg == '') return  '/themes/home/img/product/product_dummy.png';
+        $path = $dir . $this->productImg;
+        $type = pathinfo($path, PATHINFO_EXTENSION);
+        $data = file_get_contents($path);
+        return 'data:image/' . $type . ';base64,' . base64_encode($data);
+    }
 }

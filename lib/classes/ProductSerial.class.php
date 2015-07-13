@@ -58,4 +58,8 @@ class ProductSerial extends Product {
         return $this->serials;
     }
 
+    public function makeSerialString(){
+        $cnt = count($this->serials);
+        return $cnt >= 1000 ? '' : $cnt . ' left';
+    }
 }

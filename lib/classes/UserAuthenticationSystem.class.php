@@ -88,14 +88,14 @@ class UserAuthenticationSystem extends ErrorSuccessMessages {
 		return false;
 	}
 	
-	public function register($username, $email, $password, $password2, $captcha) {	
+	public function register($username, $email, $password, $password2, $captcha = null) {
 		if ($this->authenticated) {
 			return false;
 		}
 		
 		$username = strtolower($username);
 		
-		if (!validateReCaptcha($captcha)) {
+		if ($captcha != null && !validateReCaptcha($captcha)) {
             $this->addMessage(new ErrorSuccessMessage('Invalid Captcha'));
             return false;
         }

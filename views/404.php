@@ -1,5 +1,5 @@
 <?php
-__header('404');
+___header('404');
 ?>
     <style>
         .btn-success {
@@ -17,4 +17,4 @@ __header('404');
         </div>
     </div>
 <?php
-__footer();
+___footer();

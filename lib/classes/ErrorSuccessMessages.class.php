@@ -7,7 +7,7 @@ abstract class ErrorSuccessMessages {
 		$this->messages = array();
 	}
 
-	public function printMessages() {
+	public function printMessages($home = false) {
 		$error = array();
 		$success = array();
 		foreach ($this->messages as $message) {
@@ -16,7 +16,11 @@ abstract class ErrorSuccessMessages {
 			} else {
 				$success[] = $message->getMessage();
 			}
-		}
+        }
+
+        if($home){
+            echo '<br/>';
+        }
 		
 		if (count($error) != 0) {
 			echo '<div class=\'alert alert-danger alert-dismissable\'><button type=\'button\' class=\'close\' data-dismiss=\'alert\' aria-hidden=\'true\'>×</button>';

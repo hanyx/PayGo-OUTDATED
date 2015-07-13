@@ -2,7 +2,10 @@
 __header('User Settings');
 
 if (isset($_POST['update-password']) && isset($_POST['password-old']) && isset($_POST['password']) && isset($_POST['password-confirm'])) {
-	$uas->processUpdatePassword($_POST['password-old'], $_POST['password'], $_POST['password-confirm']);
+    try {
+        NoCSRF::check('password_token', $_POST, true, 60 * 10, false);
+        $uas->processUpdatePassword($_POST['password-old'], $_POST['password'], $_POST['password-confirm']);
+    } catch (Exception $e) {}
 }
 
 if(isset($_POST['switch_toggle'])){
@@ -10,6 +13,33 @@ if(isset($_POST['switch_toggle'])){
     $user->setBigSizeBar(!$user->getBigSizeBar());
     $user->update();
     die();
+}
+
+if(isset($_POST['description'])){
+    try {
+        NoCSRF::check('description_token', $_POST, true, 60 * 10, false);
+        $uas->getUser()->setDescription($_POST['description']);
+        $uas->getUser()->update();
+        $uas->addMessage(new ErrorSuccessMessage('Successfully updated your description.', false));
+    } catch (Exception $e) {}
+}
+if(isset($_FILES['file'])){
+
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    if (preg_grep('/' . pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION) . '/i' , $config['upload']['profilepics'])) {
+        if ($_FILES['file']['size'] < 50000000) {
+
+            $_FILES['file']['name'] = generateRandomString(5) . $_FILES['file']['name'];
+            while(file_exists($config['upload']['directory'] . $_FILES['file']['name'])) {
+                $_FILES['file']['name'] = generateRandomString(2) . $_FILES['file']['name'];
+            }
+
+            $uas->getUser()->setProfilePic($_FILES['file']['name']);
+            $uas->getUser()->update();
+            move_uploaded_file($_FILES['file']['tmp_name'], $config['upload']['directory'] . $_FILES['file']['name']);
+            $uas->addMessage(new ErrorSuccessMessage('Successfully updated your profile picture.', false));
+        }
+    }
 }
 ?>
 	<section class="wrapper">
@@ -59,6 +89,7 @@ if(isset($_POST['switch_toggle'])){
                 <section class='panel'>
                     <div class='panel-body'>
                         <form class='form-horizontal' method='post' data-validate='parsley'>
+                            <input type="hidden" name="password_token" value="<?php echo NoCSRF::generate('password_token'); ?>"/>
                             <div class='form-group'>
                                 <label class='col-lg-3 control-label'>Old Password</label>
                                 <div class='col-lg-8'>
@@ -88,6 +119,27 @@ if(isset($_POST['switch_toggle'])){
                         </form>
                     </div>
                 </section>
+            </div>
+            <div class="col-md-6">
+                <div class="panel panel-default pi-panel">
+                    <div class="panel-body">
+                        <form class="form-horizontal" method="post" data-validate="parsley" enctype="multipart/form-data">
+                            <input type="hidden" name="description_token" value="<?php echo NoCSRF::generate('description_token'); ?>"/>
+                            <div class="form-group col-md-12">
+                                <label>Choose profile picture</label>
+                                <input type="file" name="file" id="profilePic"/><br/>
+                                Allowed files types: <?php echo implode(', ', $config['upload']['profilepics']); ?>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label>Description</label>
+                                <textarea class="form-control" name="description" style="width: 100%; max-width: 100%;"><?php echo $uas->getUser()->getDescription(); ?></textarea>
+                            </div>
+                            <div class="form-group col-md-12">
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

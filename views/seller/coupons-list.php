@@ -19,7 +19,7 @@ if (isset($_GET['getdata'])) {
             $data[] = array(
                 'name' => $coupon->getName(),
                 'reduction' => $coupon->getReduction() . ' %',
-                'used' => $coupon->getUsedAmount(),
+                'used' => count(Order::getOrdersByCoupon($coupon->getId())),
                 'maximum' => $coupon->getMaxUsedAmount(),
                 'configure' => '<a href=\'/seller/coupons/edit/' . $coupon->getId() . '\'><i class=\'fa fa-cog\'></i></a>'
             );

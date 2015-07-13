@@ -12,56 +12,56 @@ function __header($title = 'Dashboard') {
             <meta name="keywords" content="payivy, virtual marketplace, sell online, online shop, online selling">
 
             <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-            <link rel="stylesheet" href="/seller-theme/css/bootstrap.css" type="text/css"/>
-            <link rel="stylesheet" href="/seller-theme/css/animate.css" type="text/css"/>
-            <link rel="stylesheet" href="/seller-theme/css/font-awesome.min.css" type="text/css"/>
-            <link rel="stylesheet" href="/seller-theme/css/font.css" type="text/css" cache="false"/>
-            <link rel="stylesheet" href="/seller-theme/css/plugin.css" type="text/css"/>
-            <link rel="stylesheet" href="/seller-theme/css/app.css" type="text/css"/>
-            <link type="text/css" href="/seller-theme/js/datatables/datatables.css" rel="stylesheet">
-            <link rel="stylesheet" href="/seller-theme/js/fuelux/fuelux.css" type="text/css"/>
-            <link rel="stylesheet" href="/seller-theme/js/datepicker/datepicker.css" type="text/css"/>
-            <link rel="stylesheet" href="/seller-theme/js/select2/select2.css" type="text/css"/>
-            <link rel="stylesheet" href="/seller-theme/js/wysihtml5/wysihtml5.css" type="text/css"/>
-            <link rel="stylesheet" href="/seller-theme/js/dropzone/dropzone.css" type="text/css"/>
-            <link rel="stylesheet" href="/seller-theme/css/bootstrap-tagsinput.css" type="text/css"/>
+            <link rel="stylesheet" href="/themes/seller/css/bootstrap.css" type="text/css"/>
+            <link rel="stylesheet" href="/themes/seller/css/animate.css" type="text/css"/>
+            <link rel="stylesheet" href="/themes/seller/css/font-awesome.min.css" type="text/css"/>
+            <link rel="stylesheet" href="/themes/seller/css/font.css" type="text/css" cache="false"/>
+            <link rel="stylesheet" href="/themes/seller/css/plugin.css" type="text/css"/>
+            <link rel="stylesheet" href="/themes/seller/css/app.css" type="text/css"/>
+            <link type="text/css" href="/themes/seller/js/datatables/datatables.css" rel="stylesheet">
+            <link rel="stylesheet" href="/themes/seller/js/fuelux/fuelux.css" type="text/css"/>
+            <link rel="stylesheet" href="/themes/seller/js/datepicker/datepicker.css" type="text/css"/>
+            <link rel="stylesheet" href="/themes/seller/js/select2/select2.css" type="text/css"/>
+            <link rel="stylesheet" href="/themes/seller/js/wysihtml5/wysihtml5.css" type="text/css"/>
+            <link rel="stylesheet" href="/themes/seller/js/dropzone/dropzone.css" type="text/css"/>
+            <link rel="stylesheet" href="/themes/seller/css/bootstrap-tagsinput.css" type="text/css"/>
 
 
             <!--[if lt IE 9]>
-            <script src="/seller-theme/js/ie/respond.min.js" cache="false"></script>
-            <script src="/seller-theme/js/ie/html5.js" cache="false"></script>
-            <script src="/seller-theme/js/ie/fix.js" cache="false"></script>
+            <script src="/themes/seller/js/ie/respond.min.js" cache="false"></script>
+            <script src="/themes/seller/js/ie/html5.js" cache="false"></script>
+            <script src="/themes/seller/js/ie/fix.js" cache="false"></script>
             <![endif]-->
 
-            <script src="/seller-theme/js/jquery.min.js"></script>
-            <script src="/seller-theme/js/bootstrap.js"></script>
+            <script src="/themes/seller/js/jquery.min.js"></script>
+            <script src="/themes/seller/js/bootstrap.js"></script>
             <script src='//www.google.com/recaptcha/api.js'></script>
-            <script src="/seller-theme/js/datatables/jquery.dataTables.min.js"></script>
-            <script src="/seller-theme/js/charts/morris/raphael-min.js" cache="false"></script>
-            <script src="/seller-theme/js/charts/morris/morris.min.js" cache="false"></script>
-            <script src="/seller-theme/js/charts/sparkline/jquery.sparkline.min.js"></script>
-            <script src="/seller-theme/js/datepicker/bootstrap-datepicker.js"></script>
-            <script src="/seller-theme/js/libs/moment.min.js"></script>
-            <script src="/seller-theme/js/combodate/combodate.js" cache="false"></script>
-            <script src="/seller-theme/js/slider/bootstrap-slider.js"></script>
-            <script src="/seller-theme/js/select2/select2.min.js" cache="false"></script>
-            <script src="/seller-theme/js/charts/flot/jquery.flot.min.js" cache="false"></script>
-            <script src="/seller-theme/js/charts/flot/jquery.flot.resize.js" cache="false"></script>
-            <script src="/seller-theme/js/charts/flot/jquery.flot.orderBars.js" cache="false"></script>
-            <script src="/seller-theme/js/charts/flot/jquery.flot.pie.min.js" cache="false"></script>
-            <script src="/seller-theme/js/charts/flot/jquery.flot.time.js" cache="false"></script>
-            <script src="/seller-theme/js/charts/flot/jquery.flot.tooltip.min.js" cache="false"></script>
-            <script src="/seller-theme/js/wysiwyg/jquery.hotkeys.js" cache="false"></script>
-            <script src="/seller-theme/js/wysihtml5/wysihtml5.js" cache="false"></script>
-            <script src="/seller-theme/js/dropzone/dropzone.js" cache="false"></script>
-            <script src="/seller-theme/js/bootstrap-tagsinput.min.js" cache="false"></script>
-            <script src="/seller-theme/js/charts/easypiechart/jquery.easy-pie-chart.js"></script>
+            <script src="/themes/seller/js/datatables/jquery.dataTables.min.js"></script>
+            <script src="/themes/seller/js/charts/morris/raphael-min.js" cache="false"></script>
+            <script src="/themes/seller/js/charts/morris/morris.min.js" cache="false"></script>
+            <script src="/themes/seller/js/charts/sparkline/jquery.sparkline.min.js"></script>
+            <script src="/themes/seller/js/datepicker/bootstrap-datepicker.js"></script>
+            <script src="/themes/seller/js/libs/moment.min.js"></script>
+            <script src="/themes/seller/js/combodate/combodate.js" cache="false"></script>
+            <script src="/themes/seller/js/slider/bootstrap-slider.js"></script>
+            <script src="/themes/seller/js/select2/select2.min.js" cache="false"></script>
+            <script src="/themes/seller/js/charts/flot/jquery.flot.min.js" cache="false"></script>
+            <script src="/themes/seller/js/charts/flot/jquery.flot.resize.js" cache="false"></script>
+            <script src="/themes/seller/js/charts/flot/jquery.flot.orderBars.js" cache="false"></script>
+            <script src="/themes/seller/js/charts/flot/jquery.flot.pie.min.js" cache="false"></script>
+            <script src="/themes/seller/js/charts/flot/jquery.flot.time.js" cache="false"></script>
+            <script src="/themes/seller/js/charts/flot/jquery.flot.tooltip.min.js" cache="false"></script>
+            <script src="/themes/seller/js/wysiwyg/jquery.hotkeys.js" cache="false"></script>
+            <script src="/themes/seller/js/wysihtml5/wysihtml5.js" cache="false"></script>
+            <script src="/themes/seller/js/dropzone/dropzone.js" cache="false"></script>
+            <script src="/themes/seller/js/bootstrap-tagsinput.min.js" cache="false"></script>
+            <script src="/themes/seller/js/charts/easypiechart/jquery.easy-pie-chart.js"></script>
 
-            <script src="/seller-theme/js/app.js"></script>
-            <script src="/seller-theme/js/app.plugin.js"></script>
-            <script src="/seller-theme/js/app.data.js"></script>
+            <script src="/themes/seller/js/app.js"></script>
+            <script src="/themes/seller/js/app.plugin.js"></script>
+            <script src="/themes/seller/js/app.data.js"></script>
 
-            <script src="/js/seller.js"></script>
+            <script src="/themes/home/js/seller.js"></script>
 
             <script>
                 function toggleSidebar() {
