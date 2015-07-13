@@ -18,6 +18,16 @@ if(count($url) == 4 && $url[2] == 'i'){
 $seller = new User();
 $seller->read($product->getSellerId());
 
+if (count($url) == 3 && $url[2] != 'i') {
+    $affiliate = new Affiliate();
+
+    if ($affiliate->read($url['2']) && $affiliate->getProductId() == $seller->getId() && $product->getAffiliateSecondaryLink() != '') {
+        setcookie($product->getId() . '-affid', $affiliate->getId(), time() + 60 * 60 * 24 * 10, '/', $config['url']['domain'], true);
+
+        header('Location: ' . $product->getAffiliateSecondaryLink());
+    }
+}
+
 $product = Product::getProduct($product->getId());
 $currGood = true;
 if($product->acceptsCurrency(ProductCurrency::BITCOIN) && $seller->getBitcoin() == ''){
@@ -853,10 +863,14 @@ if ($uas->hasMessage(true)) {
         <?php
         $affId = false;
 
-        if (count($url) == 3 && $url[2] != 'i') {
+        $affUrl = count($url) == 3 && $url[2] == 'a';
+
+        $affCookie = isset($_COOKIE[$product->getId() . '-affid']);
+
+        if ($affUrl || $affCookie) {
             $affiliate = new Affiliate();
 
-            if ($affiliate->read($url['2']) && $affiliate->getProductId() == $seller->getId()) {
+            if ($affiliate->read($affUrl ? $url['2'] : $_COOKIE[$product->getId() . '-affid'])) {
                 $affId = $affiliate->getId();
             }
         }
