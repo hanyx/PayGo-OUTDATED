@@ -722,6 +722,7 @@ button#registration-btn {
     min-height:50px;
     background:white;
     border-bottom:#e7e7e7;
+    width: 250px;
 }
 .product-details span.product-name{
     display:block;

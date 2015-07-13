@@ -6,7 +6,7 @@ ___header();
     <h2 class="hero-h2">Accept Paypal, Bitcoin and Altcoins</h2>
     <img class="macbook" src="/themes/home/img/macbook.png">
     <div class="hero-buttons">
-        <a href="/features" class="hero-btn hero-btn-green">List Features</a>
+        <a href="/features" class="hero-btn hero-btn-green">Features</a>
         <a href="/v/demo" class="hero-btn hero-btn-neutral">View Demo</a>
     </div>
     <div class="clearfix"></div>
@@ -19,7 +19,7 @@ ___header();
             <div class="col-md-3 feature-item ">
                 <img src="/themes/home/img/customize_1.png" height="75">
                 <h4 class="">Security</h4>
-                <p>Protect your business and digital items from fraud</p>
+                <p>Protect your business and digital items from fraud.</p>
             </div>
             <div class="col-md-3 feature-item">
                 <img src="/themes/home/img/customize_2.png" height="75">
