@@ -449,7 +449,7 @@ if ($uas->hasMessage(true)) {
                                 <span class="method-abbr">LTC</span>
                                 <span class="method-name">Litecoin</span>
                             </span>
-                                <span class="delivery" data-delivery="1 Confirmations></span>
+                                <span class="delivery" data-delivery="1 Confirmation"></span>
                                 <span class="pull-right price" data-prepend="" data-price="" data-append=""></span>
                             </div>
                         </label>
