@@ -411,7 +411,7 @@ if ($uas->hasMessage(true)) {
                                 <span class="method-name">PayPal</span>
                             </span>
                                 <span class="delivery" data-delivery="Instant Delivery"></span>
-                                <span class="pull-right price" data-prepend="$" data-price="10.37" data-append=""></span>
+                                <span class="pull-right price" data-prepend="" data-price="" data-append=""></span>
                             </div>
                         </label>
                     <?php } if($product->acceptsCurrency(ProductCurrency::PAYPALSUB)) {?>
@@ -423,7 +423,7 @@ if ($uas->hasMessage(true)) {
                                 <span class="method-name">Subscription</span>
                             </span>
                                 <span class="delivery" data-delivery="Instant Delivery"></span>
-                                <span class="pull-right price" data-prepend="$" data-price="10.37" data-append=""></span>
+                                <span class="pull-right price" data-prepend="" data-price="" data-append=""></span>
                             </div>
                         </label>
                     <?php } if($product->acceptsCurrency(ProductCurrency::BITCOIN)) {
@@ -436,7 +436,7 @@ if ($uas->hasMessage(true)) {
                                 <span class="method-name">Bitcoin</span>
                             </span>
                                 <span class="delivery" data-delivery="1 Confirmation"></span>
-                                <span class="pull-right price" data-prepend="" data-price="0.03942" data-append="BTC"></span>
+                                <span class="pull-right price" data-prepend="" data-price="" data-append=""></span>
                             </div>
                         </label>
 
@@ -449,8 +449,8 @@ if ($uas->hasMessage(true)) {
                                 <span class="method-abbr">LTC</span>
                                 <span class="method-name">Litecoin</span>
                             </span>
-                                <span class="delivery" data-delivery="3 Confirmations"></span>
-                                <span class="pull-right price" data-prepend="" data-price="2.318" data-append=" LTC"></span>
+                                <span class="delivery" data-delivery="1 Confirmations></span>
+                                <span class="pull-right price" data-prepend="" data-price="" data-append=""></span>
                             </div>
                         </label>
                     <?php } if($product->acceptsCurrency(ProductCurrency::OMNICOIN)) {
@@ -462,8 +462,8 @@ if ($uas->hasMessage(true)) {
                                 <span class="method-abbr" data-color="purple">OMC</span>
                                 <span class="method-name">Omnicoin</span>
                             </span>
-                                <span class="delivery" data-delivery="3 Confirmations"></span>
-                                <span class="pull-right price" data-prepend="" data-price="2.318" data-append=" OMC"></span>
+                                <span class="delivery" data-delivery="1 Confirmation"></span>
+                                <span class="pull-right price" data-prepend="" data-price="" data-append=""></span>
                             </div>
                         </label>
                     <?php } ?>
