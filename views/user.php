@@ -69,11 +69,11 @@ $amount=0;
                         <div class="step-1" id="step1">
                             <div class="product-card-body">
                                 <div class="row">
-                                    <div class="col-md-8 product-details">
+                                    <div class="col-md-7 product-details">
                                         <span class="product-name"><?php echo htmlspecialchars($product->getTitle()); ?></span>
                                         <span class="product-type muted"><?php echo $product->getTypeString(); ?></span>
                                     </div>
-                                    <div class="col-md-4 product-pricing">
+                                    <div class="col-md-5 product-pricing">
                                         <span class="price hidden-sm hidden-xs">$ <?php echo $product->getPrice(); ?></span>
                                         <span class="price visible-sm visible-xs" style="text-align: center!important;">$ <?php echo $product->getPrice(); ?></span>
 

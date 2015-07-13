@@ -769,6 +769,9 @@ button#registration-btn {
     border-radius:3px;
     padding:15px;
 }
+.product-card-info img{
+    max-width: 370px;
+}
 /* smth */
 .product-type{
     display: block;
