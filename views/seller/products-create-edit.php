@@ -143,20 +143,31 @@ if (isset($_POST['title']) && isset($_POST['price']) && isset($_POST['descriptio
         };
     } catch (Exception $e){}
 }
-if(isset($_FILES['file']) && is_uploaded_file($_FILES['file']['tmp_name'])){
+
+if (!empty($_FILES)) {
     $finfo = new finfo(FILEINFO_MIME_TYPE);
-    if (preg_grep('/' . pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION) . '/i' , $config['upload']['profilepics'])) {
-        if ($_FILES['file']['size'] < 50000000) {
+    if ($_FILES['file']["error"] == UPLOAD_ERR_OK) {
+        if (preg_grep('/' . pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION) . '/i', $config['upload']['profilepics'])) {
+            if ($_FILES['file']['size'] < 50000000) {
+                $fileHandler = new File();
 
-            $_FILES['file']['name'] = generateRandomString(5) . $_FILES['file']['name'];
-            while(file_exists($config['upload']['directory'] . $_FILES['file']['name'])) {
-                $_FILES['file']['name'] = generateRandomString(2) . $_FILES['file']['name'];
+                $fileHandler->setOwner($uas->getUser()->getId());
+                $fileHandler->setExtension(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+                $fileHandler->setName(htmlspecialchars($_FILES['file']['name']));
+                $fileHandler->setHidden(true);
+
+                $fileHandler->create();
+
+                move_uploaded_file($_FILES['file']['tmp_name'], $config['upload']['directory'] . $fileHandler->getFile());
+
+                $product->setProductImg($fileHandler->getId());
+
+                $product->update();
+
+                $uas->addMessage(new ErrorSuccessMessage('Successfully updated your product picture.', false));
             }
-
-            $product->setProductImg($_FILES['file']['name']);
-            $product->update();
-            move_uploaded_file($_FILES['file']['tmp_name'], $config['upload']['directory'] . $_FILES['file']['name']);
-            $uas->addMessage(new ErrorSuccessMessage('Successfully updated your product picture.', false));
+        } else {
+            $uas->addMessage(new ErrorSuccessMessage('Invalid image format'));
         }
     }
 }

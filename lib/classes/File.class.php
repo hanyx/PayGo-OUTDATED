@@ -7,6 +7,7 @@ class File {
     private $name;
     private $fileId;
     private $extension;
+    private $hidden;
 
     public function __construct() {
         $this->id = 0;
@@ -15,6 +16,7 @@ class File {
         $this->name = '';
         $this->fileId = '';
         $this->extension = '';
+        $this->hidden = false;
     }
 
     public function create() {
@@ -28,14 +30,14 @@ class File {
             }
         }
 
-        $q = DB::getInstance()->prepare('INSERT into files (deleted, owner, name, file_id, extension) VALUES (?, ?, ?, ?, ?)');
-        $q->execute(array($this->deleted, $this->owner, $this->name, $this->fileId, $this->extension));
+        $q = DB::getInstance()->prepare('INSERT into files (deleted, owner, name, file_id, extension, hidden) VALUES (?, ?, ?, ?, ?, ?)');
+        $q->execute(array($this->deleted, $this->owner, $this->name, $this->fileId, $this->extension, $this->hidden));
 
         $this->readByFileId($this->fileId);
     }
 
     public function read($id, $showDeleted = false) {
-        $q = DB::getInstance()->prepare('SELECT id, deleted, owner, name, file_id, extension FROM files WHERE id = ? AND (deleted = ? OR deleted = ?)');
+        $q = DB::getInstance()->prepare('SELECT id, deleted, owner, name, file_id, extension, hidden FROM files WHERE id = ? AND (deleted = ? OR deleted = ?)');
         $q->execute(array($id, $showDeleted, false));
         $q = $q->fetchAll();
 
@@ -49,6 +51,7 @@ class File {
         $this->name = $q[0]['name'];
         $this->fileId = $q[0]['file_id'];
         $this->extension = $q[0]['extension'];
+        $this->hidden = $q[0]['hidden'];
 
         return true;
     }
@@ -123,6 +126,14 @@ class File {
 
     public function getExtension() {
         return $this->extension;
+    }
+
+    public function isHidden() {
+        return $this->hidden;
+    }
+
+    public function setHidden($hidden) {
+        $this->hidden = $hidden;
     }
 
 }

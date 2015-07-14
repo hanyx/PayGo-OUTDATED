@@ -334,7 +334,7 @@ if ($uas->hasMessage(true)) {
 <input type="hidden" id="currency" name="currency" value="<?php echo ProductCurrency::PAYPAL; ?>" />
 
     <section id="product" class="product-card">
-        <div class="product-image <?php if($product->getProductImg() == '') { echo 'empty-image'; } ?>">
+        <div class="product-image <?php if($product->getProductImg() == '0') { echo 'empty-image'; } ?>">
             <span class="helper">
                 <img style="width: 100%;" src="<?php echo $imgsrc; ?>">
         </div>
