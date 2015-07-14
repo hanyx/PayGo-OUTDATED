@@ -707,6 +707,10 @@ if ($uas->hasMessage(true)) {
 }?>
 <script>
     $(document).ready(function() {
+        $('.product-description img').each(function() {
+            $(this).wrap('<a href="' + $(this).attr('src') + '" data-lightbox="product"></a>');
+        });
+
         $('#modal-affiliate').modal();
         var urlhash = document.location.hash.toString();
         var urlsplit = urlhash.split("-");
@@ -1079,5 +1083,6 @@ if ($uas->hasMessage(true)) {
 }
 ?>
 </script>
+<script type="text/javascript" src="/js/lightbox.min.js"></script>
 </body>
 </html>

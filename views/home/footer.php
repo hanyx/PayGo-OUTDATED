@@ -18,6 +18,7 @@ function ___footer($fixedfooter = false) {
             </div>
         </div>
     </section>
+
     </body>
 
     </html>
