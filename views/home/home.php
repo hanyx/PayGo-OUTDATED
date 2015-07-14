@@ -44,7 +44,7 @@ ___header();
     </div>
 </section>
 <section class="control-w-crypto">
-    <h1 class="control-header">Take Control with Cryptocurrecny Payments</h1>
+    <h1 class="control-header">Take Control with Cryptocurrency Payments</h1>
     <h4 class="control-slogan">Getting Paid with Bitcoin is Easier than Buying It</h4>
     <img src="/themes/home/img/btc_dollar.png" width="284">
 </section>

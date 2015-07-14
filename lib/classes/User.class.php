@@ -309,11 +309,19 @@ class User {
         $this->description = $description;
     }
 
-    public function getProfilePicSrc($dir){
-        if($this->profilePic == '') return  '/themes/home/img/product/default_user.jpg';
-        $path = $dir . $this->profilePic;
-        $type = pathinfo($path, PATHINFO_EXTENSION);
-        $data = file_get_contents($path);
-        return 'data:image/' . $type . ';base64,' . base64_encode($data);
+    public function getProfilePicSrc($dir) {
+        if ($this->profilePic != '0') {
+            $file = new File();
+
+            if ($file->read($this->profilePic)) {
+                $path = $dir . $file->getFileId() . '.' . $file->getExtension();
+                $type = pathinfo($path, PATHINFO_EXTENSION);
+                $data = file_get_contents($path);
+
+                return 'data:image/' . $type . ';base64,' . base64_encode($data);
+            }
+        }
+
+        return '/themes/home/img/product/default_user.jpg';
     }
 }

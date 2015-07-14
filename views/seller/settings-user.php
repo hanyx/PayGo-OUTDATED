@@ -18,29 +18,40 @@ if(isset($_POST['switch_toggle'])){
 if(isset($_POST['description'])){
     try {
         NoCSRF::check('description_token', $_POST, true, 60 * 10, false);
-        $uas->getUser()->setDescription($_POST['description']);
+        $uas->getUser()->setDescription(strip_tags($_POST['description']));
         $uas->getUser()->update();
         $uas->addMessage(new ErrorSuccessMessage('Successfully updated your description.', false));
     } catch (Exception $e) {}
 }
-if(isset($_FILES['file'])){
 
+if (!empty($_FILES)) {
     $finfo = new finfo(FILEINFO_MIME_TYPE);
-    if (preg_grep('/' . pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION) . '/i' , $config['upload']['profilepics'])) {
-        if ($_FILES['file']['size'] < 50000000) {
+    if ($_FILES['file']["error"] == UPLOAD_ERR_OK) {
+        if (preg_grep('/' . pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION) . '/i', $config['upload']['profilepics'])) {
+            if ($_FILES['file']['size'] < 50000000) {
+                $fileHandler = new File();
 
-            $_FILES['file']['name'] = generateRandomString(5) . $_FILES['file']['name'];
-            while(file_exists($config['upload']['directory'] . $_FILES['file']['name'])) {
-                $_FILES['file']['name'] = generateRandomString(2) . $_FILES['file']['name'];
+                $fileHandler->setOwner($uas->getUser()->getId());
+                $fileHandler->setExtension(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+                $fileHandler->setName(htmlspecialchars($_FILES['file']['name']));
+                $fileHandler->setHidden(true);
+
+                $fileHandler->create();
+
+                move_uploaded_file($_FILES['file']['tmp_name'], $config['upload']['directory'] . $fileHandler->getFile());
+
+                $uas->getUser()->setProfilePic($fileHandler->getId());
+
+                $uas->getUser()->update();
+
+                $uas->addMessage(new ErrorSuccessMessage('Successfully updated your profile picture.', false));
             }
-
-            $uas->getUser()->setProfilePic($_FILES['file']['name']);
-            $uas->getUser()->update();
-            move_uploaded_file($_FILES['file']['tmp_name'], $config['upload']['directory'] . $_FILES['file']['name']);
-            $uas->addMessage(new ErrorSuccessMessage('Successfully updated your profile picture.', false));
+        } else {
+            $uas->addMessage(new ErrorSuccessMessage('Invalid image format'));
         }
     }
 }
+
 ?>
 	<section class="wrapper">
         <div class='clearfix'>

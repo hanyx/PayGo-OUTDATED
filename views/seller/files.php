@@ -5,10 +5,11 @@ if (isset($_GET['getdata'])) {
     $files = $uas->getUser()->getFiles();
 
     foreach ($files as $file) {
-        $data[] = array(
-            'file' => ($file->getName()),
-            'delete' => '<a href=\'/seller/products/files/delete/' . $file->getId() . '\'><i class="fa fa-trash-o"></i></a>'
-        );
+        if (!$file->isHidden()) {
+            $data[] = array(
+                'file' => ($file->getName())
+            );
+        }
     }
 
     echo json_encode(array('aaData' => $data));
@@ -16,7 +17,7 @@ if (isset($_GET['getdata'])) {
 }
 
 if (count($url) == 4 && $url[3] == 'upload') {
-    if (!empty($_FILES)) {
+    if (!empty($_FILES) && $_FILES['file']["error"] == UPLOAD_ERR_OK) {
         $finfo = new finfo(FILEINFO_MIME_TYPE);
         if (preg_grep('/' . pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION) . '/i' , $config['upload']['allowedFiles'])) {
             if ($_FILES['file']['size'] < 50000000) {
@@ -54,7 +55,6 @@ __header('Files');
                         <thead>
                         <tr>
                             <th>File</th>
-                            <th style="width: 150px;">Delete</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -85,8 +85,7 @@ __header('Files');
                 'sDom': '<\'row\'<\'col-sm-6\'l><\'col-sm-6\'f>r>t<\'row\'<\'col-sm-6\'i><\'col col-sm-6\'p>>',
                 'sPaginationType': 'full_numbers',
                 'aoColumns': [
-                    { 'mData': 'file' },
-                    { 'mData': 'delete' },
+                    { 'mData': 'file' }
                 ]
             });
         }

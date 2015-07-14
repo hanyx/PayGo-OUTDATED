@@ -80,13 +80,13 @@ class Product {
 		
 		$q->execute(array($this->url, $this->sellerId, $this->title, $this->description, $this->price, $this->type, implode(',', $this->currency), $this->visible, $this->customDelivery, $this->paypalSubLength, $this->paypalSubUnit, $this->requireShipping, $this->affiliateEnabled, $this->affiliatePercent, $this->affiliateSecondaryLink, $this->affiliateId, $this->successUrl, $this->productImg));
 
-        $this->readByUrl($this->url);
-
         foreach ($this->questions as $question) {
             $q = DB::getInstance()->prepare('INSERT into product_questions (product_id, question_index, question) VALUES (?, ?, ?)');
 
             $q->execute(array($this->id, array_search($question, $this->questions), $question));
         }
+
+        $this->readByUrl($this->url);
     }
 	
 	public function read($id, $showDeleted = false) {
@@ -457,10 +457,18 @@ class Product {
     }
 
     public function getProductImgSrc($dir){
-        if($this->productImg == '') return  '/themes/home/img/product/product_dummy.png';
-        $path = $dir . $this->productImg;
-        $type = pathinfo($path, PATHINFO_EXTENSION);
-        $data = file_get_contents($path);
-        return 'data:image/' . $type . ';base64,' . base64_encode($data);
+        if ($this->productImg != '0') {
+            $file = new File();
+
+            if ($file->read($this->productImg)) {
+                $path = $dir . $file->getFileId() . '.' . $file->getExtension();
+                $type = pathinfo($path, PATHINFO_EXTENSION);
+                $data = file_get_contents($path);
+
+                return 'data:image/' . $type . ';base64,' . base64_encode($data);
+            }
+        }
+
+        return '/themes/home/img/product/product_dummy.png';
     }
 }

@@ -62,7 +62,7 @@ $amount=0;
             <div class="col-md-4 product-container" id="product-container-<?php echo $amount;?>" data-search="<?php echo base64_encode($product->getTitle());?>">
                 <a href="<?php echo $product->getUrl(); ?>">
                     <section id="product" class="product-card">
-                        <div class="product-image sellerpage-product-image <?php if($product->getProductImg() == '') {echo  'empty-image empty-image-down'; } ?>" style="background: #72B611;">
+                        <div class="product-image sellerpage-product-image <?php if($product->getProductImg() == '0') {echo  'empty-image empty-image-down'; } ?>" style="background: #72B611;">
                         <span class="helper">
                             <img src="<?php echo $product->getProductImgSrc($config['upload']['directory']); ?>" style="width:100%;height: 100%;">
                         </div>
