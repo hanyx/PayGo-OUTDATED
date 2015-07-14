@@ -31,6 +31,7 @@ function ___header($title = '', $fixedfooter = false, $productOrUserPage = false
 
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script src='//www.google.com/recaptcha/api.js'></script>
 
         <script>
             $(function() {
