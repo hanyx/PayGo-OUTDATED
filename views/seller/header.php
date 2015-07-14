@@ -61,7 +61,7 @@ function __header($title = 'Dashboard') {
             <script src="/themes/seller/js/app.plugin.js"></script>
             <script src="/themes/seller/js/app.data.js"></script>
 
-            <script src="/themes/home/js/seller.js"></script>
+            <script src="/themes/seller/js/seller.js"></script>
 
             <script>
                 function toggleSidebar() {

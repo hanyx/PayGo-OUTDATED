@@ -21,6 +21,7 @@ function ___header($title = '', $fixedfooter = false, $productOrUserPage = false
         <link rel="stylesheet" type="text/css" href="/themes/home/css/selectize.bootstrap3.css">
         <link rel="stylesheet" type="text/css" href="/themes/home/css/selectize.default.css">
         <link rel="stylesheet" type="text/css" href="/themes/home/css/selectize.css">
+        <link rel="stylesheet" type="text/css" href="/css/lightbox.css">
 
         <link href='//fonts.googleapis.com/css?family=Open+Sans:600italic,400,300,600,700' rel='stylesheet'
               type='text/css'>
@@ -30,7 +31,6 @@ function ___header($title = '', $fixedfooter = false, $productOrUserPage = false
 
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
-        <script src='//www.google.com/recaptcha/api.js'></script>
 
         <script>
             $(function() {
