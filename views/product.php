@@ -357,7 +357,7 @@ if ($uas->hasMessage(true)) {
 
             <div class="product-card-info">
                     <div class="tab-pane active" id="info">
-                        <p class="product-description"><?php echo $product->getDescription(); ?></p>
+                        <div class="product-description"><?php echo $product->getDescription(); ?></div>
                     </div>
             </div>
             <!-- product-card-info -->
