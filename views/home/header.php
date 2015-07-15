@@ -1,5 +1,5 @@
 <?php
-function ___header($title = '', $fixedfooter = false, $productOrUserPage = false, $description = 'Start selling your virtual goods now with our online sales platform') {
+function ___header($title = '', $fixedfooter = false, $productOrUserPage = false, $description = 'Sell Digital Products and Services. Accept PayPal, Bitcoin, and Altcoins.') {
     ?>
     <!DOCTYPE html>
     <html>
