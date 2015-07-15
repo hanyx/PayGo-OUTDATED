@@ -201,7 +201,7 @@ __header(((count($url) == 4 && $url[2] == 'edit') ? 'Edit' : 'Create') . ' Produ
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-lg-2 control-label">Picture (Optional)</label>
+                                    <label class="col-lg-2 control-label">Header Picture (Optional)</label>
                                     <div class="col-lg-4">
                                         <input name='file' type='file' class='form-control' value=''>
                                     </div>

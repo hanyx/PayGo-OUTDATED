@@ -29,7 +29,7 @@ if (isset($_POST['email']) && isset($_POST['name']) && isset($_POST['message']))
 }
 
 $imgsrc = $seller->getProfilePicSrc($config['upload']['directory']);
-___header($seller->getUsername() . "'s products", false, true);
+___header($seller->getUsername() . "'s Products", false, true, $seller->getUsername() . '\'s products');
 $amount=0;
 ?>
 

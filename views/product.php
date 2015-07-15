@@ -321,7 +321,7 @@ $available = "-1";
 if($product->getType() == ProductType::SERIAL){
     $available = count($product->getSerials());
 }
-___header($product->getTitle(), false, true);
+___header($product->getTitle(), false, true, strip_tags($product->getDescription()));
 $imgsrc = $product->getProductImgSrc($config['upload']['directory']);
 
 if ($uas->hasMessage(true)) {

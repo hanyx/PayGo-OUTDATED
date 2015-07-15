@@ -1,5 +1,5 @@
 <?php
-___header('Pricing');
+___header('Pricing', false, false, 'Free registration, no limitations, and no fees');
 ?>
     <section class="features-mast" style="border-bottom:none;">
         <div class="row">

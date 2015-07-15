@@ -1,5 +1,5 @@
 <?php
-___header('Features');
+___header('Features', false, false, 'Selling products is easy with our simple dashboard and 3-click checkout');
 ?>
     <section class="features-mast">
         <div class="row">

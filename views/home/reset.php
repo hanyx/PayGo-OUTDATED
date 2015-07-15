@@ -19,7 +19,7 @@ if (isset($_POST['reset']) && isset($_POST['password']) && isset($_POST['passwor
 	$uas->reset($_POST['password'], $_POST['password_repeat'], $_POST['token']);
 }
 
-___header();
+___header('Reset', true, false, 'Reset your password on PayIvy to continue selling');
 ?>
     <section class="login last-section">
         <?php

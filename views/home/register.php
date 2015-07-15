@@ -14,7 +14,7 @@ if(isset($_POST['email_home']) && isset($_POST['password_home'])){
     $password = $_POST['password_home'];
 }
 
-___header('Sign Up',true);
+___header('Sign Up', true, false, 'Sign up for PayIvy and create your online store');
 ?>
     <section class="login last-section">
         <?php

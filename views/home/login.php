@@ -40,7 +40,7 @@ if (isset($_GET['update'])) {
 	$uas->addMessage(new ErrorSuccessMessage('Password updated', false));
 }
 
-___header('Login', true);
+___header('Login', true, false, 'Log in to PayIvy to start selling virtual items now');
 ?>
     <section class="login last-section">
         <?php

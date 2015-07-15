@@ -1,5 +1,5 @@
 <?php
-function __header($title = 'Dashboard') {
+function __header($title = 'Dashboard', $description = 'Sell Digital Products and Services. Accept PayPal, Bitcoin, and Altcoins.') {
     global $uas, $pageManager, $url;
     ?>
     <!DOCTYPE html>
@@ -8,7 +8,7 @@ function __header($title = 'Dashboard') {
             <meta charset="utf-8"/>
             <title>PayIvy | <?php echo $title; ?></title>
 
-            <meta name="description" content="PayIvy is an online marketplace for all types of online products. If you want to sell your virtual items now, PayIvy is your one stop.">
+            <meta name="description" content="<?php echo $description; ?>">
             <meta name="keywords" content="payivy, virtual marketplace, sell online, online shop, online selling">
 
             <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
