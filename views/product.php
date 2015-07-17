@@ -76,6 +76,11 @@ if (count($url) == 3 && $url[2] == 'buy') {
                         break;
                     }
 
+                    if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+                        $errorMessage = 'RELOAD49';
+                        break;
+                    }
+
                     $questions = array();
 
                     $qs = $product->getQuestions();
@@ -172,7 +177,8 @@ if (count($url) == 3 && $url[2] == 'buy') {
                             $tx = $cp->CreateTransaction(array('buyer_name' => '', 'buyer_email' => $order->getEmail(), 'amount' => $order->calculateFiatWithCoupon() * $order->getQuantity(), 'currency1' => 'USD', 'currency2' => $currency, 'address' => $address, 'item_name' => $product->getTitle(), 'item_number' => $product->getId(), 'custom' => $order->getTxid(), 'ipn_url' => $config['url']['protocol'] . $config['url']['domain'] . '/ipn/coinpayments/', 'quantity' => 1, 'success_url' => $product->getSuccessUrl()));
 
                             if ($tx['error'] != 'ok') {
-                                $errorMessage = json_encode($tx);
+                                //$errorMessage = json_encode($tx);
+                                $errorMessage = 'Error38';
                                 break;
                             }
 
