@@ -357,7 +357,7 @@ class Product {
     public function getTypeString(){
         $type = 'Digital Download';
         if($this->getType() == ProductType::SERIAL) {
-            $type = 'Serial Keys';
+            $type = 'Digital Product';
         } elseif($this->getType() == ProductType::NETSEAL){
             $type = 'Netseal Program';
         }
