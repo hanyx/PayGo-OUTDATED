@@ -258,7 +258,7 @@ class Mailer {
                 $message =
                     'Hey there ' . $email . ',
 
-             We\'ve received your purchase for ' . $arg1 . ' on PayIvy.com
+             We\'ve received your request for ' . $arg1 . ' on PayIvy.com
 
                         Invoice: <b><a href="' . $arg2 . '">' . $arg2 . '</a></b>
                         Product : <b><a href="' . $arg3 . '">' . $arg1 . '</a></b>

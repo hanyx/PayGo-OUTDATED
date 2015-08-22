@@ -673,6 +673,8 @@ if ($uas->hasMessage(true)) {
         <?php } ?>
     </section>
 
+    <div class="text-center" style="color: #888888; margin-top: 25px;">Cryptocurrency payments by <a href="https://www.coinpayments.net/index.php?ref=6e66d609c8c47e8a7abd783a10e6eb94">CoinPayments</a></div>
+
 <?php if($affiliate) {
     ?>
     <div class="modal fade" id="modal-affiliate" tabindex="-1" role="dialog" aria-labelledby="modal-compose">
